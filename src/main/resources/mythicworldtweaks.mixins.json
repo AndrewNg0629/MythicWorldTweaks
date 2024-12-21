@@ -1,0 +1,29 @@
+{
+  "required": true,
+  "package": "online.andrew2007.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "DataComponentTypesMixin",
+    "PlayerEntityMixin",
+    "EditPlayerDataMixin",
+    "EntityMixin",
+    "ExplosionMixin",
+    "ExplosiveProjectileEntityMixin",
+    "InventoryMixin",
+    "ItemEntityMixin",
+    "ItemSettingsMixin",
+    "ItemStackMixin",
+    "RideCommandMixin",
+    "ServerPlayerEntityMixin",
+    "ShulkerBoxSlotMixin",
+    "SonicBoomTaskMixin",
+    "ThrowFireChargeMixin",
+    "TridentEntityMixin",
+    "WardenBrainMixin",
+    "WardenEntityMixin",
+    "ZombieEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}
