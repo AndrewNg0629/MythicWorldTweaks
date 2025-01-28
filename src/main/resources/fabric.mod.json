@@ -8,21 +8,17 @@
 		"AndrewNg0629"
 	],
 	"contact": {
-		"homepage": "",
-		"sources": ""
+		"sources": "https://github.com/AndrewNg0629/MythicWorldTweaks"
 	},
 	"license": "MIT",
 	"icon": "assets/mythicworldtweaks/structure_block.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-          "online.andrew2007.MythicWorldTweaks"
+          "online.andrew2007.mythic.MythicWorldTweaks"
 		],
 		"client": [
-			"online.andrew2007.MythicWorldTweaksClient"
-		],
-		"fabric-datagen": [
-          "online.andrew2007.MythicWorldTweaksDataGenerator"
+          "online.andrew2007.mythic.MythicWorldTweaksClient"
 		]
 	},
 	"mixins": [
