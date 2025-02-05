@@ -34,6 +34,7 @@ public record TransmittableRuntimeParams(
         boolean silentWardens,
         boolean constantVillagerConversion,
         boolean fakePlayerSleepExclusion,
+        boolean sleepingExtras,
         boolean autoDiscardingFireBallEnabled,
         boolean stuffedShulkerBoxStackLimitEnabled,
         boolean shulkerBoxNestingLimitEnabled,
@@ -64,6 +65,7 @@ public record TransmittableRuntimeParams(
 
     public static TransmittableRuntimeParams getDefaultInstance() {
         return new TransmittableRuntimeParams(
+                false,
                 false,
                 false,
                 false,

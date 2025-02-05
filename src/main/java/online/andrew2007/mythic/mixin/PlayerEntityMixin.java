@@ -4,24 +4,23 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 import online.andrew2007.mythic.config.RuntimeController;
 import online.andrew2007.mythic.util.PlayerEntityUtil;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+@SuppressWarnings("DataFlowIssue")
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin {
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;initDataTracker(Lnet/minecraft/entity/data/DataTracker$Builder;)V"), method = "initDataTracker")
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;initDataTracker(Lnet/minecraft/entity/data/DataTracker$Builder;)V", shift = At.Shift.AFTER), method = "initDataTracker")
     private void initDataTracker(DataTracker.Builder builder, CallbackInfo info) {
-        if (((PlayerEntity) (Object) this) instanceof ServerPlayerEntity serverPlayerEntity) {
-            builder.add(PlayerEntityUtil.IS_UNDER_FALL_PROTECTION, false);
-            builder.add(PlayerEntityUtil.IS_FAKE, PlayerEntityUtil.determineFake(serverPlayerEntity));
-        }
+        builder.add(PlayerEntityUtil.IS_UNDER_FALL_PROTECTION, false);
+        builder.add(PlayerEntityUtil.IS_FAKE, PlayerEntityUtil.determineFake((PlayerEntity) (Object) this));
+        builder.add(PlayerEntityUtil.IS_REALLY_SLEEPING, false);
     }
 
     @Inject(at = @At(value = "HEAD"), method = "handleFallDamage", cancellable = true)
@@ -32,6 +31,22 @@ public abstract class PlayerEntityMixin {
                 serverPlayerEntity.getDataTracker().set(PlayerEntityUtil.IS_UNDER_FALL_PROTECTION, false);
                 info.setReturnValue(!RuntimeController.getCurrentTParams().playerRidingProtection());
             }
+        }
+    }
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSleeping()Z", ordinal = 0), method = "tick")
+    private boolean sleepingTimerControl(PlayerEntity instance) {
+        if (RuntimeController.getCurrentTParams().sleepingExtras()) {
+            return instance.isSleeping() && instance.getDataTracker().get(PlayerEntityUtil.IS_REALLY_SLEEPING);
+        } else {
+            return instance.isSleeping();
+        }
+    }
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSleeping()Z", ordinal = 0), method = "canResetTimeBySleeping")
+    private boolean canReallySkipNight(PlayerEntity instance) {
+        if (RuntimeController.getCurrentTParams().sleepingExtras()) {
+            return instance.isSleeping() && instance.getDataTracker().get(PlayerEntityUtil.IS_REALLY_SLEEPING);
+        } else {
+            return instance.isSleeping();
         }
     }
 }

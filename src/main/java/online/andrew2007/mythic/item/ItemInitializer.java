@@ -28,7 +28,7 @@ import online.andrew2007.mythic.util.ReflectionCenter;
 
 public class ItemInitializer {
     public static final Item LARGE_FIRE_CHARGE = registerItem("large_fire_charge", new LargeFireChargeItem(new Item.Settings()));
-    public static final Item DEBUGGER = registerItem("debugger", new DebuggerItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC).component(DebuggerItem.DEBUG_SELECTION, 1)));
+    public static final Item DEBUGGER = registerItem("debugger", new DebuggerItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
 
     public static void generalInitialization() {
         largeFireChargeInit();

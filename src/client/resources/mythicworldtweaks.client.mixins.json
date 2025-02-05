@@ -3,6 +3,8 @@
   "package": "online.andrew2007.mythic.mixin.client",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "DrawContextMixin",
+    "SleepingChatScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

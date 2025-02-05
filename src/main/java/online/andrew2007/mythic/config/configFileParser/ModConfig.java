@@ -1,12 +1,14 @@
 package online.andrew2007.mythic.config.configFileParser;
 
 import com.google.gson.*;
+import online.andrew2007.mythic.config.ConfigLoader;
 
 import java.lang.reflect.Type;
 import java.util.Set;
 
 public record ModConfig(
         boolean modEnabled,
+        boolean modDataPackEnabled,
         boolean tweaksEnabled,
         boolean serverPlaySupportEnabled,
         ModIdValidationConfig modIdValidationConfig,
@@ -35,6 +37,7 @@ public record ModConfig(
             JsonObject jsonObject = json.getAsJsonObject();
             if (!jsonObject.keySet().equals(Set.of(
                     "mod_enabled",
+                    "mod_data_pack_enabled",
                     "tweaks_enabled",
                     "server_play_support_enabled",
                     "mod_id_validation",
@@ -45,11 +48,12 @@ public record ModConfig(
                 throw new JsonParseException("Wrong config structure, please have a check.");
             }
             ModIdValidationConfig modIdValidationConfig = context.deserialize(jsonObject.get("mod_id_validation"), ModIdValidationConfig.class);
-            BinaryToggleTweaksConfig binaryToggleTweaksConfig = context.deserialize(jsonObject.get("binary_toggle_tweaks"), BinaryToggleTweaksConfig.class);
-            ParamsRequiredTweaksConfig paramsRequiredTweaksConfig = context.deserialize(jsonObject.get("params_required_tweaks"), ParamsRequiredTweaksConfig.class);
-            ItemEditorConfig itemEditorConfig = context.deserialize(jsonObject.get("item_editor"), ItemEditorConfig.class);
+            BinaryToggleTweaksConfig binaryToggleTweaksConfig = ConfigLoader.isItemEditorParserReady() ? context.deserialize(jsonObject.get("binary_toggle_tweaks"), BinaryToggleTweaksConfig.class) : null;
+            ParamsRequiredTweaksConfig paramsRequiredTweaksConfig = ConfigLoader.isItemEditorParserReady() ? context.deserialize(jsonObject.get("params_required_tweaks"), ParamsRequiredTweaksConfig.class) : null;
+            ItemEditorConfig itemEditorConfig = ConfigLoader.isItemEditorParserReady() ? context.deserialize(jsonObject.get("item_editor"), ItemEditorConfig.class) : null;
             return new ModConfig(
                     readBoolean(jsonObject.get("mod_enabled")),
+                    readBoolean(jsonObject.get("mod_data_pack_enabled")),
                     readBoolean(jsonObject.get("tweaks_enabled")),
                     readBoolean(jsonObject.get("server_play_support_enabled")),
                     modIdValidationConfig,

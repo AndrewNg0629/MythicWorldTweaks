@@ -22,7 +22,6 @@ import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
-import online.andrew2007.mythic.MythicWorldTweaks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,14 +33,11 @@ import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class ReflectionCenter {
-    public static final FieldContainer<SonicBoomTask, Integer> RUN_TIME = new FieldContainer<>(SonicBoomTask.class, Integer.class, "RUN_TIME", "field_38855");
-    public static final FieldContainer<SonicBoomTask, Integer> SOUND_DELAY = new FieldContainer<>(SonicBoomTask.class, Integer.class, "SOUND_DELAY", "field_38854");
     public static final FieldContainer<EntityDataObject, Entity> entity = new FieldContainer<>(EntityDataObject.class, Entity.class, "entity", "field_13801");
     public static final FieldContainer<FireballEntity, Integer> explosionPower = new FieldContainer<>(FireballEntity.class, Integer.class, "explosionPower", "field_7624");
     public static final FieldContainer<PersistentProjectileEntity, ItemStack> stack = new FieldContainer<>(PersistentProjectileEntity.class, ItemStack.class, "stack", "field_46970");
     public static final FieldContainer<TridentEntity, TrackedData<Boolean>> ENCHANTED = new FieldContainer<>(TridentEntity.class, (Class<TrackedData<Boolean>>) ((Class<?>) TrackedData.class), "ENCHANTED", "field_21514");
     public static final FieldContainer<TridentEntity, Boolean> dealtDamage = new FieldContainer<>(TridentEntity.class, Boolean.class, "dealtDamage", "field_7648");
-    public static final FieldContainer<TridentEntity, TrackedData<Byte>> LOYALTY = new FieldContainer<>(TridentEntity.class, (Class<TrackedData<Byte>>) (Class<?>) TrackedData.class, "LOYALTY", "field_7647");
     public static final FieldContainer<DefaultAttributeRegistry, Map<EntityType<? extends LivingEntity>, DefaultAttributeContainer>> DEFAULT_ATTRIBUTE_REGISTRY = new FieldContainer<>(DefaultAttributeRegistry.class, (Class<Map<EntityType<? extends LivingEntity>, DefaultAttributeContainer>>) (Class<?>) Map.class, "DEFAULT_ATTRIBUTE_REGISTRY", "field_23730");
     public static final FieldContainer<DefaultAttributeContainer, Map<RegistryEntry<EntityAttribute>, EntityAttributeInstance>> instances = new FieldContainer<>(DefaultAttributeContainer.class, (Class<Map<RegistryEntry<EntityAttribute>, EntityAttributeInstance>>) (Class<?>) Map.class, "instances", "field_23713");
     public static final FieldContainer<EntityAttributeInstance, Double> baseValue = new FieldContainer<>(EntityAttributeInstance.class, Double.class, "baseValue", "field_23704");
@@ -90,8 +86,6 @@ public class ReflectionCenter {
             }
             this.containedField.setAccessible(true);
             if (!getBoxedType(this.containedField).isAssignableFrom(fieldType)) {
-                MythicWorldTweaks.LOGGER.info(this.containedField.getType().toString());
-                MythicWorldTweaks.LOGGER.info(fieldType.toString());
                 throw new IllegalArgumentException("Wrong field type! Check the generics type!");
             }
             int mod = this.containedField.getModifiers();

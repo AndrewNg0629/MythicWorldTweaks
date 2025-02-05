@@ -163,7 +163,7 @@ public record ItemEditorConfig(
                         "left_over_item",
                         "status_effects"
                 ))) {
-                    throw new JsonParseException("Wrong config value for \"max_stack_size\", positive value is required.");
+                    throw new JsonParseException("Wrong config structure, please have a check.");
                 }
                 int nutrition = jsonObject.get("nutrition").getAsInt();
                 float saturation = jsonObject.get("saturation").getAsFloat();

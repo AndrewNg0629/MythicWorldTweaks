@@ -1,0 +1,63 @@
+{
+  "mod_enabled": true,
+  "mod_data_pack_enabled": false,
+  "tweaks_enabled": false,
+  "server_play_support_enabled": true,
+  "mod_id_validation": {
+    "enabled": false,
+    "mod_id_list": []
+  },
+  "binary_toggle_tweaks": {
+    "throwable_fire_charge": false,
+    "large_fire_charge": false,
+    "editable_player_data": false,
+    "blocks_friendly_creepers": false,
+    "item_explosion_resistance": false,
+    "nestable_shulker_boxes": false,
+    "rideable_players": false,
+    "player_riding_gestures": false,
+    "player_riding_protection": false,
+    "dispensable_tridents": false,
+    "void_returnable_trident": false,
+    "multi_trident_damage": false,
+    "persistent_tridents": false,
+    "silent_wardens": false,
+    "constant_villager_conversion": false,
+    "fake_player_sleep_exclusion": false,
+    "sleeping_extras": false
+  },
+  "params_required_tweaks": {
+    "auto_discarding_fire_ball": {
+      "enabled": false,
+      "max_life_ticks": 200
+    },
+    "stuffed_shulker_box_stack_limit": {
+      "enabled": false,
+      "max_stack_size": 1
+    },
+    "shulker_box_nesting_limit": {
+      "enabled": false,
+      "max_layers": 2
+    },
+    "warden_attributes_weakening": {
+      "enabled": false,
+      "max_health": 500.0,
+      "knock_back_resistance": 1.0,
+      "melee_attack_damage": 30.0,
+      "melee_attack_knock_back": 1.5,
+      "idle_movement_speed": 0.3,
+      "chasing_movement_speed": 1.2,
+      "attack_interval_ticks": 18
+    },
+    "warden_sonic_boom_weakening": {
+      "enabled": false,
+      "sonic_boom_damage": 10.0,
+      "sonic_boom_knock_back_rate": 1.0,
+      "sonic_boom_interval_ticks": 34
+    }
+  },
+  "item_editor": {
+    "enabled": false,
+    "item_edit_config_list": []
+  }
+}

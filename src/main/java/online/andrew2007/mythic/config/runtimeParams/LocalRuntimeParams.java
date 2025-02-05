@@ -1,8 +1,13 @@
 package online.andrew2007.mythic.config.runtimeParams;
 
-public class LocalRuntimeParams {
-    boolean modEnabled = false;
-    boolean serverPlaySupportEnabled = false;
-    boolean modIdValidationEnabled = false;
-    String[] modIdList = null;
+public record LocalRuntimeParams(
+        boolean modEnabled,
+        boolean modDataPackEnabled,
+        boolean serverPlaySupportEnabled,
+        boolean modIdValidationEnabled,
+        String[] modIdList
+) {
+    public static LocalRuntimeParams getDefaultInstance() {
+        return new LocalRuntimeParams(true, false, true, false, null);
+    }
 }

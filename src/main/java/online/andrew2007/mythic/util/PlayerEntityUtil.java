@@ -3,6 +3,7 @@ package online.andrew2007.mythic.util;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Pair;
 
@@ -18,8 +19,9 @@ public class PlayerEntityUtil {
     }
 
     public static final ConcurrentHashMap<ServerPlayerEntity, Pair<Byte, Byte>> playerDoubleClickTime = new ConcurrentHashMap<>();
-    public static final TrackedData<Boolean> IS_UNDER_FALL_PROTECTION = DataTracker.registerData(ServerPlayerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    public static final TrackedData<Boolean> IS_FAKE = DataTracker.registerData(ServerPlayerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final TrackedData<Boolean> IS_UNDER_FALL_PROTECTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final TrackedData<Boolean> IS_FAKE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final TrackedData<Boolean> IS_REALLY_SLEEPING = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     public static final Class<?> carpetFPClass;
 
     public static void sneakingDCCheck(ServerPlayerEntity player) {
@@ -54,11 +56,11 @@ public class PlayerEntityUtil {
         playerDoubleClickTime.put(player, pair);
     }
 
-    public static boolean determineFake(ServerPlayerEntity serverPlayerEntity) {
+    public static boolean determineFake(PlayerEntity playerEntity) {
         if (carpetFPClass == null) {
             return false;
         } else {
-            return carpetFPClass.isAssignableFrom(serverPlayerEntity.getClass());
+            return carpetFPClass.isAssignableFrom(playerEntity.getClass());
         }
     }
 

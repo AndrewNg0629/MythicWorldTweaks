@@ -1,17 +1,40 @@
 package online.andrew2007.mythic.mixin;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.datafixers.util.Either;
+import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
+import net.minecraft.util.Unit;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import online.andrew2007.mythic.config.RuntimeController;
 import online.andrew2007.mythic.util.PlayerEntityUtil;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin {
+import java.util.List;
+
+@Mixin(value = ServerPlayerEntity.class)
+public abstract class ServerPlayerEntityMixin extends PlayerEntity {
+    @Shadow public abstract ServerWorld getServerWorld();
+    public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
+        super(world, pos, yaw, gameProfile);
+    }
     @Inject(at = @At(value = "HEAD"), method = "tick")
     private void tick(CallbackInfo info) {
         ServerPlayerEntity thisOBJ = (ServerPlayerEntity) (Object) this;
@@ -29,7 +52,8 @@ public abstract class ServerPlayerEntityMixin {
 
     @Inject(at = @At(value = "HEAD"), method = "onDeath")
     private void onDeath(DamageSource damageSource, CallbackInfo info) {
-        ((ServerPlayerEntity) (Object) this).getDataTracker().set(PlayerEntityUtil.IS_UNDER_FALL_PROTECTION, false);
+        this.getDataTracker().set(PlayerEntityUtil.IS_UNDER_FALL_PROTECTION, false);
+        this.getDataTracker().set(PlayerEntityUtil.IS_REALLY_SLEEPING, false);
     }
 
     @Inject(at = @At(value = "HEAD"), method = "onDisconnect")
@@ -42,6 +66,35 @@ public abstract class ServerPlayerEntityMixin {
                     playerPassenger.getDataTracker().set(PlayerEntityUtil.IS_UNDER_FALL_PROTECTION, true);
                 }
             }
+        }
+        thisOBJ.getDataTracker().set(PlayerEntityUtil.IS_REALLY_SLEEPING, false);
+    }
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;wakeUp(ZZ)V", shift = At.Shift.AFTER), method = "wakeUp")
+    private void wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo info) {
+        ServerPlayerEntity thisOBJ = (ServerPlayerEntity) (Object) this;
+        thisOBJ.getDataTracker().set(PlayerEntityUtil.IS_REALLY_SLEEPING, false);
+    }
+    @Inject(at = @At(value = "RETURN", ordinal = 4), method = "trySleep", cancellable = true)
+    private void alwaysAbleToSleep(BlockPos pos, CallbackInfoReturnable<Either<PlayerEntity.SleepFailureReason, Unit>> info) {
+        if (RuntimeController.getCurrentTParams().sleepingExtras()) {
+            if (!this.isCreative()) {
+                Vec3d vec3d = Vec3d.ofBottomCenter(pos);
+                List<HostileEntity> list = this.getWorld()
+                        .getEntitiesByClass(
+                                HostileEntity.class,
+                                new Box(vec3d.getX() - 8.0, vec3d.getY() - 5.0, vec3d.getZ() - 8.0, vec3d.getX() + 8.0, vec3d.getY() + 5.0, vec3d.getZ() + 8.0),
+                                entity -> entity.isAngryAt(this)
+                        );
+                if (!list.isEmpty()) {
+                    info.setReturnValue(Either.left(SleepFailureReason.NOT_SAFE));
+                    return;
+                }
+            }
+            Either<SleepFailureReason, Unit> either = super.trySleep(pos).ifRight(unit -> {
+                this.incrementStat(Stats.SLEEP_IN_BED);
+            });
+            ((ServerWorld)this.getWorld()).updateSleepingPlayers();
+            info.setReturnValue(either);
         }
     }
 }

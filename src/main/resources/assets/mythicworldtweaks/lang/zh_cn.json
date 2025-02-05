@@ -1,4 +1,9 @@
 {
   "item.mythicworldtweaks.large_fire_charge": "大火焰弹",
-  "item.mythicworldtweaks.debugger": "调试器"
+  "item.mythicworldtweaks.debugger": "调试器",
+  "mythicworldtweaks.item_editor.item_count_tooltip": "物品数量: %s个",
+  "mythicworldtweaks.config.fail_to_hot_update": "热更新模组配置时解析配置失败，请查看日志或控制台以获取详细信息。",
+  "mythicworldtweaks.config.hot_update_succeed": "热更新模组配置成功。",
+  "mythicworldtweaks.config.hot_update_later": "模组配置解析并缓存成功，将在下次服务器启动时执行热更新。",
+  "mythicworldtweaks.sleeping_extras.sleep_button": "入睡"
 }

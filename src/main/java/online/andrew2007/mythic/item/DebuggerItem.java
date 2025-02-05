@@ -2,7 +2,6 @@ package online.andrew2007.mythic.item;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.component.ComponentType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,7 +13,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import online.andrew2007.mythic.MythicWorldTweaks;
-import online.andrew2007.mythic.util.MythicWorldTweaksToggle;
 import online.andrew2007.mythic.util.PlayerEntityUtil;
 
 public class DebuggerItem extends Item {
@@ -23,33 +21,15 @@ public class DebuggerItem extends Item {
             Identifier.of(MythicWorldTweaks.MOD_ID, "debug_selection"),
             ComponentType.<Integer>builder().codec(Codec.INT).build()
     );
-    public final int debugSelectionsCount = 21;
+    public final int debugSelectionsCount = 3;
 
     public DebuggerItem(Settings settings) {
         super(settings);
     }
-
-    public void debugAction(int selection, PlayerEntity user) {
-        if (selection == 20) {
-            user.sendMessage(Text.of(user.getDataTracker().get(PlayerEntityUtil.IS_UNDER_FALL_PROTECTION).toString()));
-            user.getDataTracker().set(PlayerEntityUtil.IS_UNDER_FALL_PROTECTION, true);
-            user.sendMessage(Text.of(user.getDataTracker().get(PlayerEntityUtil.IS_UNDER_FALL_PROTECTION).toString()));
-            return;
-        } else if (selection == 21) {
-            user.sendMessage(Text.of(user.getPose().toString() + user.isFallFlying()));
-        }
-        int ordinal = selection - 1;
-        MythicWorldTweaksToggle feature = MythicWorldTweaksToggle.values()[ordinal];
-        boolean featureEnabled = feature.isEnabled();
-        String featureName = feature.name();
-        feature.setEnabled(!featureEnabled);
-        user.sendMessage(Text.of(String.format("Toggled \"%s\" %s.", featureName, !featureEnabled ? "on" : "off")));
-    }
-
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
-        if (stack.contains(DEBUG_SELECTION) && !user.getWorld().isClient()) {
+        if (stack.contains(DEBUG_SELECTION)) {
             int debugSelection = stack.getOrDefault(DEBUG_SELECTION, 1);
             if (user.isSneaking()) {
                 if (debugSelection >= debugSelectionsCount) {
@@ -60,7 +40,7 @@ public class DebuggerItem extends Item {
                 stack.set(DEBUG_SELECTION, debugSelection);
                 user.sendMessage(Text.of(String.format("Debug selection: %s", debugSelection)));
             } else {
-                debugAction(debugSelection, user);
+                debugAction(debugSelection, world, user);
             }
             return TypedActionResult.success(stack, world.isClient());
         } else {
@@ -68,9 +48,32 @@ public class DebuggerItem extends Item {
         }
     }
 
-    @Override
-    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
-        return 60;
+    private void debugAction(int debugSelection, World world, PlayerEntity user) {
+        switch (debugSelection) {
+            case 1:
+                if (world.isClient) {
+                    boolean bl = user.getDataTracker().get(PlayerEntityUtil.IS_REALLY_SLEEPING);
+                    user.getDataTracker().set(PlayerEntityUtil.IS_REALLY_SLEEPING, !bl);
+                    MythicWorldTweaks.LOGGER.info("Client: Debug data set to {}.", !bl);
+                }
+                break;
+            case 2:
+                if (!world.isClient) {
+                    boolean bl = user.getDataTracker().get(PlayerEntityUtil.IS_REALLY_SLEEPING);
+                    user.getDataTracker().set(PlayerEntityUtil.IS_REALLY_SLEEPING, !bl);
+                    MythicWorldTweaks.LOGGER.info("Server: Debug data set to {}.", !bl);
+                }
+                break;
+            case 3:
+                boolean bl = user.getDataTracker().get(PlayerEntityUtil.IS_REALLY_SLEEPING);
+                if (world.isClient) {
+                    MythicWorldTweaks.LOGGER.info("Client: Debug data is {}.", bl);
+                } else {
+                    MythicWorldTweaks.LOGGER.info("Server: Debug data is {}.", bl);
+                }
+                break;
+            default:
+                break;
+        }
     }
 }
-
