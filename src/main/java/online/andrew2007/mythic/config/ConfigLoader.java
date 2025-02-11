@@ -1,7 +1,7 @@
 package online.andrew2007.mythic.config;
 
 import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
@@ -22,17 +22,17 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-@SuppressWarnings({"ResultOfMethodCallIgnored"})
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class ConfigLoader {
+    private static final Timer notifier = new Timer();
     private static boolean initState = false;
     private static ImmutableBiMap<Identifier, Item> allItems;
     private static ImmutableBiMap<Identifier, RegistryEntry<StatusEffect>> allStatusEffects;
-    private static ImmutableList<String> allModIds;
+    private static ImmutableSet<String> allModIds;
     private static boolean isItemEditorParserReady = false;
     private static MinecraftServer currentServer = null;
     private static boolean isDuringServerRuntime = false;
     private static ModConfig currentModConfig = null;
-    private static final Timer notifier = new Timer();
     private static boolean notifierRunning = false;
     private static TimerTask notifierTask = null;
 
@@ -40,7 +40,7 @@ public class ConfigLoader {
         tryConfigSystemInit();
         currentServer = server;
         isDuringServerRuntime = true;
-        RuntimeController.loadTransmittableParamsFromConfig();
+        RuntimeController.loadTransmittableParamsFromConfig(true);
     }
 
     public static void onServerStopping() {
@@ -68,10 +68,10 @@ public class ConfigLoader {
             }
             allStatusEffects = effectMapBuilder.build();
             isItemEditorParserReady = true;
-            ImmutableList.Builder<String> modIdListBuilder = ImmutableList.builder();
+            ImmutableSet.Builder<String> modIdSetBuilder = ImmutableSet.builder();
             FabricLoader fabricLoader = FabricLoader.getInstance();
-            fabricLoader.getAllMods().forEach(modContainer -> modIdListBuilder.add(modContainer.getMetadata().getId()));
-            allModIds = modIdListBuilder.build();
+            fabricLoader.getAllMods().forEach(modContainer -> modIdSetBuilder.add(modContainer.getMetadata().getId()));
+            allModIds = modIdSetBuilder.build();
             try {
                 tryPlaceDefaultConfigFile(true);
             } catch (IOException e) {
@@ -113,7 +113,7 @@ public class ConfigLoader {
             return;
         }
         if (ConfigLoader.isDuringServerRuntime()) {
-            RuntimeController.loadTransmittableParamsFromConfig();
+            RuntimeController.loadTransmittableParamsFromConfig(false);
             MythicWorldTweaks.LOGGER.info("Server is running, config loaded immediately.");
             LocalToaster.toast(Text.of("MythicWorldTweaks"), Text.translatable("mythicworldtweaks.config.hot_update_succeed"));
         } else {
@@ -138,7 +138,7 @@ public class ConfigLoader {
     }
 
     @NotNull
-    public static ImmutableList<String> getAllModIds() throws IllegalStateException {
+    public static ImmutableSet<String> getAllModIds() throws IllegalStateException {
         if (!initState) {
             throw new IllegalStateException("The config system hasn't been initialized, allStatusEffects is empty.");
         }
@@ -152,7 +152,7 @@ public class ConfigLoader {
     public static ModConfig getConfigObject() throws RuntimeException {
         try {
             String configContent = readConfigContent();
-            return ModConfig.GSON.fromJson(configContent, ModConfig.class);
+            return ModConfig.CONFIG_FILE_GSON.fromJson(configContent, ModConfig.class);
         } catch (Exception e) {
             throw new RuntimeException("Unable to get config object.", e);
         }
@@ -178,7 +178,7 @@ public class ConfigLoader {
     private static String getDefaultConfig() throws IOException, NullPointerException {
         ClassLoader classLoader = ConfigLoader.class.getClassLoader();
         try (InputStream inputStream = Objects.requireNonNull(classLoader.getResourceAsStream("config/default_config.json"));
-             InputStreamReader reader = new InputStreamReader(inputStream);
+             InputStreamReader reader = new InputStreamReader(inputStream)
         ) {
             int byteCount;
             char[] charBuffer = new char[128];

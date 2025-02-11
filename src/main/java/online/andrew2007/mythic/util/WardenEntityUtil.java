@@ -18,6 +18,31 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class WardenEntityUtil {
+    public static void modifyWardenAttributes() {
+        Map<RegistryEntry<EntityAttribute>, EntityAttributeInstance> wardenAttributes = ReflectionCenter.getFieldValue(ReflectionCenter.instances, ReflectionCenter.getFieldValue(ReflectionCenter.DEFAULT_ATTRIBUTE_REGISTRY, null).get(EntityType.WARDEN));
+        if (RuntimeController.getCurrentTParams().wardenAttributesWeakeningEnabled()) {
+            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_MAX_HEALTH, RuntimeController.getCurrentTParams().wardenMaxHealth());
+            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, RuntimeController.getCurrentTParams().wardenKnockBackResistance());
+            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_ATTACK_DAMAGE, RuntimeController.getCurrentTParams().wardenMeleeAttackDamage());
+            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_ATTACK_KNOCKBACK, RuntimeController.getCurrentTParams().wardenMeleeAttackKnockBack());
+            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_MOVEMENT_SPEED, RuntimeController.getCurrentTParams().wardenIdleMovementSpeed());
+        } else {
+            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_MAX_HEALTH, 500.0D);
+            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0D);
+            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_ATTACK_DAMAGE, 30.0D);
+            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.5D);
+            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F);
+        }
+    }
+
+    private static void modifyEntityDA(Map<RegistryEntry<EntityAttribute>, EntityAttributeInstance> attributeInstances, RegistryEntry<EntityAttribute> targetAttribute, double targetValue) {
+        EntityAttributeInstance attributeInstance = attributeInstances.get(targetAttribute);
+        if (attributeInstance != null) {
+            ReflectionCenter.setFieldValue(ReflectionCenter.baseValue, attributeInstance, targetValue);
+            ReflectionCenter.setFieldValue(ReflectionCenter.value, attributeInstance, targetValue);
+        }
+    }
+
     public static class WardenEntityTrack {
         private static final CopyOnWriteArrayList<WardenEntity> wardenEntityList = new CopyOnWriteArrayList<>();
 
@@ -71,31 +96,6 @@ public class WardenEntityUtil {
             } else {
                 return false;
             }
-        }
-    }
-
-    public static void modifyWardenAttributes() {
-        Map<RegistryEntry<EntityAttribute>, EntityAttributeInstance> wardenAttributes = ReflectionCenter.getFieldValue(ReflectionCenter.instances, ReflectionCenter.getFieldValue(ReflectionCenter.DEFAULT_ATTRIBUTE_REGISTRY, null).get(EntityType.WARDEN));
-        if (RuntimeController.getCurrentTParams().wardenAttributesWeakeningEnabled()) {
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_MAX_HEALTH, RuntimeController.getCurrentTParams().wardenMaxHealth());
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, RuntimeController.getCurrentTParams().wardenKnockBackResistance());
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_ATTACK_DAMAGE, RuntimeController.getCurrentTParams().wardenMeleeAttackDamage());
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_ATTACK_KNOCKBACK, RuntimeController.getCurrentTParams().wardenMeleeAttackKnockBack());
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_MOVEMENT_SPEED, RuntimeController.getCurrentTParams().wardenIdleMovementSpeed());
-        } else {
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_MAX_HEALTH, 500.0D);
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0D);
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_ATTACK_DAMAGE, 30.0D);
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.5D);
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F);
-        }
-    }
-
-    private static void modifyEntityDA(Map<RegistryEntry<EntityAttribute>, EntityAttributeInstance> attributeInstances, RegistryEntry<EntityAttribute> targetAttribute, double targetValue) {
-        EntityAttributeInstance attributeInstance = attributeInstances.get(targetAttribute);
-        if (attributeInstance != null) {
-            ReflectionCenter.setFieldValue(ReflectionCenter.baseValue, attributeInstance, targetValue);
-            ReflectionCenter.setFieldValue(ReflectionCenter.value, attributeInstance, targetValue);
         }
     }
 

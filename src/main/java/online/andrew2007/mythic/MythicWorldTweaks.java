@@ -9,8 +9,10 @@ import net.minecraft.MinecraftVersion;
 import online.andrew2007.mythic.config.ConfigLoader;
 import online.andrew2007.mythic.config.RuntimeController;
 import online.andrew2007.mythic.item.ItemInitializer;
-import online.andrew2007.mythic.network.MWTNetwork;
-import online.andrew2007.mythic.util.*;
+import online.andrew2007.mythic.network.MythicNetwork;
+import online.andrew2007.mythic.util.FireBallEntityManager;
+import online.andrew2007.mythic.util.PlayerEntityUtil;
+import online.andrew2007.mythic.util.WardenEntityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,12 +27,7 @@ public class MythicWorldTweaks implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("MythicWorldTweaks mod starts to be initialized!");
-        try {
-            RuntimeController.loadLocalParamsFromConfig(ConfigLoader.getConfigObject());
-        } catch (RuntimeException e) {
-            MythicWorldTweaks.LOGGER.error("Unable to load config on startup, Minecraft is shutting down.");
-            throw e;
-        }
+        RuntimeController.loadLocalParamsFromConfig();
         ItemInitializer.generalInitialization();
         PlayerEntityUtil.staticInit();
         ServerTickEvents.END_SERVER_TICK.register(server -> {
@@ -42,6 +39,6 @@ public class MythicWorldTweaks implements ModInitializer {
         ServerWorldEvents.UNLOAD.register((server, world) -> WardenEntityUtil.WardenEntityTrack.clearEntities());
         ServerLifecycleEvents.SERVER_STARTING.register(ConfigLoader::onServerStarting);
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> ConfigLoader.onServerStopping());
-        MWTNetwork.commonInitialization();
+        MythicNetwork.commonInitialization();
     }
 }

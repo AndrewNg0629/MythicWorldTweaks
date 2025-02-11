@@ -19,7 +19,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TridentEntity.class)
 public abstract class TridentEntityMixin extends PersistentProjectileEntity {
-    @Shadow @Final private static TrackedData<Byte> LOYALTY;
+    @Shadow
+    @Final
+    private static TrackedData<Byte> LOYALTY;
+
     protected TridentEntityMixin(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
         super(entityType, world);
     }

@@ -33,6 +33,7 @@ public abstract class PlayerEntityMixin {
             }
         }
     }
+
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSleeping()Z", ordinal = 0), method = "tick")
     private boolean sleepingTimerControl(PlayerEntity instance) {
         if (RuntimeController.getCurrentTParams().sleepingExtras()) {
@@ -41,6 +42,7 @@ public abstract class PlayerEntityMixin {
             return instance.isSleeping();
         }
     }
+
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSleeping()Z", ordinal = 0), method = "canResetTimeBySleeping")
     private boolean canReallySkipNight(PlayerEntity instance) {
         if (RuntimeController.getCurrentTParams().sleepingExtras()) {

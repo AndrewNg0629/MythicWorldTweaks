@@ -20,6 +20,7 @@ public class SleepManagerMixin {
             players.removeIf(serverPlayerEntity -> serverPlayerEntity.getDataTracker().get(PlayerEntityUtil.IS_FAKE));
         }
     }
+
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;isSleeping()Z"), method = "update")
     private boolean isReallySleeping(ServerPlayerEntity instance) {
         if (RuntimeController.getCurrentTParams().sleepingExtras()) {

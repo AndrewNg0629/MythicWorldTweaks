@@ -26,6 +26,7 @@ public class DebuggerItem extends Item {
     public DebuggerItem(Settings settings) {
         super(settings);
     }
+
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);

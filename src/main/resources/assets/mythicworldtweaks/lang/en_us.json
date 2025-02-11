@@ -5,5 +5,6 @@
   "mythicworldtweaks.config.fail_to_hot_update": "Failed to read and update config, see log/console for details.",
   "mythicworldtweaks.config.hot_update_succeed": "Config was successfully read and updated.",
   "mythicworldtweaks.config.hot_update_later": "Config has been successfully read and it will be updated on next server start.",
+  "mythicworldtweaks.network.received_config": "Successfully received and applied mod config from the server.",
   "mythicworldtweaks.sleeping_extras.sleep_button": "Sleep"
 }

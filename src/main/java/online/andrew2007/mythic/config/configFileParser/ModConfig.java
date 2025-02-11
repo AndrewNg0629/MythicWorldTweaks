@@ -11,12 +11,13 @@ public record ModConfig(
         boolean modDataPackEnabled,
         boolean tweaksEnabled,
         boolean serverPlaySupportEnabled,
+        String serverName,
         ModIdValidationConfig modIdValidationConfig,
         BinaryToggleTweaksConfig binaryToggleTweaksConfig,
         ParamsRequiredTweaksConfig paramsRequiredTweaksConfig,
         ItemEditorConfig itemEditorConfig
 ) {
-    public static final Gson GSON = new GsonBuilder()
+    public static final Gson CONFIG_FILE_GSON = new GsonBuilder()
             .registerTypeAdapter(ModConfig.class, new ModConfig.Deserializer())
             .registerTypeAdapter(ModIdValidationConfig.class, new ModIdValidationConfig.Deserializer())
             .registerTypeAdapter(BinaryToggleTweaksConfig.class, new BinaryToggleTweaksConfig.Deserializer())
@@ -31,6 +32,7 @@ public record ModConfig(
             .registerTypeAdapter(ItemEditorConfig.FoodProperty.class, new ItemEditorConfig.FoodProperty.Deserializer())
             .registerTypeAdapter(ItemEditorConfig.FoodStatusEffectUnit.class, new ItemEditorConfig.FoodStatusEffectUnit.Deserializer())
             .create();
+
     public static class Deserializer implements CustomJsonDeserializer<ModConfig> {
         @Override
         public ModConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -40,6 +42,7 @@ public record ModConfig(
                     "mod_data_pack_enabled",
                     "tweaks_enabled",
                     "server_play_support_enabled",
+                    "server_name",
                     "mod_id_validation",
                     "binary_toggle_tweaks",
                     "params_required_tweaks",
@@ -56,6 +59,7 @@ public record ModConfig(
                     readBoolean(jsonObject.get("mod_data_pack_enabled")),
                     readBoolean(jsonObject.get("tweaks_enabled")),
                     readBoolean(jsonObject.get("server_play_support_enabled")),
+                    jsonObject.get("server_name").getAsString(),
                     modIdValidationConfig,
                     binaryToggleTweaksConfig,
                     paramsRequiredTweaksConfig,

@@ -12,8 +12,13 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(SonicBoomTask.class)
 public class SonicBoomTaskMixin {
-    @Shadow @Final private static int RUN_TIME;
-    @Shadow @Final private static int SOUND_DELAY;
+    @Shadow
+    @Final
+    private static int RUN_TIME;
+    @Shadow
+    @Final
+    private static int SOUND_DELAY;
+
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"),
             method = "method_43265(Lnet/minecraft/entity/mob/WardenEntity;Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/LivingEntity;)V",
             index = 1)

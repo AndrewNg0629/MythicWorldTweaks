@@ -5,5 +5,6 @@
   "mythicworldtweaks.config.fail_to_hot_update": "熱更新模組配置時解析配置失敗，請查看日誌或控制檯以獲取詳細資訊。",
   "mythicworldtweaks.config.hot_update_succeed": "熱更新模組配置成功。",
   "mythicworldtweaks.config.hot_update_later": "模組配置解析並緩存成功，將在下次伺服器啟動時執行熱更新。",
+  "mythicworldtweaks.network.received_config": "從伺服器接收並應用模組配置成功。",
   "mythicworldtweaks.sleeping_extras.sleep_button": "入睡"
 }

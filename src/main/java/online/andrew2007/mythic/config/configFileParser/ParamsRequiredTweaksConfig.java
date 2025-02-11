@@ -31,6 +31,7 @@ public record ParamsRequiredTweaksConfig(
             }
         }
     }
+
     public record StuffedShulkerBoxStackLimitConfig(boolean enabled, int maxStackSize) {
         public static class Deserializer implements CustomJsonDeserializer<StuffedShulkerBoxStackLimitConfig> {
             @Override
@@ -47,6 +48,7 @@ public record ParamsRequiredTweaksConfig(
             }
         }
     }
+
     public record ShulkerBoxNestingLimitConfig(boolean enabled, int maxLayers) {
         public static class Deserializer implements CustomJsonDeserializer<ShulkerBoxNestingLimitConfig> {
             @Override
@@ -57,13 +59,14 @@ public record ParamsRequiredTweaksConfig(
                     throw new JsonParseException("Wrong config structure, please have a check.");
                 }
                 int maxLayers = jsonObject.get("max_layers").getAsInt();
-                if (maxLayers <= 0 || maxLayers >10) {
+                if (maxLayers <= 0 || maxLayers > 10) {
                     throw new JsonParseException("Wrong config value for \"max_layers\", value between 0 and 10 is required.");
                 }
                 return new ShulkerBoxNestingLimitConfig(readBoolean(jsonObject.get("enabled")), maxLayers);
             }
         }
     }
+
     public record WardenAttributesWeakeningConfig(
             boolean enabled,
             double maxHealth,
@@ -124,6 +127,7 @@ public record ParamsRequiredTweaksConfig(
             }
         }
     }
+
     public record WardenSonicBoomWeakeningConfig(
             boolean enabled,
             float sonicBoomDamage,
@@ -161,6 +165,7 @@ public record ParamsRequiredTweaksConfig(
             }
         }
     }
+
     public static class Deserializer implements CustomJsonDeserializer<ParamsRequiredTweaksConfig> {
         @Override
         public ParamsRequiredTweaksConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {

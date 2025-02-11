@@ -1,5 +1,10 @@
 package online.andrew2007.mythic.config;
 
+import com.mojang.authlib.GameProfile;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import online.andrew2007.mythic.MythicWorldTweaks;
 import online.andrew2007.mythic.config.configFileParser.BinaryToggleTweaksConfig;
 import online.andrew2007.mythic.config.configFileParser.ItemEditorConfig;
@@ -8,20 +13,25 @@ import online.andrew2007.mythic.config.configFileParser.ParamsRequiredTweaksConf
 import online.andrew2007.mythic.config.runtimeParams.LocalRuntimeParams;
 import online.andrew2007.mythic.config.runtimeParams.TransmittableRuntimeParams;
 import online.andrew2007.mythic.item.ItemEditor;
+import online.andrew2007.mythic.network.PlayConfigPushValidator;
+import online.andrew2007.mythic.network.payloads.PlayConfigPushPayload;
+import online.andrew2007.mythic.util.LocalToaster;
 import online.andrew2007.mythic.util.WardenEntityUtil;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 public class RuntimeController {
     private static LocalRuntimeParams localRuntimeParams = LocalRuntimeParams.getDefaultInstance();
     private static boolean localRuntimeParamsInitialized = false;
     private static TransmittableRuntimeParams currentTParams = TransmittableRuntimeParams.getDefaultInstance();
-    private static TransmittableRuntimeParams serverPlayCachedTParams = null;
+    private static TransmittableRuntimeParams.TransmittableIECUnit[] previousItemEditorConfig = new TransmittableRuntimeParams.TransmittableIECUnit[0];
+    private static TransmittableRuntimeParams serverPlayReceivedTParams = null;
+    private static boolean isDuringMythicServerPlay = false;
 
-    static void loadTransmittableParamsFromConfig() {
+    static void loadTransmittableParamsFromConfig(boolean isStartup) {
         ModConfig modConfig = ConfigLoader.getCurrentModConfig();
         TransmittableRuntimeParams newParams;
-        TransmittableRuntimeParams previousParams = currentTParams;
         if (modConfig.tweaksEnabled() && localRuntimeParams.modEnabled()) {
             BinaryToggleTweaksConfig binaryToggleTweaksConfig = modConfig.binaryToggleTweaksConfig();
             ParamsRequiredTweaksConfig paramsRequiredTweaksConfig = modConfig.paramsRequiredTweaksConfig();
@@ -43,7 +53,7 @@ public class RuntimeController {
                     );
                 }
             } else {
-                transmittableIECUnits = null;
+                transmittableIECUnits = new TransmittableRuntimeParams.TransmittableIECUnit[0];
             }
             newParams = new TransmittableRuntimeParams(
                     binaryToggleTweaksConfig.throwableFireCharge(),
@@ -88,47 +98,96 @@ public class RuntimeController {
             newParams = TransmittableRuntimeParams.getDefaultInstance();
         }
         if (localRuntimeParams.modEnabled()) {
-            onParamsChange(previousParams, newParams);
+            currentTParams = newParams;
+            if (!isDuringMythicServerPlay) {
+                onParamsChange();
+            }
+            if (getLocalRuntimeParams().serverPlaySupportEnabled() && ConfigLoader.isDuringServerRuntime() && !isStartup) {
+                MinecraftServer server = ConfigLoader.getCurrentServer();
+                ArrayList<ServerPlayerEntity> playerList = new ArrayList<>(server.getPlayerManager().getPlayerList());
+                String hostPlayerName;
+                if (!server.isDedicated()) {
+                    GameProfile hostProfile = server.getHostProfile();
+                    if (hostProfile != null) {
+                        hostPlayerName = hostProfile.getName();
+                    } else {
+                        hostPlayerName = null;
+                    }
+                } else {
+                    hostPlayerName = null;
+                }
+                playerList.removeIf(player -> player.getGameProfile().getName().equalsIgnoreCase(hostPlayerName));
+                for (ServerPlayerEntity player : playerList) {
+                    ServerPlayNetworking.send(player, new PlayConfigPushPayload(getCurrentTParams()));
+                    PlayConfigPushValidator.onConfigPush(player);
+                }
+            }
         }
     }
 
-    public static void loadLocalParamsFromConfig(ModConfig modConfig) {
+    public static void loadLocalParamsFromConfig() {
         if (!localRuntimeParamsInitialized) {
-            localRuntimeParams = new LocalRuntimeParams(
-                    modConfig.modEnabled(),
-                    modConfig.modDataPackEnabled(),
-                    modConfig.serverPlaySupportEnabled(),
-                    modConfig.modIdValidationConfig().enabled(),
-                    modConfig.modIdValidationConfig().modIdList()
-            );
-            localRuntimeParamsInitialized = true;
+            try {
+                ModConfig modConfig = ConfigLoader.getConfigObject();
+                localRuntimeParams = new LocalRuntimeParams(
+                        modConfig.modEnabled(),
+                        modConfig.modDataPackEnabled(),
+                        modConfig.serverPlaySupportEnabled(),
+                        modConfig.serverName(),
+                        modConfig.modIdValidationConfig().enabled(),
+                        modConfig.modIdValidationConfig().modIdList()
+                );
+                localRuntimeParamsInitialized = true;
+            } catch (RuntimeException e) {
+                MythicWorldTweaks.LOGGER.error("Unable to load config on startup, Minecraft is shutting down.");
+                throw e;
+            }
         }
     }
 
-    private static void onParamsChange(TransmittableRuntimeParams previousParams, TransmittableRuntimeParams newParams) {
-        currentTParams = newParams;
-        applyItemEdits(previousParams.itemEditorConfig());
+    private static void onParamsChange() {
+        applyItemEdits();
         WardenEntityUtil.modifyWardenAttributes();
         WardenEntityUtil.WardenEntityTrack.wardenRefresh();
     }
-    private static void applyItemEdits(TransmittableRuntimeParams.TransmittableIECUnit[] previousUnits) {
+
+    private static void applyItemEdits() {
         HashSet<ItemEditor> itemEditors = new HashSet<>();
-        if (previousUnits != null) {
-            for (TransmittableRuntimeParams.TransmittableIECUnit unit : previousUnits) {
+        if (previousItemEditorConfig != null) {
+            for (TransmittableRuntimeParams.TransmittableIECUnit unit : previousItemEditorConfig) {
                 itemEditors.add(unit.revertItemEditor());
             }
         }
-        TransmittableRuntimeParams.TransmittableIECUnit[] currentUnits = currentTParams.itemEditorConfig();
+        TransmittableRuntimeParams.TransmittableIECUnit[] currentUnits = getCurrentTParams().itemEditorConfig();
         if (currentUnits != null) {
             for (TransmittableRuntimeParams.TransmittableIECUnit unit : currentUnits) {
                 itemEditors.add(unit.applyToItemEditor());
             }
         }
         itemEditors.forEach(ItemEditor::apply);
+        previousItemEditorConfig = currentUnits;
     }
+
+    public static void receiveConfigPush(TransmittableRuntimeParams params) {
+        serverPlayReceivedTParams = params;
+        isDuringMythicServerPlay = true;
+        onParamsChange();
+        LocalToaster.toast(Text.of("MythicWorldTweaks"), Text.translatable("mythicworldtweaks.network.received_config"));
+        MythicWorldTweaks.LOGGER.info("Successfully received and applied mod config from the server.");
+    }
+
+    public synchronized static void exitMythicServerPlay() {
+        if (isDuringMythicServerPlay) {
+            isDuringMythicServerPlay = false;
+            serverPlayReceivedTParams = null;
+            onParamsChange();
+        }
+    }
+
     public static TransmittableRuntimeParams getCurrentTParams() {
-        return currentTParams;
+        return isDuringMythicServerPlay ? serverPlayReceivedTParams : currentTParams;
     }
+
     public static LocalRuntimeParams getLocalRuntimeParams() {
         return localRuntimeParams;
     }

@@ -3,6 +3,7 @@
   "mod_data_pack_enabled": false,
   "tweaks_enabled": false,
   "server_play_support_enabled": true,
+  "server_name": "A Minecraft Server",
   "mod_id_validation": {
     "enabled": false,
     "mod_id_list": []

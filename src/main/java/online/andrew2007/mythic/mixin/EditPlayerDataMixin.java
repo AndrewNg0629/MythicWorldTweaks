@@ -16,7 +16,10 @@ import java.util.UUID;
 
 @Mixin(EntityDataObject.class)
 public class EditPlayerDataMixin {
-    @Shadow @Final private Entity entity;
+    @Shadow
+    @Final
+    private Entity entity;
+
     @Inject(at = @At(value = "HEAD"), method = "setNbt", cancellable = true)
     public void setNbt(NbtCompound nbt, CallbackInfo info) {
         Entity entity = this.entity;

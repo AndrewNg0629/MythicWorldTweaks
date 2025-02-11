@@ -15,7 +15,19 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(DrawContext.class)
 public abstract class DrawContextMixin {
-    @Shadow @Final private MatrixStack matrices;
+    @Shadow
+    @Final
+    private MatrixStack matrices;
+
+    @Unique
+    private static String processDouble(double num) {
+        String string = String.valueOf(num).substring(0, 3);
+        if (string.endsWith(".")) {
+            string = string.substring(0, 2);
+        }
+        return string;
+    }
+
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Ljava/lang/String;IIIZ)I"),
             method = "drawItemInSlot(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V")
     private int drawText(DrawContext instance, TextRenderer textRenderer, String text, int x, int y, int color, boolean shadow, @Local(argsOnly = true, ordinal = 0) int originalX, @Local(argsOnly = true, ordinal = 1) int originalY, @Local(argsOnly = true) ItemStack itemStack) {
@@ -41,14 +53,5 @@ public abstract class DrawContextMixin {
             x = originalX + 19 - 2 - textRenderer.getWidth(text);
         }
         return instance.drawText(textRenderer, text, x, y, color, shadow);
-    }
-
-    @Unique
-    private static String processDouble(double num) {
-        String string = String.valueOf(num).substring(0, 3);
-        if (string.endsWith(".")) {
-            string = string.substring(0, 2);
-        }
-        return string;
     }
 }

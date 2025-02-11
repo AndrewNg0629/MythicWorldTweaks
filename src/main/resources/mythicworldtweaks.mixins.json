@@ -5,7 +5,6 @@
   "mixins": [
     "BedBlockMixin",
     "DataComponentTypesMixin",
-    "DebugMixin",
     "EditPlayerDataMixin",
     "EntityMixin",
     "ExplosionMixin",
@@ -16,9 +15,13 @@
     "ItemMixin",
     "ItemSettingsMixin",
     "ItemStackMixin",
+    "LoginQueryRequestS2CPacketMixin",
+    "LoginQueryResponseC2SPacketMixin",
     "PlayerEntityMixin",
     "ResourcePackManagerMixin",
     "RideCommandMixin",
+    "ServerLoginNetworkAddonMixin",
+    "ServerLoginNetworkHandlerMixin",
     "ServerMainMixin",
     "ServerPlayerEntityMixin",
     "ShulkerBoxSlotMixin",
@@ -32,5 +35,5 @@
   ],
   "injectors": {
     "defaultRequire": 1
-	}
+  }
 }

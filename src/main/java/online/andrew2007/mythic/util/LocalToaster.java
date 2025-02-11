@@ -9,12 +9,14 @@ import java.lang.reflect.Method;
 public class LocalToaster {
     private static Method toastMethod = null;
     private static boolean isToasterReady = false;
+
     public static void receiveToaster(Method method) {
         if (!isToasterReady) {
             isToasterReady = true;
             toastMethod = method;
         }
     }
+
     public static void toast(Text title, Text index) {
         if (EnvironmentDetection.isPhyClient) {
             if (isToasterReady) {

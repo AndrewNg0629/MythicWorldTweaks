@@ -1,44 +1,47 @@
 {
-	"schemaVersion": 1,
-	"id": "mythicworldtweaks",
-	"version": "${version}",
-	"name": "MythicWorldTweaks",
-	"description": "Self-developed mod for MythicWorld server.",
-	"authors": [
-		"AndrewNg0629"
-	],
-	"contact": {
-		"homepage": "https://github.com/AndrewNg0629/MythicWorldTweaks"
-	},
-	"license": "MIT",
-	"icon": "assets/mythicworldtweaks/structure_block.png",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-          "online.andrew2007.mythic.MythicWorldTweaks"
-		],
-		"client": [
-          "online.andrew2007.mythic.MythicWorldTweaksClient"
-		]
-	},
-	"mixins": [
-		"mythicworldtweaks.mixins.json",
-		{
-			"config": "mythicworldtweaks.client.mixins.json",
-			"environment": "client"
-		}
-	],
-	"depends": {
-		"fabricloader": ">=0.16.10",
-		"minecraft": "~1.21",
-		"java": ">=17",
-		"fabric-api": "*"
-	},
-	"suggests": {
-	},
-	"custom": {
-		"modmenu": {
-			"update_checker": false
-		}
-	}
+  "schemaVersion": 1,
+  "id": "mythicworldtweaks",
+  "version": "${version}",
+  "name": "MythicWorldTweaks",
+  "description": "Self-developed mod for MythicWorld server.",
+  "authors": [
+    "AndrewNg0629"
+  ],
+  "contact": {
+    "homepage": "https://github.com/AndrewNg0629/MythicWorldTweaks"
+  },
+  "license": "MIT",
+  "icon": "assets/mythicworldtweaks/structure_block.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "online.andrew2007.mythic.MythicWorldTweaks"
+    ],
+    "client": [
+      "online.andrew2007.mythic.MythicWorldTweaksClient"
+    ],
+    "modmenu": [
+      "online.andrew2007.mythic.util.client.ModMenuHandler"
+    ]
+  },
+  "mixins": [
+    "mythicworldtweaks.mixins.json",
+    {
+      "config": "mythicworldtweaks.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": ">=1.21",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+  },
+  "custom": {
+    "modmenu": {
+      "update_checker": false
+    }
+  }
 }

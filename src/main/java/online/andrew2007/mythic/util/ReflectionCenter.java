@@ -1,15 +1,12 @@
 package online.andrew2007.mythic.util;
 
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
-import net.minecraft.command.EntityDataObject;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.WardenAngerManager;
-import net.minecraft.entity.ai.brain.task.SonicBoomTask;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.DefaultAttributeRegistry;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -33,7 +30,6 @@ import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class ReflectionCenter {
-    public static final FieldContainer<EntityDataObject, Entity> entity = new FieldContainer<>(EntityDataObject.class, Entity.class, "entity", "field_13801");
     public static final FieldContainer<FireballEntity, Integer> explosionPower = new FieldContainer<>(FireballEntity.class, Integer.class, "explosionPower", "field_7624");
     public static final FieldContainer<PersistentProjectileEntity, ItemStack> stack = new FieldContainer<>(PersistentProjectileEntity.class, ItemStack.class, "stack", "field_46970");
     public static final FieldContainer<TridentEntity, TrackedData<Boolean>> ENCHANTED = new FieldContainer<>(TridentEntity.class, (Class<TrackedData<Boolean>>) ((Class<?>) TrackedData.class), "ENCHANTED", "field_21514");

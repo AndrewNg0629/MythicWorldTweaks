@@ -51,6 +51,7 @@ public record ItemEditorConfig(
             return new ItemEditorConfig(enabled, itemEditorConfigUnits);
         }
     }
+
     public record ItemEditorConfigUnit(
             Item targetItem,
             int maxStackSize,
@@ -66,14 +67,14 @@ public record ItemEditorConfig(
                 JsonObject jsonObject = json.getAsJsonObject();
                 if (!jsonObject.has("target_item") ||
                         !Set.of(
-                        "target_item",
-                        "max_stack_size",
-                        "max_damage",
-                        "fire_resistant",
-                        "rarity",
-                        "recipe_remainder",
-                        "food_property"
-                ).containsAll(jsonObject.keySet())) {
+                                "target_item",
+                                "max_stack_size",
+                                "max_damage",
+                                "fire_resistant",
+                                "rarity",
+                                "recipe_remainder",
+                                "food_property"
+                        ).containsAll(jsonObject.keySet())) {
                     throw new JsonParseException("Wrong config structure, please have a check.");
                 }
                 Identifier targetItemIdentifier = parseIdentifier(jsonObject.get("target_item"));
@@ -107,7 +108,8 @@ public record ItemEditorConfig(
                         case "uncommon" -> Rarity.UNCOMMON;
                         case "rare" -> Rarity.RARE;
                         case "epic" -> Rarity.EPIC;
-                        default -> throw new JsonParseException(String.format("No such rarity identity: %s", rarityIdentity));
+                        default ->
+                                throw new JsonParseException(String.format("No such rarity identity: %s", rarityIdentity));
                     };
                 }
                 if (jsonObject.has("recipe_remainder")) {
@@ -150,6 +152,7 @@ public record ItemEditorConfig(
             }
         }
     }
+
     public record FoodProperty(FoodComponent foodComponent) {
         public static class Deserializer implements CustomJsonDeserializer<FoodProperty> {
             @Override
@@ -196,13 +199,15 @@ public record ItemEditorConfig(
                                     foodStatusEffectUnit.lastingTime(),
                                     foodStatusEffectUnit.level() - 1),
                             foodStatusEffectUnit.probability()
-                            ));
+                    ));
                 }
                 return new FoodProperty(new FoodComponent(nutrition, saturation, alwaysEdible, eatSeconds, leftOverItemOptional, statusEffectEntryList));
             }
         }
     }
-    public record FoodStatusEffectUnit(RegistryEntry<StatusEffect> statusEffect, int level, int lastingTime, float probability) {
+
+    public record FoodStatusEffectUnit(RegistryEntry<StatusEffect> statusEffect, int level, int lastingTime,
+                                       float probability) {
         public static class Deserializer implements CustomJsonDeserializer<FoodStatusEffectUnit> {
             @Override
             public FoodStatusEffectUnit deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {

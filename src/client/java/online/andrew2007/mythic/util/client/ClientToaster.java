@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 public class ClientToaster {
     private static MinecraftClient minecraftClient = null;
     private static boolean isToasterReady = false;
+
     public static void initToaster(MinecraftClient client) {
         if (!isToasterReady) {
             minecraftClient = client;
@@ -25,7 +26,8 @@ public class ClientToaster {
             LocalToaster.receiveToaster(toastMethod);
         }
     }
-    public static void toast(Text title, Text index) {
+
+    private static void toast(Text title, Text index) {
         if (isToasterReady) {
             minecraftClient.getToastManager().add(SystemToast.create(minecraftClient, SystemToast.Type.NARRATOR_TOGGLE, title, index));
         } else {

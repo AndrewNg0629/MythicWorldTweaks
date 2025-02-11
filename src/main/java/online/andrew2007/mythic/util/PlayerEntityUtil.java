@@ -6,23 +6,25 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Pair;
+import online.andrew2007.mythic.MythicWorldTweaks;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerEntityUtil {
-    static {
-        Class<?> gotFPClass = null;
-        try {
-            gotFPClass = Class.forName("carpet.patches.EntityPlayerMPFake");
-        } catch (ClassNotFoundException ignored) {}
-        carpetFPClass = gotFPClass;
-    }
-
     public static final ConcurrentHashMap<ServerPlayerEntity, Pair<Byte, Byte>> playerDoubleClickTime = new ConcurrentHashMap<>();
     public static final TrackedData<Boolean> IS_UNDER_FALL_PROTECTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     public static final TrackedData<Boolean> IS_FAKE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     public static final TrackedData<Boolean> IS_REALLY_SLEEPING = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     public static final Class<?> carpetFPClass;
+
+    static {
+        Class<?> gotFPClass = null;
+        try {
+            gotFPClass = Class.forName("carpet.patches.EntityPlayerMPFake");
+        } catch (ClassNotFoundException ignored) {
+        }
+        carpetFPClass = gotFPClass;
+    }
 
     public static void sneakingDCCheck(ServerPlayerEntity player) {
         if (!playerDoubleClickTime.containsKey(player)) {
@@ -64,5 +66,7 @@ public class PlayerEntityUtil {
         }
     }
 
-    public static void staticInit() {}
+    public static void staticInit() {
+        MythicWorldTweaks.LOGGER.debug("Loaded static class PlayerEntityUtil.");
+    }
 }

@@ -20,14 +20,17 @@ public class SleepingChatScreenMixin extends ChatScreen {
     public SleepingChatScreenMixin(String originalChatText) {
         super(originalChatText);
     }
+
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ChatScreen;<init>(Ljava/lang/String;)V", shift = At.Shift.AFTER), method = "<init>")
     private void SleepingChatScreen(CallbackInfo info) {
         SleepingScreenTracker.onCreate((SleepingChatScreen) (Object) this);
     }
+
     @Inject(at = @At(value = "HEAD"), method = "close")
     private void close(CallbackInfo info) {
         SleepingScreenTracker.onClose((SleepingChatScreen) (Object) this);
     }
+
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ChatScreen;init()V", shift = At.Shift.AFTER), method = "init")
     private void init(CallbackInfo info) {
         if (RuntimeController.getCurrentTParams().sleepingExtras()) {
@@ -38,6 +41,7 @@ public class SleepingChatScreenMixin extends ChatScreen {
             this.addDrawableChild(SleepingScreenTracker.getButtonA(thisOBJ));
         }
     }
+
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ButtonWidget;render(Lnet/minecraft/client/gui/DrawContext;IIF)V", shift = At.Shift.AFTER), method = "render")
     private void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo info) {
         if (RuntimeController.getCurrentTParams().sleepingExtras()) {
