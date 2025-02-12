@@ -32,7 +32,12 @@ public class ConfigFileListener {
     private static void onEventTriggered(Path fileName) {
         String stringFileName = fileName.toString();
         if (stringFileName.startsWith("config.json")) {
-            ConfigLoader.onConfigHotUpdate();
+            try {
+                MythicWorldTweaks.LOGGER.info("Config file change detected, starting hot update process. The listener will cool down for 3000 ms.");
+                ConfigLoader.onConfigHotUpdate();
+            } catch (Exception e) {
+                MythicWorldTweaks.LOGGER.error("Error doing hot update", e);
+            }
         }
     }
 
@@ -58,7 +63,7 @@ public class ConfigFileListener {
                             if (watchEventKind == StandardWatchEventKinds.ENTRY_MODIFY) {
                                 WatchEvent<Path> modifyEvent = (WatchEvent<Path>) event;
                                 Path fileName = modifyEvent.context();
-                                if (!(lastTriggeredTime + 600L >= System.currentTimeMillis())) {
+                                if (!(lastTriggeredTime + 3000L >= System.currentTimeMillis())) {
                                     lastTriggeredTime = System.currentTimeMillis();
                                     onEventTriggered(fileName);
                                 }

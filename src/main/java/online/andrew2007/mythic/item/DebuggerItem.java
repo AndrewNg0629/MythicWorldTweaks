@@ -13,7 +13,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import online.andrew2007.mythic.MythicWorldTweaks;
-import online.andrew2007.mythic.util.PlayerEntityUtil;
+import online.andrew2007.mythic.config.RuntimeController;
+
+import java.util.Arrays;
 
 public class DebuggerItem extends Item {
     public static final ComponentType<Integer> DEBUG_SELECTION = Registry.register(
@@ -21,7 +23,7 @@ public class DebuggerItem extends Item {
             Identifier.of(MythicWorldTweaks.MOD_ID, "debug_selection"),
             ComponentType.<Integer>builder().codec(Codec.INT).build()
     );
-    public final int debugSelectionsCount = 3;
+    public final int debugSelectionsCount = 2;
 
     public DebuggerItem(Settings settings) {
         super(settings);
@@ -32,7 +34,7 @@ public class DebuggerItem extends Item {
         ItemStack stack = user.getStackInHand(hand);
         if (stack.contains(DEBUG_SELECTION)) {
             int debugSelection = stack.getOrDefault(DEBUG_SELECTION, 1);
-            if (user.isSneaking()) {
+            if (user.isSneaking() && !world.isClient()) {
                 if (debugSelection >= debugSelectionsCount) {
                     debugSelection = 1;
                 } else {
@@ -52,27 +54,19 @@ public class DebuggerItem extends Item {
     private void debugAction(int debugSelection, World world, PlayerEntity user) {
         switch (debugSelection) {
             case 1:
-                if (world.isClient) {
-                    boolean bl = user.getDataTracker().get(PlayerEntityUtil.IS_REALLY_SLEEPING);
-                    user.getDataTracker().set(PlayerEntityUtil.IS_REALLY_SLEEPING, !bl);
-                    MythicWorldTweaks.LOGGER.info("Client: Debug data set to {}.", !bl);
+                if (world.isClient()) {
+                    user.sendMessage(Text.of("Hello, I'm Debugger from MythicWorldTweaks."));
+                    user.sendMessage(Text.of(String.format("Current MythicWorldTweaks version: %s", MythicWorldTweaks.MOD_VERSION)));
                 }
-                break;
             case 2:
-                if (!world.isClient) {
-                    boolean bl = user.getDataTracker().get(PlayerEntityUtil.IS_REALLY_SLEEPING);
-                    user.getDataTracker().set(PlayerEntityUtil.IS_REALLY_SLEEPING, !bl);
-                    MythicWorldTweaks.LOGGER.info("Server: Debug data set to {}.", !bl);
+                if (world.isClient()) {
+                    user.sendMessage(Text.of(String.format("Is using server config: %s", RuntimeController.isDuringMythicServerPlay())));
+                    user.sendMessage(Text.of("Local runtime params dump:"));
+                    user.sendMessage(Text.of(RuntimeController.getLocalRuntimeParams().toString()));
+                    user.sendMessage(Text.of("Transmittable runtime params dump:"));
+                    user.sendMessage(Text.of(RuntimeController.getCurrentTParams().toString()));
+                    user.sendMessage(Text.of(Arrays.toString(RuntimeController.getCurrentTParams().itemEditorConfig())));
                 }
-                break;
-            case 3:
-                boolean bl = user.getDataTracker().get(PlayerEntityUtil.IS_REALLY_SLEEPING);
-                if (world.isClient) {
-                    MythicWorldTweaks.LOGGER.info("Client: Debug data is {}.", bl);
-                } else {
-                    MythicWorldTweaks.LOGGER.info("Server: Debug data is {}.", bl);
-                }
-                break;
             default:
                 break;
         }

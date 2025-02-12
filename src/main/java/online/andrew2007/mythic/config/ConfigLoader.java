@@ -32,7 +32,7 @@ public class ConfigLoader {
     private static boolean isItemEditorParserReady = false;
     private static MinecraftServer currentServer = null;
     private static boolean isDuringServerRuntime = false;
-    private static ModConfig currentModConfig = null;
+    private static volatile ModConfig currentModConfig = null;
     private static boolean notifierRunning = false;
     private static TimerTask notifierTask = null;
 
@@ -89,7 +89,7 @@ public class ConfigLoader {
         }
     }
 
-    public static void onConfigHotUpdate() {
+    public synchronized static void onConfigHotUpdate() {
         if (notifierRunning) {
             notifierTask.cancel();
             notifierRunning = false;
@@ -149,10 +149,14 @@ public class ConfigLoader {
         return currentModConfig;
     }
 
-    public static ModConfig getConfigObject() throws RuntimeException {
+    public static synchronized ModConfig getConfigObject() throws RuntimeException {
         try {
-            String configContent = readConfigContent();
-            return ModConfig.CONFIG_FILE_GSON.fromJson(configContent, ModConfig.class);
+            ModConfig modConfig = null;
+            while (modConfig == null) {
+                String configContent = readConfigContent();
+                modConfig = ModConfig.CONFIG_FILE_GSON.fromJson(configContent, ModConfig.class);
+            }
+            return modConfig;
         } catch (Exception e) {
             throw new RuntimeException("Unable to get config object.", e);
         }

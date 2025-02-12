@@ -22,8 +22,6 @@ jobs:
           distribution: 'microsoft'
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-      - name: build data mod
-        run: ./gradlew :MythicWorldData:build
       - name: build
         run: ./gradlew build
       - name: capture build artifacts

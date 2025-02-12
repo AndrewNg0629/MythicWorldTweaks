@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "mythicworlddata",
+  "version": "${version}",
+  "name": "MythicWorldData",
+  "description": "The carrier of MythicWorld data pack.",
+  "authors": [
+    "AndrewNg0629"
+  ],
+  "contact": {
+  },
+  "license": "MIT",
+  "icon": "assets/mythicworlddata/jigsaw_block.png",
+  "environment": "*",
+  "entrypoints": {
+  },
+  "mixins": [
+    "mythicworlddata.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": ">=1.21",
+    "java": ">=21"
+  },
+  "suggests": {
+  },
+  "custom": {
+    "modmenu": {
+      "parent": "mythicworldtweaks"
+    }
+  }
+}

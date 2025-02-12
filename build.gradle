@@ -50,8 +50,13 @@ dependencies {
 
 	modImplementation "carpet:fabric-carpet:${project.carpet_minecraft_version}-${project.carpet_core_version}"
 	modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
-	//modApi(project(":MythicWorldData"))
+	afterEvaluate {
+		api(project(":MythicWorldData"))
+		include(project(":MythicWorldData"))
+	}
 }
+
+
 
 processResources {
 	inputs.property "version", project.version

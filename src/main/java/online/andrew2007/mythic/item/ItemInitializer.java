@@ -26,6 +26,7 @@ import online.andrew2007.mythic.MythicWorldTweaks;
 import online.andrew2007.mythic.config.RuntimeController;
 import online.andrew2007.mythic.util.ReflectionCenter;
 
+@SuppressWarnings("resource") //We can't close the ServerWorld after playing sounds.
 public class ItemInitializer {
     public static final Item LARGE_FIRE_CHARGE = registerItem("large_fire_charge", new LargeFireChargeItem(new Item.Settings()));
     public static final Item DEBUGGER = registerItem("debugger", new DebuggerItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));

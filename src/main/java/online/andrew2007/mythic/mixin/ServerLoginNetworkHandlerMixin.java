@@ -126,7 +126,7 @@ public abstract class ServerLoginNetworkHandlerMixin {
                                     }
                                     missingModsMessage.append(modId);
                                 }
-                                this.failReason = String.format("Some mods required by the server is missing on your side, please have them installed: %s", missingModsMessage);
+                                this.failReason = String.format("Some mods required by the server are missing on your side, please have them installed: %s", missingModsMessage);
                             }
                         }
                         this.isValidationPassed = !versionValidationFailed && !modIdsValidationFailed;

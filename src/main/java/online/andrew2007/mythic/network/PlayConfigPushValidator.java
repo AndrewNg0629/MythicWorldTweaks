@@ -8,46 +8,22 @@ import online.andrew2007.mythic.config.runtimeParams.TransmittableRuntimeParams;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class PlayConfigPushValidator {
     private static final ConcurrentHashMap<ServerPlayerEntity, ValidationInfo> pendingValidationPlayers = new ConcurrentHashMap<>();
     private static final ExecutorService threadExecutor = Executors.newCachedThreadPool();
-    private static class ValidationInfo {
-        private final Object lock;
-        private boolean validationPassed;
-        private String failReason = "Config push response timed out, regarded as failure.";
-        public ValidationInfo(@NotNull Object lock) {
-            this.lock = Objects.requireNonNull(lock);
-            this.validationPassed = false;
-        }
-        public Object getLock() {
-            return this.lock;
-        }
-        public void pass() {
-            this.validationPassed = true;
-            lock.notifyAll();
-        }
-        public void reject(String failReason) {
-            this.validationPassed = false;
-            this.failReason = failReason;
-            lock.notifyAll();
-        }
-        public boolean isPassed() {
-            return this.validationPassed;
-        }
-        public String getFailReason() {
-            return this.failReason;
-        }
-    }
+
     private static Object registerForValidation(ServerPlayerEntity serverPlayerEntity) {
         Object lock = new Object();
         pendingValidationPlayers.put(serverPlayerEntity, new ValidationInfo(lock));
         return lock;
     }
+
     public static void onConfigPushResponse(ServerPlayerEntity serverPlayerEntity, TransmittableRuntimeParams params) {
-        MythicWorldTweaks.LOGGER.info("Received player response.");
         ValidationInfo info = pendingValidationPlayers.get(serverPlayerEntity);
         if (info != null) {
             Object lock = info.getLock();
@@ -62,6 +38,7 @@ public class PlayConfigPushValidator {
             throw new IllegalStateException(String.format("Player %s hasn't been registered.", serverPlayerEntity.getName()));
         }
     }
+
     public static void onConfigPush(ServerPlayerEntity serverPlayerEntity) {
         Runnable validationTask = () -> {
             Object lock = registerForValidation(serverPlayerEntity);
@@ -80,5 +57,39 @@ public class PlayConfigPushValidator {
             pendingValidationPlayers.remove(serverPlayerEntity);
         };
         threadExecutor.execute(validationTask);
+    }
+
+    private static class ValidationInfo {
+        private final Object lock;
+        private boolean validationPassed;
+        private String failReason = "Config push response timed out, regarded as failure.";
+
+        public ValidationInfo(@NotNull Object lock) {
+            this.lock = Objects.requireNonNull(lock);
+            this.validationPassed = false;
+        }
+
+        public Object getLock() {
+            return this.lock;
+        }
+
+        public void pass() {
+            this.validationPassed = true;
+            lock.notifyAll();
+        }
+
+        public void reject(String failReason) {
+            this.validationPassed = false;
+            this.failReason = failReason;
+            lock.notifyAll();
+        }
+
+        public boolean isPassed() {
+            return this.validationPassed;
+        }
+
+        public String getFailReason() {
+            return this.failReason;
+        }
     }
 }

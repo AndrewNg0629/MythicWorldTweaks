@@ -58,6 +58,16 @@ public record TransmittableRuntimeParams(
         boolean itemEditorEnabled,
         TransmittableIECUnit[] itemEditorConfig
 ) {
+    public static final Gson TRANSMITTING_GSON = new GsonBuilder()
+            .registerTypeAdapter(Item.class, new ItemTypeAdapter())
+            .registerTypeAdapter(FoodComponent.class, new FoodComponentTypeAdapter())
+            .registerTypeAdapter(ItemStack.class, new FoodItemStackTypeAdapter())
+            .registerTypeAdapter(FoodComponent.StatusEffectEntry.class, new FoodStatusEffectEntryTypeAdapter())
+            .registerTypeAdapter(StatusEffectInstance.class, new FoodStatusEffectInstanceTypeAdapter())
+            .registerTypeAdapter(Identifier.class, new IdentifierTypeAdapter())
+            .create();
+    public static final ImmutableSet<Field> allPrimitiveFields;
+
     static {
         Field[] fields = TransmittableRuntimeParams.class.getDeclaredFields();
         ImmutableSet.Builder<Field> setBuilder = new ImmutableSet.Builder<>();
@@ -69,17 +79,6 @@ public record TransmittableRuntimeParams(
         }
         allPrimitiveFields = setBuilder.build();
     }
-
-    public static final Gson TRANSMITTING_GSON = new GsonBuilder()
-            .registerTypeAdapter(Item.class, new ItemTypeAdapter())
-            .registerTypeAdapter(FoodComponent.class, new FoodComponentTypeAdapter())
-            .registerTypeAdapter(ItemStack.class, new FoodItemStackTypeAdapter())
-            .registerTypeAdapter(FoodComponent.StatusEffectEntry.class, new FoodStatusEffectEntryTypeAdapter())
-            .registerTypeAdapter(StatusEffectInstance.class, new FoodStatusEffectInstanceTypeAdapter())
-            .registerTypeAdapter(Identifier.class, new IdentifierTypeAdapter())
-            .create();
-
-    public static final ImmutableSet<Field> allPrimitiveFields;
 
     public static TransmittableRuntimeParams getDefaultInstance() {
         return new TransmittableRuntimeParams(

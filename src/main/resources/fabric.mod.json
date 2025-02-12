@@ -8,7 +8,8 @@
     "AndrewNg0629"
   ],
   "contact": {
-    "homepage": "https://github.com/AndrewNg0629/MythicWorldTweaks"
+    "homepage": "https://github.com/AndrewNg0629/MythicWorldTweaks",
+    "issues": "https://github.com/AndrewNg0629/MythicWorldTweaks/issues"
   },
   "license": "MIT",
   "icon": "assets/mythicworldtweaks/structure_block.png",

@@ -25,6 +25,7 @@ public record PlayConfigPushPayload(TransmittableRuntimeParams params) implement
         }
     };
     public static final PacketCodec<ByteBuf, PlayConfigPushPayload> CODEC = PacketCodec.tuple(PARAMS_CODEC, PlayConfigPushPayload::params, PlayConfigPushPayload::new);
+
     @Override
     public Id<? extends CustomPayload> getId() {
         return ID;

@@ -21,6 +21,7 @@ import java.util.Objects;
 public class MythicWorldTweaks implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("MythicWorldTweaks");
     public static final String MOD_ID = "mythicworldtweaks";
+    public static final String DATA_MOD_ID = "mythicworlddata";
     public static final String MOD_VERSION = Objects.requireNonNull(FabricLoader.getInstance().getModContainer(MOD_ID).orElse(null)).getMetadata().getVersion().getFriendlyString();
     public static final String GAME_VERSION = MinecraftVersion.CURRENT.getName();
 

@@ -29,7 +29,7 @@ public class RuntimeController {
     private static TransmittableRuntimeParams serverPlayReceivedTParams = null;
     private static boolean isDuringMythicServerPlay = false;
 
-    static void loadTransmittableParamsFromConfig(boolean isStartup) {
+    public static synchronized void loadTransmittableParamsFromConfig(boolean isStartup) {
         ModConfig modConfig = ConfigLoader.getCurrentModConfig();
         TransmittableRuntimeParams newParams;
         if (modConfig.tweaksEnabled() && localRuntimeParams.modEnabled()) {
@@ -168,7 +168,7 @@ public class RuntimeController {
         previousItemEditorConfig = currentUnits;
     }
 
-    public static void receiveConfigPush(TransmittableRuntimeParams params) {
+    public static synchronized void receiveConfigPush(TransmittableRuntimeParams params) {
         serverPlayReceivedTParams = params;
         isDuringMythicServerPlay = true;
         onParamsChange();
@@ -181,6 +181,7 @@ public class RuntimeController {
             isDuringMythicServerPlay = false;
             serverPlayReceivedTParams = null;
             onParamsChange();
+            MythicWorldTweaks.LOGGER.info("Disconnected from server, switch from server config to local config.");
         }
     }
 
@@ -190,5 +191,9 @@ public class RuntimeController {
 
     public static LocalRuntimeParams getLocalRuntimeParams() {
         return localRuntimeParams;
+    }
+
+    public static boolean isDuringMythicServerPlay() {
+        return isDuringMythicServerPlay;
     }
 }
