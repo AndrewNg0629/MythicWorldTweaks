@@ -10,12 +10,15 @@ import online.andrew2007.mythic.config.ConfigLoader;
 import online.andrew2007.mythic.config.RuntimeController;
 import online.andrew2007.mythic.item.ItemInitializer;
 import online.andrew2007.mythic.network.MythicNetwork;
+import online.andrew2007.mythic.network.PlayConfigPushValidator;
+import online.andrew2007.mythic.util.EnvironmentDetection;
 import online.andrew2007.mythic.util.FireBallEntityManager;
 import online.andrew2007.mythic.util.PlayerEntityUtil;
 import online.andrew2007.mythic.util.WardenEntityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.Objects;
 
 public class MythicWorldTweaks implements ModInitializer {
@@ -39,7 +42,12 @@ public class MythicWorldTweaks implements ModInitializer {
         });
         ServerWorldEvents.UNLOAD.register((server, world) -> WardenEntityUtil.WardenEntityTrack.clearEntities());
         ServerLifecycleEvents.SERVER_STARTING.register(ConfigLoader::onServerStarting);
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> ConfigLoader.onServerStopping());
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            ConfigLoader.onServerStopping();
+            if (!EnvironmentDetection.isPhyClient) {
+                PlayConfigPushValidator.shutDownExecutor();
+            }
+        });
         MythicNetwork.commonInitialization();
     }
 }

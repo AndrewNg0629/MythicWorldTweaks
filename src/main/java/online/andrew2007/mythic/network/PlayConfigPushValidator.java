@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 public class PlayConfigPushValidator {
     private static final ConcurrentHashMap<ServerPlayerEntity, ValidationInfo> pendingValidationPlayers = new ConcurrentHashMap<>();
     private static final ExecutorService threadExecutor = Executors.newCachedThreadPool();
+    private static boolean executorShutDown = false;
 
     private static Object registerForValidation(ServerPlayerEntity serverPlayerEntity) {
         Object lock = new Object();
@@ -90,6 +91,14 @@ public class PlayConfigPushValidator {
 
         public String getFailReason() {
             return this.failReason;
+        }
+    }
+
+    public static void shutDownExecutor() {
+        if (!executorShutDown) {
+            threadExecutor.shutdown();
+            threadExecutor.close();
+            executorShutDown = true;
         }
     }
 }
