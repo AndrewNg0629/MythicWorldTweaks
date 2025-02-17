@@ -10,6 +10,8 @@ import online.andrew2007.mythic.config.ConfigLoader;
 import online.andrew2007.mythic.config.RuntimeController;
 import online.andrew2007.mythic.item.ItemInitializer;
 import online.andrew2007.mythic.network.MythicNetwork;
+import online.andrew2007.mythic.network.PlayConfigPushValidator;
+import online.andrew2007.mythic.util.EnvironmentDetection;
 import online.andrew2007.mythic.util.FireBallEntityManager;
 import online.andrew2007.mythic.util.PlayerEntityUtil;
 import online.andrew2007.mythic.util.WardenEntityUtil;
@@ -39,7 +41,12 @@ public class MythicWorldTweaks implements ModInitializer {
         });
         ServerWorldEvents.UNLOAD.register((server, world) -> WardenEntityUtil.WardenEntityTrack.clearEntities());
         ServerLifecycleEvents.SERVER_STARTING.register(ConfigLoader::onServerStarting);
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> ConfigLoader.onServerStopping());
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            ConfigLoader.onServerStopping();
+            if (!EnvironmentDetection.isPhyClient) {
+                PlayConfigPushValidator.shutDownExecutor();
+            }
+        });
         MythicNetwork.commonInitialization();
     }
 }

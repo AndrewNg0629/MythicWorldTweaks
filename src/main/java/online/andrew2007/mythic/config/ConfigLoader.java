@@ -24,7 +24,7 @@ import java.util.TimerTask;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class ConfigLoader {
-    private static final Timer notifier = new Timer();
+    private static final Timer notifier = new Timer(true);
     private static boolean initState = false;
     private static ImmutableBiMap<Identifier, Item> allItems;
     private static ImmutableBiMap<Identifier, RegistryEntry<StatusEffect>> allStatusEffects;
@@ -169,11 +169,11 @@ public class ConfigLoader {
         try (FileReader fileReader = new FileReader(configFile);
              BufferedReader bufferedReader = new BufferedReader(fileReader)
         ) {
-            int byteCount;
+            int charCount;
             char[] charBuffer = new char[128];
             StringBuilder fileIndex = new StringBuilder();
-            while ((byteCount = bufferedReader.read(charBuffer)) != -1) {
-                fileIndex.append(new String(charBuffer, 0, byteCount));
+            while ((charCount = bufferedReader.read(charBuffer)) != -1) {
+                fileIndex.append(new String(charBuffer, 0, charCount));
             }
             return fileIndex.toString();
         }
@@ -184,11 +184,11 @@ public class ConfigLoader {
         try (InputStream inputStream = Objects.requireNonNull(classLoader.getResourceAsStream("config/default_config.json"));
              InputStreamReader reader = new InputStreamReader(inputStream)
         ) {
-            int byteCount;
+            int charCount;
             char[] charBuffer = new char[128];
             StringBuilder fileIndex = new StringBuilder();
-            while ((byteCount = reader.read(charBuffer)) != -1) {
-                fileIndex.append(new String(charBuffer, 0, byteCount));
+            while ((charCount = reader.read(charBuffer)) != -1) {
+                fileIndex.append(new String(charBuffer, 0, charCount));
             }
             return fileIndex.toString();
         }
