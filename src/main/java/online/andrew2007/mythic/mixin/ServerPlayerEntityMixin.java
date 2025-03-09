@@ -13,9 +13,10 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import online.andrew2007.mythic.config.RuntimeController;
-import online.andrew2007.mythic.util.PlayerEntityUtil;
+import online.andrew2007.mythic.modFunctions.PlayerEntityStuff;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -34,12 +35,12 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     private void tick(CallbackInfo info) {
         ServerPlayerEntity thisOBJ = (ServerPlayerEntity) (Object) this;
         if (RuntimeController.getCurrentTParams().playerRidingGestures()) {
-            PlayerEntityUtil.sneakingDCCheck(thisOBJ);
+            PlayerEntityStuff.sneakingDCCheck(thisOBJ);
         }
         if (RuntimeController.getCurrentTParams().playerRidingProtection()) {
-            if (thisOBJ.getDataTracker().get(PlayerEntityUtil.IS_UNDER_FALL_PROTECTION)) {
+            if (thisOBJ.getDataTracker().get(PlayerEntityStuff.IS_UNDER_FALL_PROTECTION)) {
                 if ((thisOBJ.isOnGround() || thisOBJ.isInFluid() || thisOBJ.isFallFlying() || (thisOBJ.isCreative() && thisOBJ.getAbilities().flying))) {
-                    thisOBJ.getDataTracker().set(PlayerEntityUtil.IS_UNDER_FALL_PROTECTION, false);
+                    thisOBJ.getDataTracker().set(PlayerEntityStuff.IS_UNDER_FALL_PROTECTION, false);
                 }
             }
         }
@@ -47,8 +48,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
     @Inject(at = @At(value = "HEAD"), method = "onDeath")
     private void onDeath(DamageSource damageSource, CallbackInfo info) {
-        this.getDataTracker().set(PlayerEntityUtil.IS_UNDER_FALL_PROTECTION, false);
-        this.getDataTracker().set(PlayerEntityUtil.IS_REALLY_SLEEPING, false);
+        this.getDataTracker().set(PlayerEntityStuff.IS_UNDER_FALL_PROTECTION, false);
+        this.getDataTracker().set(PlayerEntityStuff.IS_REALLY_SLEEPING, false);
     }
 
     @Inject(at = @At(value = "HEAD"), method = "onDisconnect")
@@ -58,17 +59,17 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
         if (RuntimeController.getCurrentTParams().playerRidingProtection()) {
             if (passenger != null) {
                 if (passenger instanceof ServerPlayerEntity playerPassenger) {
-                    playerPassenger.getDataTracker().set(PlayerEntityUtil.IS_UNDER_FALL_PROTECTION, true);
+                    playerPassenger.getDataTracker().set(PlayerEntityStuff.IS_UNDER_FALL_PROTECTION, true);
                 }
             }
         }
-        thisOBJ.getDataTracker().set(PlayerEntityUtil.IS_REALLY_SLEEPING, false);
+        thisOBJ.getDataTracker().set(PlayerEntityStuff.IS_REALLY_SLEEPING, false);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;wakeUp(ZZ)V", shift = At.Shift.AFTER), method = "wakeUp")
     private void wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo info) {
         ServerPlayerEntity thisOBJ = (ServerPlayerEntity) (Object) this;
-        thisOBJ.getDataTracker().set(PlayerEntityUtil.IS_REALLY_SLEEPING, false);
+        thisOBJ.getDataTracker().set(PlayerEntityStuff.IS_REALLY_SLEEPING, false);
     }
 
     @Inject(at = @At(value = "RETURN", ordinal = 4), method = "trySleep", cancellable = true)
@@ -90,6 +91,16 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
             Either<SleepFailureReason, Unit> either = super.trySleep(pos).ifRight(unit -> this.incrementStat(Stats.SLEEP_IN_BED));
             ((ServerWorld) this.getWorld()).updateSleepingPlayers();
             info.setReturnValue(either);
+        }
+    }
+
+    @Inject(at = @At(value = "TAIL"), method = "copyFrom")
+    private void copyFrom(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo info) {
+        if (!this.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY) && !oldPlayer.isSpectator() && RuntimeController.getCurrentTParams().keepExperience()) {
+            this.experienceLevel = oldPlayer.experienceLevel;
+            this.totalExperience = oldPlayer.totalExperience;
+            this.experienceProgress = oldPlayer.experienceProgress;
+            this.setScore(oldPlayer.getScore());
         }
     }
 }

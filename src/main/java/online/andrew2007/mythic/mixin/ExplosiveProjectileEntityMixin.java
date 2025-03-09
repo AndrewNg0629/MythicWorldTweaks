@@ -1,7 +1,7 @@
 package online.andrew2007.mythic.mixin;
 
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
-import online.andrew2007.mythic.util.FireBallEntityManager;
+import online.andrew2007.mythic.modFunctions.FireBallEntityManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

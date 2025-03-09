@@ -14,9 +14,7 @@ public record ModIdValidationConfig(boolean enabled, String[] modIdList) {
         @Override
         public ModIdValidationConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObject = json.getAsJsonObject();
-            if (!jsonObject.keySet().equals(Set.of("enabled", "mod_id_list"))) {
-                throw new JsonParseException("Wrong config structure, please have a check.");
-            }
+            checkKeys(Set.of("enabled", "mod_id_list"), jsonObject.keySet(), true);
             List<JsonElement> modIdJsonList = jsonObject.get("mod_id_list").getAsJsonArray().asList();
             String[] modIdList = new String[modIdJsonList.size()];
             for (int i = 0; i < modIdJsonList.size(); i++) {

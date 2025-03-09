@@ -25,34 +25,43 @@ public record BinaryToggleTweaksConfig(
         boolean silentWardens,
         boolean constantVillagerConversion,
         boolean fakePlayerSleepExclusion,
-        boolean sleepingExtras
+        boolean sleepingExtras,
+        boolean suicideCommand,
+        boolean keepExperience,
+        boolean alwaysDragonEgg,
+        boolean bowEnchantmentsForCrossbow
 ) {
     public static class Deserializer implements CustomJsonDeserializer<BinaryToggleTweaksConfig> {
 
         @Override
         public BinaryToggleTweaksConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObject = json.getAsJsonObject();
-            if (!jsonObject.keySet().equals(Set.of(
-                    "throwable_fire_charge",
-                    "large_fire_charge",
-                    "editable_player_data",
-                    "blocks_friendly_creepers",
-                    "item_explosion_resistance",
-                    "nestable_shulker_boxes",
-                    "rideable_players",
-                    "player_riding_gestures",
-                    "player_riding_protection",
-                    "dispensable_tridents",
-                    "void_returnable_trident",
-                    "multi_trident_damage",
-                    "persistent_tridents",
-                    "silent_wardens",
-                    "constant_villager_conversion",
-                    "fake_player_sleep_exclusion",
-                    "sleeping_extras"
-            ))) {
-                throw new JsonParseException("Wrong config structure, please have a check.");
-            }
+            checkKeys(Set.of(
+                            "throwable_fire_charge",
+                            "large_fire_charge",
+                            "editable_player_data",
+                            "blocks_friendly_creepers",
+                            "item_explosion_resistance",
+                            "nestable_shulker_boxes",
+                            "rideable_players",
+                            "player_riding_gestures",
+                            "player_riding_protection",
+                            "dispensable_tridents",
+                            "void_returnable_trident",
+                            "multi_trident_damage",
+                            "persistent_tridents",
+                            "silent_wardens",
+                            "constant_villager_conversion",
+                            "fake_player_sleep_exclusion",
+                            "sleeping_extras",
+                            "suicide_command",
+                            "keep_experience",
+                            "always_dragon_egg",
+                            "bow_enchantments_for_crossbow"
+                    ),
+                    jsonObject.keySet(),
+                    true
+            );
             return new BinaryToggleTweaksConfig(
                     readBoolean(jsonObject.get("throwable_fire_charge")),
                     readBoolean(jsonObject.get("large_fire_charge")),
@@ -70,7 +79,11 @@ public record BinaryToggleTweaksConfig(
                     readBoolean(jsonObject.get("silent_wardens")),
                     readBoolean(jsonObject.get("constant_villager_conversion")),
                     readBoolean(jsonObject.get("fake_player_sleep_exclusion")),
-                    readBoolean(jsonObject.get("sleeping_extras"))
+                    readBoolean(jsonObject.get("sleeping_extras")),
+                    readBoolean(jsonObject.get("suicide_command")),
+                    readBoolean(jsonObject.get("keep_experience")),
+                    readBoolean(jsonObject.get("always_dragon_egg")),
+                    readBoolean(jsonObject.get("bow_enchantments_for_crossbow"))
             );
         }
     }

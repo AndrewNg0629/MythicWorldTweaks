@@ -24,7 +24,7 @@ import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 import online.andrew2007.mythic.MythicWorldTweaks;
 import online.andrew2007.mythic.config.RuntimeController;
-import online.andrew2007.mythic.util.ReflectionCenter;
+import online.andrew2007.mythic.modFunctions.ReflectionCenter;
 
 @SuppressWarnings("resource") //We can't close the ServerWorld after playing sounds.
 public class ItemInitializer {

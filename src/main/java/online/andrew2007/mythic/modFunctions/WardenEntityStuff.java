@@ -1,4 +1,4 @@
-package online.andrew2007.mythic.util;
+package online.andrew2007.mythic.modFunctions;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -17,7 +17,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class WardenEntityUtil {
+public class WardenEntityStuff {
     public static void modifyWardenAttributes() {
         Map<RegistryEntry<EntityAttribute>, EntityAttributeInstance> wardenAttributes = ReflectionCenter.getFieldValue(ReflectionCenter.instances, ReflectionCenter.getFieldValue(ReflectionCenter.DEFAULT_ATTRIBUTE_REGISTRY, null).get(EntityType.WARDEN));
         if (RuntimeController.getCurrentTParams().wardenAttributesWeakeningEnabled()) {

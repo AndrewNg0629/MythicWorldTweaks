@@ -4,8 +4,8 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import online.andrew2007.mythic.config.ConfigFileListener;
 import online.andrew2007.mythic.config.ConfigLoader;
+import online.andrew2007.mythic.modFunctions.client.ClientToaster;
 import online.andrew2007.mythic.network.client.MythicClientNetwork;
-import online.andrew2007.mythic.util.client.ClientToaster;
 
 public class MythicWorldTweaksClient implements ClientModInitializer {
 

@@ -1,4 +1,4 @@
-package online.andrew2007.mythic.util;
+package online.andrew2007.mythic.modFunctions;
 
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import online.andrew2007.mythic.config.RuntimeController;

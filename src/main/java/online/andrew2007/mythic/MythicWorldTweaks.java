@@ -1,20 +1,25 @@
 package online.andrew2007.mythic;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.MinecraftVersion;
+import net.minecraft.entity.Entity;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
 import online.andrew2007.mythic.config.ConfigLoader;
 import online.andrew2007.mythic.config.RuntimeController;
 import online.andrew2007.mythic.item.ItemInitializer;
+import online.andrew2007.mythic.modFunctions.EnvironmentDetection;
+import online.andrew2007.mythic.modFunctions.FireBallEntityManager;
+import online.andrew2007.mythic.modFunctions.PlayerEntityStuff;
+import online.andrew2007.mythic.modFunctions.WardenEntityStuff;
 import online.andrew2007.mythic.network.MythicNetwork;
 import online.andrew2007.mythic.network.PlayConfigPushValidator;
-import online.andrew2007.mythic.util.EnvironmentDetection;
-import online.andrew2007.mythic.util.FireBallEntityManager;
-import online.andrew2007.mythic.util.PlayerEntityUtil;
-import online.andrew2007.mythic.util.WardenEntityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,14 +37,14 @@ public class MythicWorldTweaks implements ModInitializer {
         LOGGER.info("MythicWorldTweaks mod starts to be initialized!");
         RuntimeController.loadLocalParamsFromConfig();
         ItemInitializer.generalInitialization();
-        PlayerEntityUtil.staticInit();
+        PlayerEntityStuff.staticInit();
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (RuntimeController.getCurrentTParams().autoDiscardingFireBallEnabled()) {
                 FireBallEntityManager.tick();
             }
-            WardenEntityUtil.WardenEntityTrack.tick();
+            WardenEntityStuff.WardenEntityTrack.tick();
         });
-        ServerWorldEvents.UNLOAD.register((server, world) -> WardenEntityUtil.WardenEntityTrack.clearEntities());
+        ServerWorldEvents.UNLOAD.register((server, world) -> WardenEntityStuff.WardenEntityTrack.clearEntities());
         ServerLifecycleEvents.SERVER_STARTING.register(ConfigLoader::onServerStarting);
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             ConfigLoader.onServerStopping();
@@ -47,6 +52,16 @@ public class MythicWorldTweaks implements ModInitializer {
                 PlayConfigPushValidator.shutDownExecutor();
             }
         });
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
+                CommandManager.literal("suicide")
+                        .requires(source -> source.isExecutedByPlayer() && RuntimeController.getCurrentTParams().suicideCommand())
+                        .executes(context -> {
+                            ServerCommandSource source = context.getSource();
+                            Entity entity = source.getPlayerOrThrow();
+                            entity.kill();
+                            source.sendFeedback(() -> Text.translatable("commands.kill.success.single", entity.getDisplayName()), false);
+                            return 1;
+                        })));
         MythicNetwork.commonInitialization();
     }
 }

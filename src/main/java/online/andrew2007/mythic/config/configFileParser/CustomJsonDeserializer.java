@@ -9,6 +9,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import online.andrew2007.mythic.config.ConfigLoader;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public interface CustomJsonDeserializer<T> extends JsonDeserializer<T> {
     static int getCharCount(String string, char character) {
         return string.split(String.valueOf(character), -1).length - 1;
@@ -53,6 +56,26 @@ public interface CustomJsonDeserializer<T> extends JsonDeserializer<T> {
             throw new JsonParseException(String.format("Item \"%s\" doesn't exist!", itemIdentifier));
         } else {
             return item;
+        }
+    }
+
+    default void checkKeys(Set<String> expected, Set<String> present, boolean requireFull) throws JsonParseException {
+        HashSet<String> excessKeys = new HashSet<>(present);
+        excessKeys.removeAll(expected);
+        HashSet<String> missingKeys = new HashSet<>(expected);
+        missingKeys.removeAll(present);
+        boolean error = false;
+        StringBuilder errorMessage = new StringBuilder();
+        if (!excessKeys.isEmpty()) {
+            error = true;
+            errorMessage.append(String.format("Excess keys: %s.", excessKeys));
+        }
+        if (!missingKeys.isEmpty() && requireFull) {
+            error = true;
+            errorMessage.append(String.format("Missing keys: %s.", missingKeys));
+        }
+        if (error) {
+            throw new JsonParseException(String.format("Wrong config structure. %s", errorMessage));
         }
     }
 }

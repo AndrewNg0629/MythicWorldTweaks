@@ -12,8 +12,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import online.andrew2007.mythic.MythicWorldTweaks;
 import online.andrew2007.mythic.config.configFileParser.ModConfig;
-import online.andrew2007.mythic.util.EnvironmentDetection;
-import online.andrew2007.mythic.util.LocalToaster;
+import online.andrew2007.mythic.modFunctions.EnvironmentDetection;
+import online.andrew2007.mythic.modFunctions.LocalToaster;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;

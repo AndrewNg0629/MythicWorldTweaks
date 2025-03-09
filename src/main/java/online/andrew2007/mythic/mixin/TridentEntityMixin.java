@@ -8,7 +8,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import online.andrew2007.mythic.config.RuntimeController;
-import online.andrew2007.mythic.util.ReflectionCenter;
+import online.andrew2007.mythic.modFunctions.ReflectionCenter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

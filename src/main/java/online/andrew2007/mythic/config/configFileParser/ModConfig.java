@@ -37,19 +37,20 @@ public record ModConfig(
         @Override
         public ModConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObject = json.getAsJsonObject();
-            if (!jsonObject.keySet().equals(Set.of(
-                    "mod_enabled",
-                    "mod_data_pack_enabled",
-                    "tweaks_enabled",
-                    "server_play_support_enabled",
-                    "server_name",
-                    "mod_id_validation",
-                    "binary_toggle_tweaks",
-                    "params_required_tweaks",
-                    "item_editor"
-            ))) {
-                throw new JsonParseException("Wrong config structure, please have a check.");
-            }
+            checkKeys(Set.of(
+                            "mod_enabled",
+                            "mod_data_pack_enabled",
+                            "tweaks_enabled",
+                            "server_play_support_enabled",
+                            "server_name",
+                            "mod_id_validation",
+                            "binary_toggle_tweaks",
+                            "params_required_tweaks",
+                            "item_editor"
+                    ),
+                    jsonObject.keySet(),
+                    true
+            );
             ModIdValidationConfig modIdValidationConfig = context.deserialize(jsonObject.get("mod_id_validation"), ModIdValidationConfig.class);
             BinaryToggleTweaksConfig binaryToggleTweaksConfig = ConfigLoader.isItemEditorParserReady() ? context.deserialize(jsonObject.get("binary_toggle_tweaks"), BinaryToggleTweaksConfig.class) : null;
             ParamsRequiredTweaksConfig paramsRequiredTweaksConfig = ConfigLoader.isItemEditorParserReady() ? context.deserialize(jsonObject.get("params_required_tweaks"), ParamsRequiredTweaksConfig.class) : null;

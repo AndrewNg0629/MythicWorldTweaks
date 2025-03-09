@@ -60,6 +60,14 @@ public class PlayConfigPushValidator {
         threadExecutor.execute(validationTask);
     }
 
+    public static void shutDownExecutor() {
+        if (!executorShutDown) {
+            threadExecutor.shutdown();
+            threadExecutor.close();
+            executorShutDown = true;
+        }
+    }
+
     private static class ValidationInfo {
         private final Object lock;
         private boolean validationPassed;
@@ -91,14 +99,6 @@ public class PlayConfigPushValidator {
 
         public String getFailReason() {
             return this.failReason;
-        }
-    }
-
-    public static void shutDownExecutor() {
-        if (!executorShutDown) {
-            threadExecutor.shutdown();
-            threadExecutor.close();
-            executorShutDown = true;
         }
     }
 }

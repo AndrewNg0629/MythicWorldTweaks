@@ -7,7 +7,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.util.Rarity;
-import online.andrew2007.mythic.util.ReflectionCenter;
+import online.andrew2007.mythic.modFunctions.ReflectionCenter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;

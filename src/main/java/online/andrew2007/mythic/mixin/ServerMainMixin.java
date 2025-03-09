@@ -2,7 +2,7 @@ package online.andrew2007.mythic.mixin;
 
 import net.minecraft.SharedConstants;
 import net.minecraft.server.Main;
-import online.andrew2007.mythic.util.EnvironmentDetection;
+import online.andrew2007.mythic.modFunctions.EnvironmentDetection;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

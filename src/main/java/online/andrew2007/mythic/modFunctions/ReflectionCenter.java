@@ -1,4 +1,4 @@
-package online.andrew2007.mythic.util;
+package online.andrew2007.mythic.modFunctions;
 
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import net.minecraft.component.ComponentMap;
@@ -62,7 +62,7 @@ public class ReflectionCenter {
         try {
             fieldContainer.containedField.set(instance, targetValue);
         } catch (IllegalAccessException | IllegalArgumentException e) {
-            throw new RuntimeException(String.format("Failed to set value of field: %s", fieldContainer.cachedConstant), e);
+            throw new RuntimeException(String.format("Failed to set value of field: %s", fieldContainer.containedField), e);
         }
     }
 

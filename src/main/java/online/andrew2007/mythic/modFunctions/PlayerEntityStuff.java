@@ -1,4 +1,4 @@
-package online.andrew2007.mythic.util;
+package online.andrew2007.mythic.modFunctions;
 
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -10,7 +10,7 @@ import online.andrew2007.mythic.MythicWorldTweaks;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PlayerEntityUtil {
+public class PlayerEntityStuff {
     public static final ConcurrentHashMap<ServerPlayerEntity, Pair<Byte, Byte>> playerDoubleClickTime = new ConcurrentHashMap<>();
     public static final TrackedData<Boolean> IS_UNDER_FALL_PROTECTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     public static final TrackedData<Boolean> IS_FAKE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -67,6 +67,6 @@ public class PlayerEntityUtil {
     }
 
     public static void staticInit() {
-        MythicWorldTweaks.LOGGER.debug("Loaded static class PlayerEntityUtil.");
+        MythicWorldTweaks.LOGGER.debug("Loaded static class PlayerEntityStuff.");
     }
 }
