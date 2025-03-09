@@ -29,12 +29,13 @@ public record ItemEditorConfig(
         @Override
         public ItemEditorConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObject = json.getAsJsonObject();
-            if (!jsonObject.keySet().equals(Set.of(
-                    "enabled",
-                    "item_edit_config_list"
-            ))) {
-                throw new JsonParseException("Wrong config structure, please have a check.");
-            }
+            checkKeys(Set.of(
+                            "enabled",
+                            "item_edit_config_list"
+                    ),
+                    jsonObject.keySet(),
+                    true
+            );
             boolean enabled = jsonObject.get("enabled").getAsBoolean();
             List<JsonElement> configUnitsJSONList = jsonObject.get("item_edit_config_list").getAsJsonArray().asList();
             ItemEditorConfigUnit[] itemEditorConfigUnits = new ItemEditorConfigUnit[configUnitsJSONList.size()];
@@ -65,8 +66,10 @@ public record ItemEditorConfig(
             @Override
             public ItemEditorConfigUnit deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 JsonObject jsonObject = json.getAsJsonObject();
-                if (!jsonObject.has("target_item") ||
-                        !Set.of(
+                if (!jsonObject.has("target_item")) {
+                    throw new JsonParseException("Wrong config structure, missing \"target_item_key\"!");
+                }
+                checkKeys(Set.of(
                                 "target_item",
                                 "max_stack_size",
                                 "max_damage",
@@ -74,9 +77,10 @@ public record ItemEditorConfig(
                                 "rarity",
                                 "recipe_remainder",
                                 "food_property"
-                        ).containsAll(jsonObject.keySet())) {
-                    throw new JsonParseException("Wrong config structure, please have a check.");
-                }
+                        ),
+                        jsonObject.keySet(),
+                        false
+                );
                 Identifier targetItemIdentifier = parseIdentifier(jsonObject.get("target_item"));
                 Item targetItem = getItem(targetItemIdentifier);
                 boolean itemDamageable = targetItem.getComponents().contains(DataComponentTypes.MAX_DAMAGE);
@@ -158,16 +162,17 @@ public record ItemEditorConfig(
             @Override
             public FoodProperty deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 JsonObject jsonObject = json.getAsJsonObject();
-                if (!jsonObject.keySet().equals(Set.of(
-                        "nutrition",
-                        "saturation",
-                        "always_edible",
-                        "eat_seconds",
-                        "left_over_item",
-                        "status_effects"
-                ))) {
-                    throw new JsonParseException("Wrong config structure, please have a check.");
-                }
+                checkKeys(Set.of(
+                                "nutrition",
+                                "saturation",
+                                "always_edible",
+                                "eat_seconds",
+                                "left_over_item",
+                                "status_effects"
+                        ),
+                        jsonObject.keySet(),
+                        true
+                );
                 int nutrition = jsonObject.get("nutrition").getAsInt();
                 float saturation = jsonObject.get("saturation").getAsFloat();
                 boolean alwaysEdible = jsonObject.get("always_edible").getAsBoolean();
@@ -212,9 +217,7 @@ public record ItemEditorConfig(
             @Override
             public FoodStatusEffectUnit deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 JsonObject jsonObject = json.getAsJsonObject();
-                if (!jsonObject.keySet().equals(Set.of("status_effect", "level", "lasting_time", "probability"))) {
-                    throw new JsonParseException("Wrong config structure, please have a check.");
-                }
+                checkKeys(Set.of("status_effect", "level", "lasting_time", "probability"), jsonObject.keySet(), true);
                 Identifier effectIdentifier = parseIdentifier(jsonObject.get("status_effect"));
                 RegistryEntry<StatusEffect> statusEffect = ConfigLoader.getAllStatusEffects().get(effectIdentifier);
                 if (statusEffect == null) {

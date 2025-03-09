@@ -20,9 +20,7 @@ public record ParamsRequiredTweaksConfig(
             @Override
             public AutoDiscardingFireBallConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 JsonObject jsonObject = json.getAsJsonObject();
-                if (!jsonObject.keySet().equals(Set.of("enabled", "max_life_ticks"))) {
-                    throw new JsonParseException("Wrong config structure, please have a check.");
-                }
+                checkKeys(Set.of("enabled", "max_life_ticks"), jsonObject.keySet(), true);
                 int maxLifeTicks = jsonObject.get("max_life_ticks").getAsInt();
                 if (maxLifeTicks <= 0) {
                     throw new JsonParseException("Wrong config value for \"max_life_time\", positive value is required.");
@@ -37,9 +35,7 @@ public record ParamsRequiredTweaksConfig(
             @Override
             public StuffedShulkerBoxStackLimitConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 JsonObject jsonObject = json.getAsJsonObject();
-                if (!jsonObject.keySet().equals(Set.of("enabled", "max_stack_size"))) {
-                    throw new JsonParseException("Wrong config structure, please have a check.");
-                }
+                checkKeys(Set.of("enabled", "max_stack_size"), jsonObject.keySet(), true);
                 int maxStackSize = jsonObject.get("max_stack_size").getAsInt();
                 if (maxStackSize <= 0) {
                     throw new JsonParseException("Wrong config value for \"max_stack_size\", positive value is required.");
@@ -54,10 +50,7 @@ public record ParamsRequiredTweaksConfig(
             @Override
             public ShulkerBoxNestingLimitConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 JsonObject jsonObject = json.getAsJsonObject();
-                if (!jsonObject.keySet().equals(Set.of("enabled", "max_layers"))) {
-                    System.out.println(jsonObject.keySet());
-                    throw new JsonParseException("Wrong config structure, please have a check.");
-                }
+                checkKeys(Set.of("enabled", "max_layers"), jsonObject.keySet(), true);
                 int maxLayers = jsonObject.get("max_layers").getAsInt();
                 if (maxLayers <= 0 || maxLayers > 10) {
                     throw new JsonParseException("Wrong config value for \"max_layers\", value between 0 and 10 is required.");
@@ -81,18 +74,19 @@ public record ParamsRequiredTweaksConfig(
             @Override
             public WardenAttributesWeakeningConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 JsonObject jsonObject = json.getAsJsonObject();
-                if (!jsonObject.keySet().equals(Set.of(
-                        "enabled",
-                        "max_health",
-                        "knock_back_resistance",
-                        "melee_attack_damage",
-                        "melee_attack_knock_back",
-                        "idle_movement_speed",
-                        "chasing_movement_speed",
-                        "attack_interval_ticks"
-                ))) {
-                    throw new JsonParseException("Wrong config structure, please have a check.");
-                }
+                checkKeys(Set.of(
+                                "enabled",
+                                "max_health",
+                                "knock_back_resistance",
+                                "melee_attack_damage",
+                                "melee_attack_knock_back",
+                                "idle_movement_speed",
+                                "chasing_movement_speed",
+                                "attack_interval_ticks"
+                        ),
+                        jsonObject.keySet(),
+                        true
+                );
                 double maxHealth = jsonObject.get("max_health").getAsDouble();
                 double knockBackResistance = jsonObject.get("knock_back_resistance").getAsDouble();
                 double meleeAttackDamage = jsonObject.get("melee_attack_damage").getAsDouble();
@@ -138,14 +132,15 @@ public record ParamsRequiredTweaksConfig(
             @Override
             public WardenSonicBoomWeakeningConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 JsonObject jsonObject = json.getAsJsonObject();
-                if (!jsonObject.keySet().equals(Set.of(
-                        "enabled",
-                        "sonic_boom_damage",
-                        "sonic_boom_knock_back_rate",
-                        "sonic_boom_interval_ticks"
-                ))) {
-                    throw new JsonParseException("Wrong config structure, please have a check.");
-                }
+                checkKeys(Set.of(
+                                "enabled",
+                                "sonic_boom_damage",
+                                "sonic_boom_knock_back_rate",
+                                "sonic_boom_interval_ticks"
+                        ),
+                        jsonObject.keySet(),
+                        true
+                );
                 float sonicBoomDamage = jsonObject.get("sonic_boom_damage").getAsFloat();
                 double sonicBoomKnockBackRate = jsonObject.get("sonic_boom_knock_back_rate").getAsDouble();
                 int sonicBoomIntervalTicks = jsonObject.get("sonic_boom_interval_ticks").getAsInt();
@@ -170,16 +165,15 @@ public record ParamsRequiredTweaksConfig(
         @Override
         public ParamsRequiredTweaksConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObject = json.getAsJsonObject();
-            if (!jsonObject.keySet().equals(Set.of(
-                    "auto_discarding_fire_ball",
-                    "stuffed_shulker_box_stack_limit",
-                    "shulker_box_nesting_limit",
-                    "warden_attributes_weakening",
-                    "warden_sonic_boom_weakening"
-
-            ))) {
-                throw new JsonParseException("Wrong config structure, please have a check.");
-            }
+            checkKeys(Set.of(
+                            "auto_discarding_fire_ball",
+                            "stuffed_shulker_box_stack_limit",
+                            "shulker_box_nesting_limit",
+                            "warden_attributes_weakening",
+                            "warden_sonic_boom_weakening"),
+                    jsonObject.keySet(),
+                    true
+            );
             AutoDiscardingFireBallConfig autoDiscardingFireBallConfig = context.deserialize(jsonObject.get("auto_discarding_fire_ball"), AutoDiscardingFireBallConfig.class);
             StuffedShulkerBoxStackLimitConfig stuffedShulkerBoxStackLimitConfig = context.deserialize(jsonObject.get("stuffed_shulker_box_stack_limit"), StuffedShulkerBoxStackLimitConfig.class);
             ShulkerBoxNestingLimitConfig shulkerBoxNestingLimitConfig = context.deserialize(jsonObject.get("shulker_box_nesting_limit"), ShulkerBoxNestingLimitConfig.class);

@@ -25,7 +25,11 @@
     "silent_wardens": false,
     "constant_villager_conversion": false,
     "fake_player_sleep_exclusion": false,
-    "sleeping_extras": false
+    "sleeping_extras": false,
+    "suicide_command": false,
+    "keep_experience": false,
+    "always_dragon_egg": false,
+    "bow_enchantments_for_crossbow": false
   },
   "params_required_tweaks": {
     "auto_discarding_fire_ball": {

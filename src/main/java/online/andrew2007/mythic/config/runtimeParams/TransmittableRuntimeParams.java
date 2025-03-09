@@ -37,6 +37,10 @@ public record TransmittableRuntimeParams(
         boolean constantVillagerConversion,
         boolean fakePlayerSleepExclusion,
         boolean sleepingExtras,
+        boolean suicideCommand,
+        boolean keepExperience,
+        boolean alwaysDragonEgg,
+        boolean bowEnchantmentsForCrossbow,
         boolean autoDiscardingFireBallEnabled,
         boolean stuffedShulkerBoxStackLimitEnabled,
         boolean shulkerBoxNestingLimitEnabled,
@@ -82,6 +86,10 @@ public record TransmittableRuntimeParams(
 
     public static TransmittableRuntimeParams getDefaultInstance() {
         return new TransmittableRuntimeParams(
+                false,
+                false,
+                false,
+                false,
                 false,
                 false,
                 false,

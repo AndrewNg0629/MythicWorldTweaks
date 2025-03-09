@@ -6,6 +6,8 @@
     "BedBlockMixin",
     "DataComponentTypesMixin",
     "EditPlayerDataMixin",
+    "EnchantmentMixin",
+    "EnderDragonFightMixin",
     "EntityMixin",
     "ExplosionMixin",
     "ExplosiveProjectileEntityMixin",

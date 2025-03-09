@@ -1,4 +1,4 @@
-package online.andrew2007.mythic.util.client;
+package online.andrew2007.mythic.modFunctions.client;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;

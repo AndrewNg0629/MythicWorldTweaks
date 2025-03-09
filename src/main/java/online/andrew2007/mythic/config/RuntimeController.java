@@ -13,10 +13,10 @@ import online.andrew2007.mythic.config.configFileParser.ParamsRequiredTweaksConf
 import online.andrew2007.mythic.config.runtimeParams.LocalRuntimeParams;
 import online.andrew2007.mythic.config.runtimeParams.TransmittableRuntimeParams;
 import online.andrew2007.mythic.item.ItemEditor;
+import online.andrew2007.mythic.modFunctions.LocalToaster;
+import online.andrew2007.mythic.modFunctions.WardenEntityStuff;
 import online.andrew2007.mythic.network.PlayConfigPushValidator;
 import online.andrew2007.mythic.network.payloads.PlayConfigPushPayload;
-import online.andrew2007.mythic.util.LocalToaster;
-import online.andrew2007.mythic.util.WardenEntityUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -73,6 +73,10 @@ public class RuntimeController {
                     binaryToggleTweaksConfig.constantVillagerConversion(),
                     binaryToggleTweaksConfig.fakePlayerSleepExclusion(),
                     binaryToggleTweaksConfig.sleepingExtras(),
+                    binaryToggleTweaksConfig.suicideCommand(),
+                    binaryToggleTweaksConfig.keepExperience(),
+                    binaryToggleTweaksConfig.alwaysDragonEgg(),
+                    binaryToggleTweaksConfig.bowEnchantmentsForCrossbow(),
                     paramsRequiredTweaksConfig.autoDiscardingFireBallConfig().enabled(),
                     paramsRequiredTweaksConfig.stuffedShulkerBoxStackLimitConfig().enabled(),
                     paramsRequiredTweaksConfig.shulkerBoxNestingLimitConfig().enabled(),
@@ -147,8 +151,8 @@ public class RuntimeController {
 
     private static void onParamsChange() {
         applyItemEdits();
-        WardenEntityUtil.modifyWardenAttributes();
-        WardenEntityUtil.WardenEntityTrack.wardenRefresh();
+        WardenEntityStuff.modifyWardenAttributes();
+        WardenEntityStuff.WardenEntityTrack.wardenRefresh();
     }
 
     private static void applyItemEdits() {

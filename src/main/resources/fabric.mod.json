@@ -22,7 +22,7 @@
       "online.andrew2007.mythic.MythicWorldTweaksClient"
     ],
     "modmenu": [
-      "online.andrew2007.mythic.util.client.ModMenuHandler"
+      "online.andrew2007.mythic.modFunctions.client.ModMenuHandler"
     ]
   },
   "mixins": [

@@ -1,4 +1,4 @@
-package online.andrew2007.mythic.util;
+package online.andrew2007.mythic.modFunctions;
 
 import net.minecraft.text.Text;
 import online.andrew2007.mythic.MythicWorldTweaks;

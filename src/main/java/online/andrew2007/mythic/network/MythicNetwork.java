@@ -13,9 +13,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import online.andrew2007.mythic.config.RuntimeController;
+import online.andrew2007.mythic.modFunctions.PlayerEntityStuff;
 import online.andrew2007.mythic.network.payloads.PlayConfigPushPayload;
 import online.andrew2007.mythic.network.payloads.SleepingExtrasPayload;
-import online.andrew2007.mythic.util.PlayerEntityUtil;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -69,7 +69,7 @@ public class MythicNetwork {
                         if (serverPlayerEntity.getWorld().isDay()) {
                             serverPlayerEntity.sendMessage(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW.getMessage(), true);
                         } else {
-                            serverPlayerEntity.getDataTracker().set(PlayerEntityUtil.IS_REALLY_SLEEPING, true);
+                            serverPlayerEntity.getDataTracker().set(PlayerEntityStuff.IS_REALLY_SLEEPING, true);
                             context.responseSender().sendPacket(new SleepingExtrasPayload(Unit.INSTANCE));
                             Criteria.SLEPT_IN_BED.trigger(context.player());
                             if (!context.player().getServerWorld().isSleepingEnabled()) {

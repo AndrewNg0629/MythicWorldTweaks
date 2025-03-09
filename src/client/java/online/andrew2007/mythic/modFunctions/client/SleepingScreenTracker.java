@@ -1,4 +1,4 @@
-package online.andrew2007.mythic.util.client;
+package online.andrew2007.mythic.modFunctions.client;
 
 import net.minecraft.client.gui.screen.SleepingChatScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;

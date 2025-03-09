@@ -6,9 +6,9 @@ import net.minecraft.client.gui.screen.SleepingChatScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import online.andrew2007.mythic.MythicWorldTweaks;
 import online.andrew2007.mythic.config.RuntimeController;
+import online.andrew2007.mythic.modFunctions.client.SleepingScreenTracker;
 import online.andrew2007.mythic.network.payloads.PlayConfigPushPayload;
 import online.andrew2007.mythic.network.payloads.SleepingExtrasPayload;
-import online.andrew2007.mythic.util.client.SleepingScreenTracker;
 
 public class MythicClientNetwork {
     @SuppressWarnings("resource") //Would you like to close the client?
