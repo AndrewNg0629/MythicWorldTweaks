@@ -17,6 +17,7 @@
     "ItemMixin",
     "ItemSettingsMixin",
     "ItemStackMixin",
+    "LivingEntityMixin",
     "LoginQueryRequestS2CPacketMixin",
     "LoginQueryResponseC2SPacketMixin",
     "PlayerEntityMixin",

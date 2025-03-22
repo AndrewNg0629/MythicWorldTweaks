@@ -29,7 +29,9 @@ public record BinaryToggleTweaksConfig(
         boolean suicideCommand,
         boolean keepExperience,
         boolean alwaysDragonEgg,
-        boolean bowEnchantmentsForCrossbow
+        boolean bowEnchantmentsForCrossbow,
+        boolean playerDeathItemProtection,
+        boolean creativePlayerVoidResistance
 ) {
     public static class Deserializer implements CustomJsonDeserializer<BinaryToggleTweaksConfig> {
 
@@ -57,7 +59,9 @@ public record BinaryToggleTweaksConfig(
                             "suicide_command",
                             "keep_experience",
                             "always_dragon_egg",
-                            "bow_enchantments_for_crossbow"
+                            "bow_enchantments_for_crossbow",
+                            "player_death_item_protection",
+                            "creative_player_void_resistance"
                     ),
                     jsonObject.keySet(),
                     true
@@ -83,7 +87,9 @@ public record BinaryToggleTweaksConfig(
                     readBoolean(jsonObject.get("suicide_command")),
                     readBoolean(jsonObject.get("keep_experience")),
                     readBoolean(jsonObject.get("always_dragon_egg")),
-                    readBoolean(jsonObject.get("bow_enchantments_for_crossbow"))
+                    readBoolean(jsonObject.get("bow_enchantments_for_crossbow")),
+                    readBoolean(jsonObject.get("player_death_item_protection")),
+                    readBoolean(jsonObject.get("creative_player_void_resistance"))
             );
         }
     }
