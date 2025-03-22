@@ -103,18 +103,17 @@ public abstract class ServerLoginNetworkHandlerMixin {
     private void onQueryResponse(LoginQueryResponseC2SPacket packet, CallbackInfo info) {
         LoginQueryResponsePayload rawPayload = packet.response();
         if (rawPayload != null) {
-            if (rawPayload instanceof ValidationC2SPayload payload) {
+            if (rawPayload instanceof ValidationC2SPayload(String modVersion, java.util.Set<String> allModIds)) {
                 this.server.execute(() -> {
                     if (RuntimeController.getLocalRuntimeParams().serverPlaySupportEnabled()) {
-                        String submittedModVersion = payload.modVersion();
                         boolean versionValidationFailed = false;
                         boolean modIdsValidationFailed = false;
-                        if (!MythicWorldTweaks.MOD_VERSION.equals(submittedModVersion)) {
+                        if (!MythicWorldTweaks.MOD_VERSION.equals(modVersion)) {
                             versionValidationFailed = true;
-                            this.failReason = String.format("The version of your MythicWorldTweaks is %s, while the version %s is required to join the server.", submittedModVersion, MythicWorldTweaks.MOD_VERSION);
+                            this.failReason = String.format("The version of your MythicWorldTweaks is %s, while the version %s is required to join the server.", modVersion, MythicWorldTweaks.MOD_VERSION);
                         }
                         if (RuntimeController.getLocalRuntimeParams().modIdValidationEnabled() && !versionValidationFailed) {
-                            ImmutableSet<String> submittedModIds = ImmutableSet.copyOf(payload.allModIds());
+                            ImmutableSet<String> submittedModIds = ImmutableSet.copyOf(allModIds);
                             ImmutableSet<String> requiredModIds = ImmutableSet.copyOf(RuntimeController.getLocalRuntimeParams().modIdList());
                             ImmutableSet<String> modIdsNotPresent = Sets.difference(requiredModIds, submittedModIds).immutableCopy();
                             if (!modIdsNotPresent.isEmpty()) {
@@ -134,10 +133,12 @@ public abstract class ServerLoginNetworkHandlerMixin {
                     }
                 });
                 info.cancel();
-            } else if (rawPayload instanceof LoginConfigPushC2SPayload payload) {
+            } else if (rawPayload instanceof LoginConfigPushC2SPayload(
+                    online.andrew2007.mythic.config.runtimeParams.TransmittableRuntimeParams params
+            )) {
                 this.server.execute(() -> {
                     if (RuntimeController.getLocalRuntimeParams().serverPlaySupportEnabled()) {
-                        this.isConfigPushSuccess = payload.params().equals(RuntimeController.getCurrentTParams());
+                        this.isConfigPushSuccess = params.equals(RuntimeController.getCurrentTParams());
                         this.isConfigPushResponded = true;
                     }
                 });

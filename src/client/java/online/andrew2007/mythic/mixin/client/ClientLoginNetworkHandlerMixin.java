@@ -33,12 +33,9 @@ public class ClientLoginNetworkHandlerMixin {
     private void onQueryRequest(LoginQueryRequestS2CPacket packet, CallbackInfo info) {
         LoginQueryRequestPayload rawPayload = packet.payload();
         int queryId = packet.queryId();
-        if (rawPayload instanceof ValidationS2CPayload payload) {
+        if (rawPayload instanceof ValidationS2CPayload(String serverName, String gameVersion, String modVersion)) {
             this.client.execute(() -> {
                 if (RuntimeController.getLocalRuntimeParams().serverPlaySupportEnabled()) {
-                    String serverName = payload.serverName();
-                    String gameVersion = payload.gameVersion();
-                    String modVersion = payload.modVersion();
                     MythicWorldTweaks.LOGGER.info("The server you are joining has MythicWorldTweaks mod installed.");
                     MythicWorldTweaks.LOGGER.info("Server info: Name: {}, Server Minecraft version: {}, Server mod: MythicWorldTweaks {}", serverName, gameVersion, modVersion);
                     if (RuntimeController.getLocalRuntimeParams().serverPlaySupportEnabled()) {
@@ -52,10 +49,12 @@ public class ClientLoginNetworkHandlerMixin {
                 }
             });
             info.cancel();
-        } else if (rawPayload instanceof LoginConfigPushS2CPayload payload) {
+        } else if (rawPayload instanceof LoginConfigPushS2CPayload(
+                online.andrew2007.mythic.config.runtimeParams.TransmittableRuntimeParams params
+        )) {
             this.client.execute(() -> {
                 if (RuntimeController.getLocalRuntimeParams().serverPlaySupportEnabled()) {
-                    RuntimeController.receiveConfigPush(payload.params());
+                    RuntimeController.receiveConfigPush(params);
                     this.connection.send(new LoginQueryResponseC2SPacket(queryId, new LoginConfigPushC2SPayload(RuntimeController.getCurrentTParams())));
                 } else {
                     MythicWorldTweaks.LOGGER.warn("Your \"server_play_support\" is disabled, preventing you from responding to config push, you may be kicked by the server");

@@ -29,7 +29,9 @@
     "suicide_command": false,
     "keep_experience": false,
     "always_dragon_egg": false,
-    "bow_enchantments_for_crossbow": false
+    "bow_enchantments_for_crossbow": false,
+    "player_death_item_protection": false,
+    "creative_player_void_resistance": false
   },
   "params_required_tweaks": {
     "auto_discarding_fire_ball": {

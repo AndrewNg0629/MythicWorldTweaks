@@ -16,7 +16,6 @@ import online.andrew2007.mythic.config.RuntimeController;
 import online.andrew2007.mythic.item.ItemInitializer;
 import online.andrew2007.mythic.modFunctions.EnvironmentDetection;
 import online.andrew2007.mythic.modFunctions.FireBallEntityManager;
-import online.andrew2007.mythic.modFunctions.PlayerEntityStuff;
 import online.andrew2007.mythic.modFunctions.WardenEntityStuff;
 import online.andrew2007.mythic.network.MythicNetwork;
 import online.andrew2007.mythic.network.PlayConfigPushValidator;
@@ -32,12 +31,21 @@ public class MythicWorldTweaks implements ModInitializer {
     public static final String MOD_VERSION = Objects.requireNonNull(FabricLoader.getInstance().getModContainer(MOD_ID).orElse(null)).getMetadata().getVersion().getFriendlyString();
     public static final String GAME_VERSION = MinecraftVersion.CURRENT.getName();
 
+    public static void staticInit() {
+        try {
+            Class.forName("online.andrew2007.mythic.modFunctions.PlayerEntityStuff");
+            Class.forName("online.andrew2007.mythic.modFunctions.ItemEntityStuff");
+        } catch (ClassNotFoundException e) {
+            LOGGER.error("Failed to find specific class to load.", e);
+        }
+    }
+
     @Override
     public void onInitialize() {
         LOGGER.info("MythicWorldTweaks mod starts to be initialized!");
         RuntimeController.loadLocalParamsFromConfig();
         ItemInitializer.generalInitialization();
-        PlayerEntityStuff.staticInit();
+        staticInit();
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (RuntimeController.getCurrentTParams().autoDiscardingFireBallEnabled()) {
                 FireBallEntityManager.tick();

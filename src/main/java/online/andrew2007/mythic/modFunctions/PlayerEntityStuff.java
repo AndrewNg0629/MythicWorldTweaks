@@ -6,7 +6,6 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Pair;
-import online.andrew2007.mythic.MythicWorldTweaks;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -64,9 +63,5 @@ public class PlayerEntityStuff {
         } else {
             return carpetFPClass.isAssignableFrom(playerEntity.getClass());
         }
-    }
-
-    public static void staticInit() {
-        MythicWorldTweaks.LOGGER.debug("Loaded static class PlayerEntityStuff.");
     }
 }
