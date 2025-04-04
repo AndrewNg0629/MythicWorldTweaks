@@ -14,9 +14,7 @@ import online.andrew2007.mythic.config.RuntimeController;
 import online.andrew2007.mythic.modFunctions.ItemEntityStuff;
 import online.andrew2007.mythic.modFunctions.PlayerEntityStuff;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -72,8 +70,20 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ItemEntity;setPickupDelay(I)V", shift = At.Shift.AFTER), method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;")
     private void dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> info, @Local ItemEntity itemEntity) {
-        if (RuntimeController.getCurrentTParams().playerDeathItemProtection() && this.isDead()) {
+        if (RuntimeController.getCurrentTParams().playerDeathItemProtectionEnabled() && this.isDead()) {
             itemEntity.getDataTracker().set(ItemEntityStuff.IS_UNDER_PROTECTION, true);
+            if (!retainOwnership && RuntimeController.getCurrentTParams().strictPickup()) {
+                itemEntity.setThrower(this);
+            }
+        }
+    }
+
+    @ModifyConstant(constant = @Constant(floatValue = 0.5F), method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;")
+    private float throwSpeed(float constant) {
+        if (RuntimeController.getCurrentTParams().playerDeathItemProtectionEnabled()) {
+            return this.getY() < this.getWorld().getBottomY() - 16 ? 0.05F : 0.15F;
+        } else {
+            return constant;
         }
     }
 }

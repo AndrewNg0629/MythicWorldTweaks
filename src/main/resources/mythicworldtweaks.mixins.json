@@ -20,6 +20,7 @@
     "LivingEntityMixin",
     "LoginQueryRequestS2CPacketMixin",
     "LoginQueryResponseC2SPacketMixin",
+    "MobEntityMixin",
     "PlayerEntityMixin",
     "ResourcePackManagerMixin",
     "RideCommandMixin",
