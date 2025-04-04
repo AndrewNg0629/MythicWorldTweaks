@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(value = LoginQueryResponseC2SPacket.class, priority = 100)
+@Mixin(value = LoginQueryResponseC2SPacket.class, priority = 999)
 public abstract class LoginQueryResponseC2SPacketMixin {
     @Inject(at = @At(value = "HEAD"), method = "readPayload", cancellable = true)
     private static void readResponse(int queryId, PacketByteBuf buf, CallbackInfoReturnable<LoginQueryResponsePayload> info) {

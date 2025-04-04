@@ -27,6 +27,9 @@ public abstract class EntityMixin {
     public abstract double getX();
 
     @Shadow
+    public abstract double getY();
+
+    @Shadow
     public abstract double getZ();
 
     @Shadow
@@ -63,9 +66,9 @@ public abstract class EntityMixin {
     @Inject(at = @At(value = "HEAD"), method = "tickInVoid", cancellable = true)
     private void tickInVoid(CallbackInfo info) {
         Entity thisOBJ = (Entity) (Object) this;
-        if (RuntimeController.getCurrentTParams().playerDeathItemProtection() && thisOBJ instanceof ItemEntity item) {
+        if (RuntimeController.getCurrentTParams().playerDeathItemProtectionEnabled() && thisOBJ instanceof ItemEntity item) {
             if (item.getDataTracker().get(ItemEntityStuff.IS_UNDER_PROTECTION)) {
-                this.setPosition(new Vec3d(this.getX(), this.getWorld().getBottomY() - 63, this.getZ()));
+                this.setPosition(new Vec3d(this.getX(), this.getY() + 1.0D, this.getZ()));
                 info.cancel();
             }
         }

@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.data.DataTracker;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import online.andrew2007.mythic.config.RuntimeController;
@@ -11,18 +12,17 @@ import online.andrew2007.mythic.modFunctions.ItemEntityStuff;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity {
     @Unique
-    private final double worldMinY = (double) this.getWorld().getBottomY() + 1.1D;
+    private final int worldMinY = this.getWorld().getBottomY() + 1;
     @Shadow
     private int itemAge;
+
     public ItemEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
@@ -43,7 +43,7 @@ public abstract class ItemEntityMixin extends Entity {
 
     @Unique
     private boolean isUnderProtection() {
-        return RuntimeController.getCurrentTParams().playerDeathItemProtection() && this.getDataTracker().get(ItemEntityStuff.IS_UNDER_PROTECTION);
+        return RuntimeController.getCurrentTParams().playerDeathItemProtectionEnabled() && this.getDataTracker().get(ItemEntityStuff.IS_UNDER_PROTECTION);
     }
 
     @Inject(at = @At(value = "TAIL"), method = "initDataTracker")
@@ -61,10 +61,23 @@ public abstract class ItemEntityMixin extends Entity {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;tick()V", shift = At.Shift.AFTER), method = "tick")
     private void tick(CallbackInfo info) {
         if (this.isUnderProtection()) {
-            if (this.getGravity() == 0D) {
-                this.setVelocity(new Vec3d(this.getVelocity().x, (this.worldMinY - this.getY()) * 0.025D, this.getVelocity().z));
+            BlockPos blockPosAbove = this.getBlockPos().up();
+            if (this.getY() <= this.worldMinY + 0.3D && !this.getWorld().getBlockState(blockPosAbove).isSolidBlock(this.getWorld(), blockPosAbove)) {
+                this.setVelocity(new Vec3d(this.getVelocity().x, 0D, this.getVelocity().z));
+                double relevantHeight = Math.abs(this.getY() - this.worldMinY);
+                if (relevantHeight <= 0.5D) {
+                    if (relevantHeight > 0.1D) {
+                        this.setPosition(this.getX(), this.worldMinY, this.getZ());
+                    } else {
+                        this.setVelocity(Vec3d.ZERO);
+                    }
+                } else {
+                    this.setPosition(this.getX(), this.getY() + 0.5D, this.getZ());
+                }
             }
-            this.itemAge = 0;
+            if (RuntimeController.getCurrentTParams().itemDiscardTicks() <= 0) {
+                this.itemAge = 0;
+            }
         }
     }
 
@@ -80,5 +93,20 @@ public abstract class ItemEntityMixin extends Entity {
         if (this.isUnderProtection()) {
             info.setReturnValue(false);
         }
+    }
+
+    @Inject(at = @At(value = "HEAD"), method = "tryMerge(Lnet/minecraft/entity/ItemEntity;)V", cancellable = true)
+    private void tryMerge(ItemEntity other, CallbackInfo info) {
+        if (RuntimeController.getCurrentTParams().playerDeathItemProtectionEnabled() &&
+                (this.getDataTracker().get(ItemEntityStuff.IS_UNDER_PROTECTION) ^ other.getDataTracker().get(ItemEntityStuff.IS_UNDER_PROTECTION))
+        ) {
+            info.cancel();
+        }
+    }
+
+    @ModifyConstant(constant = @Constant(intValue = 6000), method = "tick")
+    private int discardTicks(int value) {
+        int itemDiscardTicks = RuntimeController.getCurrentTParams().itemDiscardTicks();
+        return itemDiscardTicks > 0 ? itemDiscardTicks : value;
     }
 }

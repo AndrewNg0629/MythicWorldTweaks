@@ -41,13 +41,13 @@ public record TransmittableRuntimeParams(
         boolean keepExperience,
         boolean alwaysDragonEgg,
         boolean bowEnchantmentsForCrossbow,
-        boolean playerDeathItemProtection,
         boolean creativePlayerVoidResistance,
         boolean autoDiscardingFireBallEnabled,
         boolean stuffedShulkerBoxStackLimitEnabled,
         boolean shulkerBoxNestingLimitEnabled,
         boolean wardenAttributesWeakeningEnabled,
         boolean wardenSonicBoomWeakeningEnabled,
+        boolean playerDeathItemProtectionEnabled,
         int fireBallMaxLifeTicks,
         int shulkerBoxMaxStackSize,
         int shulkerBoxMaxLayers,
@@ -61,6 +61,9 @@ public record TransmittableRuntimeParams(
         float sonicBoomDamage,
         double sonicBoomKnockBackRate,
         int sonicBoomIntervalTicks,
+        int itemDiscardTicks,
+        boolean mobPickupProtection,
+        boolean strictPickup,
         boolean itemEditorEnabled,
         TransmittableIECUnit[] itemEditorConfig
 ) {
@@ -129,6 +132,9 @@ public record TransmittableRuntimeParams(
                 10.0F,
                 1.0D,
                 34,
+                12000,
+                false,
+                false,
                 false,
                 new TransmittableIECUnit[0]
         );

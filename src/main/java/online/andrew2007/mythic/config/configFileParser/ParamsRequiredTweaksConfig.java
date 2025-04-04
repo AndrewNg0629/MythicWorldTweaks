@@ -13,7 +13,8 @@ public record ParamsRequiredTweaksConfig(
         StuffedShulkerBoxStackLimitConfig stuffedShulkerBoxStackLimitConfig,
         ShulkerBoxNestingLimitConfig shulkerBoxNestingLimitConfig,
         WardenAttributesWeakeningConfig wardenAttributesWeakeningConfig,
-        WardenSonicBoomWeakeningConfig wardenSonicBoomWeakeningConfig
+        WardenSonicBoomWeakeningConfig wardenSonicBoomWeakeningConfig,
+        PlayerDeathItemProtectionConfig playerDeathItemProtectionConfig
 ) {
     public record AutoDiscardingFireBallConfig(boolean enabled, int maxLifeTicks) {
         public static class Deserializer implements CustomJsonDeserializer<AutoDiscardingFireBallConfig> {
@@ -161,6 +162,24 @@ public record ParamsRequiredTweaksConfig(
         }
     }
 
+    public record PlayerDeathItemProtectionConfig(boolean enabled, int itemDiscardTicks, boolean mobPickupProtection,
+                                                  boolean strictPickup) {
+        public static class Deserializer implements CustomJsonDeserializer<PlayerDeathItemProtectionConfig> {
+            @Override
+            public PlayerDeathItemProtectionConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                JsonObject jsonObject = json.getAsJsonObject();
+                checkKeys(Set.of("enabled", "item_discard_ticks", "mob_pickup_protection", "strict_pickup"), jsonObject.keySet(), true);
+                int itemDiscardTicks = jsonObject.get("item_discard_ticks").getAsInt();
+                boolean mobPickupProtection = readBoolean(jsonObject.get("mob_pickup_protection"));
+                boolean strictPickup = readBoolean(jsonObject.get("strict_pickup"));
+                if (itemDiscardTicks < -1) {
+                    throw new JsonParseException("Wrong config value for \"item_discard_ticks\", value greater than -2 is required.");
+                }
+                return new PlayerDeathItemProtectionConfig(readBoolean(jsonObject.get("enabled")), itemDiscardTicks, mobPickupProtection, strictPickup);
+            }
+        }
+    }
+
     public static class Deserializer implements CustomJsonDeserializer<ParamsRequiredTweaksConfig> {
         @Override
         public ParamsRequiredTweaksConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -170,7 +189,9 @@ public record ParamsRequiredTweaksConfig(
                             "stuffed_shulker_box_stack_limit",
                             "shulker_box_nesting_limit",
                             "warden_attributes_weakening",
-                            "warden_sonic_boom_weakening"),
+                            "warden_sonic_boom_weakening",
+                            "player_death_item_protection"
+                    ),
                     jsonObject.keySet(),
                     true
             );
@@ -179,12 +200,14 @@ public record ParamsRequiredTweaksConfig(
             ShulkerBoxNestingLimitConfig shulkerBoxNestingLimitConfig = context.deserialize(jsonObject.get("shulker_box_nesting_limit"), ShulkerBoxNestingLimitConfig.class);
             WardenAttributesWeakeningConfig wardenAttributesWeakeningConfig = context.deserialize(jsonObject.get("warden_attributes_weakening"), WardenAttributesWeakeningConfig.class);
             WardenSonicBoomWeakeningConfig wardenSonicBoomWeakeningConfig = context.deserialize(jsonObject.get("warden_sonic_boom_weakening"), WardenSonicBoomWeakeningConfig.class);
+            PlayerDeathItemProtectionConfig playerDeathItemProtectionConfig = context.deserialize(jsonObject.get("player_death_item_protection"), PlayerDeathItemProtectionConfig.class);
             return new ParamsRequiredTweaksConfig(
                     autoDiscardingFireBallConfig,
                     stuffedShulkerBoxStackLimitConfig,
                     shulkerBoxNestingLimitConfig,
                     wardenAttributesWeakeningConfig,
-                    wardenSonicBoomWeakeningConfig
+                    wardenSonicBoomWeakeningConfig,
+                    playerDeathItemProtectionConfig
             );
         }
     }

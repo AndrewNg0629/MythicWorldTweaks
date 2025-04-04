@@ -27,6 +27,7 @@ public record ModConfig(
             .registerTypeAdapter(ParamsRequiredTweaksConfig.ShulkerBoxNestingLimitConfig.class, new ParamsRequiredTweaksConfig.ShulkerBoxNestingLimitConfig.Deserializer())
             .registerTypeAdapter(ParamsRequiredTweaksConfig.WardenAttributesWeakeningConfig.class, new ParamsRequiredTweaksConfig.WardenAttributesWeakeningConfig.Deserializer())
             .registerTypeAdapter(ParamsRequiredTweaksConfig.WardenSonicBoomWeakeningConfig.class, new ParamsRequiredTweaksConfig.WardenSonicBoomWeakeningConfig.Deserializer())
+            .registerTypeAdapter(ParamsRequiredTweaksConfig.PlayerDeathItemProtectionConfig.class, new ParamsRequiredTweaksConfig.PlayerDeathItemProtectionConfig.Deserializer())
             .registerTypeAdapter(ItemEditorConfig.class, new ItemEditorConfig.Deserializer())
             .registerTypeAdapter(ItemEditorConfig.ItemEditorConfigUnit.class, new ItemEditorConfig.ItemEditorConfigUnit.Deserializer())
             .registerTypeAdapter(ItemEditorConfig.FoodProperty.class, new ItemEditorConfig.FoodProperty.Deserializer())

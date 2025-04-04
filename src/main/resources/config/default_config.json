@@ -30,7 +30,6 @@
     "keep_experience": false,
     "always_dragon_egg": false,
     "bow_enchantments_for_crossbow": false,
-    "player_death_item_protection": false,
     "creative_player_void_resistance": false
   },
   "params_required_tweaks": {
@@ -61,6 +60,12 @@
       "sonic_boom_damage": 10.0,
       "sonic_boom_knock_back_rate": 1.0,
       "sonic_boom_interval_ticks": 34
+    },
+    "player_death_item_protection": {
+      "enabled": false,
+      "item_discard_ticks": 12000,
+      "mob_pickup_protection": false,
+      "strict_pickup": false
     }
   },
   "item_editor": {
