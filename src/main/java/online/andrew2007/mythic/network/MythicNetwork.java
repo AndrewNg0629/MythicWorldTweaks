@@ -13,7 +13,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import online.andrew2007.mythic.config.RuntimeController;
-import online.andrew2007.mythic.modFunctions.PlayerEntityStuff;
 import online.andrew2007.mythic.network.payloads.PlayConfigPushPayload;
 import online.andrew2007.mythic.network.payloads.SleepingExtrasPayload;
 
@@ -69,7 +68,7 @@ public class MythicNetwork {
                         if (serverPlayerEntity.getWorld().isDay()) {
                             serverPlayerEntity.sendMessage(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW.getMessage(), true);
                         } else {
-                            serverPlayerEntity.getDataTracker().set(PlayerEntityStuff.IS_REALLY_SLEEPING, true);
+                            serverPlayerEntity.mythicWorldTweaks$setReallySleeping(true);
                             context.responseSender().sendPacket(new SleepingExtrasPayload(Unit.INSTANCE));
                             Criteria.SLEPT_IN_BED.trigger(context.player());
                             if (!context.player().getServerWorld().isSleepingEnabled()) {
@@ -81,6 +80,6 @@ public class MythicNetwork {
                 }
             }
         }));
-        ServerPlayNetworking.registerGlobalReceiver(PlayConfigPushPayload.ID, (payload, context) -> context.server().execute(() -> PlayConfigPushValidator.onConfigPushResponse(context.player(), payload.params())));
+        ServerPlayNetworking.registerGlobalReceiver(PlayConfigPushPayload.ID, (payload, context) -> context.server().execute(() -> context.player().mythicWorldTweaks$onPlayConfigPushResponse(payload.params())));
     }
 }

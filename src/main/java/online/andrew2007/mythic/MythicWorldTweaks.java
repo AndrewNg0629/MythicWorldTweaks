@@ -14,11 +14,9 @@ import net.minecraft.text.Text;
 import online.andrew2007.mythic.config.ConfigLoader;
 import online.andrew2007.mythic.config.RuntimeController;
 import online.andrew2007.mythic.item.ItemInitializer;
-import online.andrew2007.mythic.modFunctions.EnvironmentDetection;
 import online.andrew2007.mythic.modFunctions.FireBallEntityManager;
 import online.andrew2007.mythic.modFunctions.WardenEntityStuff;
 import online.andrew2007.mythic.network.MythicNetwork;
-import online.andrew2007.mythic.network.PlayConfigPushValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +32,6 @@ public class MythicWorldTweaks implements ModInitializer {
     public static void staticInit() {
         try {
             Class.forName("online.andrew2007.mythic.modFunctions.PlayerEntityStuff");
-            Class.forName("online.andrew2007.mythic.modFunctions.ItemEntityStuff");
         } catch (ClassNotFoundException e) {
             LOGGER.error("Failed to find specific class to load.", e);
         }
@@ -54,12 +51,7 @@ public class MythicWorldTweaks implements ModInitializer {
         });
         ServerWorldEvents.UNLOAD.register((server, world) -> WardenEntityStuff.WardenEntityTrack.clearEntities());
         ServerLifecycleEvents.SERVER_STARTING.register(ConfigLoader::onServerStarting);
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
-            ConfigLoader.onServerStopping();
-            if (!EnvironmentDetection.isPhyClient) {
-                PlayConfigPushValidator.shutDownExecutor();
-            }
-        });
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> ConfigLoader.onServerStopping());
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
                 CommandManager.literal("suicide")
                         .requires(source -> source.isExecutedByPlayer() && RuntimeController.getCurrentTParams().suicideCommand())

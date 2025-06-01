@@ -29,10 +29,9 @@ public abstract class TridentEntityMixin extends PersistentProjectileEntity {
 
     @Inject(at = @At("HEAD"), method = "tick")
     private void tick(CallbackInfo info) {
-        TridentEntity thisOBJ = (TridentEntity) (Object) this;
-        if (thisOBJ.getY() <= thisOBJ.getWorld().getBottomY() + 12 && thisOBJ.getDataTracker().get(LOYALTY) > 0 && RuntimeController.getCurrentTParams().voidReturnableTrident()) {
-            thisOBJ.setVelocity(Vec3d.ZERO);
-            ReflectionCenter.setFieldValue(ReflectionCenter.dealtDamage, thisOBJ, true);
+        if (this.getY() <= this.getWorld().getBottomY() + 12 && this.getDataTracker().get(LOYALTY) > 0 && RuntimeController.getCurrentTParams().voidReturnableTrident()) {
+            this.setVelocity(Vec3d.ZERO);
+            ReflectionCenter.setFieldValue(ReflectionCenter.dealtDamage, (TridentEntity) (Object) this, true);
         }
     }
 
