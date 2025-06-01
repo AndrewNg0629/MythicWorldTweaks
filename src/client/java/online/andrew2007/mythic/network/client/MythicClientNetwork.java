@@ -6,7 +6,6 @@ import net.minecraft.client.gui.screen.SleepingChatScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import online.andrew2007.mythic.MythicWorldTweaks;
 import online.andrew2007.mythic.config.RuntimeController;
-import online.andrew2007.mythic.modFunctions.client.SleepingScreenTracker;
 import online.andrew2007.mythic.network.payloads.PlayConfigPushPayload;
 import online.andrew2007.mythic.network.payloads.SleepingExtrasPayload;
 
@@ -15,9 +14,10 @@ public class MythicClientNetwork {
     public static void clientInitialization() {
         ClientPlayNetworking.registerGlobalReceiver(SleepingExtrasPayload.ID, (payload, context) -> context.client().execute(() ->
                 {
+                    context.player().mythicWorldTweaks$setReallySleeping(true);
                     Screen screen = context.client().currentScreen;
                     if (screen instanceof SleepingChatScreen sleepingChatScreen) {
-                        ButtonWidget button = SleepingScreenTracker.getButtonA(sleepingChatScreen);
+                        ButtonWidget button = sleepingChatScreen.mythicWorldTweaks$getSleepButton();
                         if (button != null) {
                             button.visible = false;
                         }

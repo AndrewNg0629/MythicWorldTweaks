@@ -15,7 +15,6 @@ import online.andrew2007.mythic.config.runtimeParams.TransmittableRuntimeParams;
 import online.andrew2007.mythic.item.ItemEditor;
 import online.andrew2007.mythic.modFunctions.LocalToaster;
 import online.andrew2007.mythic.modFunctions.WardenEntityStuff;
-import online.andrew2007.mythic.network.PlayConfigPushValidator;
 import online.andrew2007.mythic.network.payloads.PlayConfigPushPayload;
 
 import java.util.ArrayList;
@@ -128,7 +127,7 @@ public class RuntimeController {
                 playerList.removeIf(player -> player.getGameProfile().getName().equalsIgnoreCase(hostPlayerName));
                 for (ServerPlayerEntity player : playerList) {
                     ServerPlayNetworking.send(player, new PlayConfigPushPayload(getCurrentTParams()));
-                    PlayConfigPushValidator.onConfigPush(player);
+                    player.mythicWorldTweaks$onPlayConfigPush();
                 }
             }
         }

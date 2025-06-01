@@ -6,9 +6,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -16,8 +18,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import online.andrew2007.mythic.config.RuntimeController;
-import online.andrew2007.mythic.modFunctions.PlayerEntityStuff;
+import online.andrew2007.mythic.config.runtimeParams.TransmittableRuntimeParams;
+import online.andrew2007.mythic.injectedInterfaces.ServerPlayerEntityMethodInjections;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -25,22 +30,98 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
-@Mixin(value = ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin extends PlayerEntity {
+@Mixin(ServerPlayerEntity.class)
+public abstract class ServerPlayerEntityMixin extends PlayerEntity implements ServerPlayerEntityMethodInjections {
+    @Shadow public ServerPlayNetworkHandler networkHandler;
+
     public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
         super(world, pos, yaw, gameProfile);
     }
 
-    @Inject(at = @At(value = "HEAD"), method = "tick")
+    @Unique
+    private byte pressTime;
+    @Unique
+    private byte singleClickInterval;
+    @Unique
+    private boolean isDuringValidation = false;
+    @Unique
+    private short pastValidationTicks = 0;
+    @Unique
+    private String failReason = null;
+    @Unique
+    private boolean isValidationProcessed = false;
+    @Unique
+    private boolean isValidationPassed = false;
+
+    @Override
+    public void mythicWorldTweaks$onPlayConfigPush() {
+        this.isDuringValidation = true;
+        this.pastValidationTicks = 0;
+        this.failReason = "Config push response timed out, regarded as failure.";
+        this.isValidationProcessed = false;
+        this.isValidationPassed = false;
+    }
+
+    @Override
+    public void mythicWorldTweaks$onPlayConfigPushResponse(TransmittableRuntimeParams params) {
+        if (RuntimeController.getCurrentTParams().equals(params)) {
+            this.isValidationProcessed = true;
+            this.isValidationPassed = true;
+        } else {
+            this.isValidationProcessed = true;
+            this.isValidationPassed = false;
+            this.failReason = "Config push failed, received config is not equivalent to the server's.";
+        }
+    }
+
+    @Inject(at = @At(value = "HEAD"), method = "tick", cancellable = true)
     private void tick(CallbackInfo info) {
-        ServerPlayerEntity thisOBJ = (ServerPlayerEntity) (Object) this;
         if (RuntimeController.getCurrentTParams().playerRidingGestures()) {
-            PlayerEntityStuff.sneakingDCCheck(thisOBJ);
+            if (this.isSneaking()) {
+                if (this.pressTime >= 0 && this.pressTime < 10) {
+                    this.pressTime++;
+                } else {
+                    this.pressTime = -1;
+                }
+            } else {
+                if (this.pressTime > 0 && this.pressTime <= 10) {
+                    if (this.singleClickInterval > 0) {
+                        this.removeAllPassengers();
+                    }
+                    this.singleClickInterval = 0;
+                }
+                this.pressTime = 0;
+            }
+            if (this.singleClickInterval >= 0) {
+                if (singleClickInterval < (byte) 10) {
+                    this.singleClickInterval++;
+                } else {
+                    this.singleClickInterval = -1;
+                }
+            }
         }
         if (RuntimeController.getCurrentTParams().playerRidingProtection()) {
-            if (thisOBJ.getDataTracker().get(PlayerEntityStuff.IS_UNDER_FALL_PROTECTION)) {
-                if ((thisOBJ.isOnGround() || thisOBJ.isInFluid() || thisOBJ.isFallFlying() || (thisOBJ.isCreative() && thisOBJ.getAbilities().flying))) {
-                    thisOBJ.getDataTracker().set(PlayerEntityStuff.IS_UNDER_FALL_PROTECTION, false);
+            if (this.mythicWorldTweaks$isUnderFallProtection()) {
+                if ((this.isOnGround() || this.isInFluid() || this.isFallFlying() || (this.isCreative() && this.getAbilities().flying))) {
+                    this.mythicWorldTweaks$setUnderFallProtection(false);
+                }
+            }
+        }
+        if (RuntimeController.getLocalRuntimeParams().serverPlaySupportEnabled()) {
+            if (this.isDuringValidation) {
+                if (!this.isValidationProcessed) {
+                    if (++this.pastValidationTicks >= 60) {
+                        this.isDuringValidation = false;
+                        this.networkHandler.disconnect(Text.of(this.failReason));
+                        info.cancel();
+                    }
+                } else {
+                    if (!this.isValidationPassed) {
+                        this.networkHandler.disconnect(Text.of(this.failReason));
+                        info.cancel();
+                    } else {
+                        this.isDuringValidation = false;
+                    }
                 }
             }
         }
@@ -48,28 +129,26 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
     @Inject(at = @At(value = "HEAD"), method = "onDeath")
     private void onDeath(DamageSource damageSource, CallbackInfo info) {
-        this.getDataTracker().set(PlayerEntityStuff.IS_UNDER_FALL_PROTECTION, false);
-        this.getDataTracker().set(PlayerEntityStuff.IS_REALLY_SLEEPING, false);
+        this.mythicWorldTweaks$setUnderFallProtection(false);
+        this.mythicWorldTweaks$setReallySleeping(false);
     }
 
     @Inject(at = @At(value = "HEAD"), method = "onDisconnect")
     private void onDisconnect(CallbackInfo info) {
-        ServerPlayerEntity thisOBJ = (ServerPlayerEntity) (Object) this;
-        Entity passenger = thisOBJ.getFirstPassenger();
+        Entity passenger = this.getFirstPassenger();
         if (RuntimeController.getCurrentTParams().playerRidingProtection()) {
             if (passenger != null) {
                 if (passenger instanceof ServerPlayerEntity playerPassenger) {
-                    playerPassenger.getDataTracker().set(PlayerEntityStuff.IS_UNDER_FALL_PROTECTION, true);
+                    playerPassenger.mythicWorldTweaks$setUnderFallProtection(true);
                 }
             }
         }
-        thisOBJ.getDataTracker().set(PlayerEntityStuff.IS_REALLY_SLEEPING, false);
+        this.mythicWorldTweaks$setReallySleeping(false);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;wakeUp(ZZ)V", shift = At.Shift.AFTER), method = "wakeUp")
     private void wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo info) {
-        ServerPlayerEntity thisOBJ = (ServerPlayerEntity) (Object) this;
-        thisOBJ.getDataTracker().set(PlayerEntityStuff.IS_REALLY_SLEEPING, false);
+        this.mythicWorldTweaks$setReallySleeping(false);
     }
 
     @Inject(at = @At(value = "RETURN", ordinal = 4), method = "trySleep", cancellable = true)
@@ -91,6 +170,13 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
             Either<SleepFailureReason, Unit> either = super.trySleep(pos).ifRight(unit -> this.incrementStat(Stats.SLEEP_IN_BED));
             ((ServerWorld) this.getWorld()).updateSleepingPlayers();
             info.setReturnValue(either);
+        }
+    }
+
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/advancement/criterion/TickCriterion;trigger(Lnet/minecraft/server/network/ServerPlayerEntity;)V"), method = "method_19504", cancellable = true)
+    private void triggerAdvancement(Unit unit, CallbackInfo info) {
+        if (RuntimeController.getCurrentTParams().sleepingExtras()) {
+            info.cancel();
         }
     }
 

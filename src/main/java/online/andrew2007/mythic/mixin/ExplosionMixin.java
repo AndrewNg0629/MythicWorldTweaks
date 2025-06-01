@@ -6,7 +6,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.explosion.Explosion;
 import online.andrew2007.mythic.config.RuntimeController;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -17,12 +19,14 @@ import java.util.Set;
 
 @Mixin(Explosion.class)
 public abstract class ExplosionMixin {
+    @Shadow @Nullable public abstract Entity getEntity();
+
     @Inject(at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/objects/ObjectArrayList;addAll(Ljava/util/Collection;)Z", remap = false), method = "collectBlocksAndDamageEntities")
     private void collectBlocksAndDamageEntities(CallbackInfo info, @Local Set<BlockPos> blocksToDestroy) {
-        Explosion thisOBJ = (Explosion) (Object) this;
         boolean shouldDestroyBlocks = true;
-        if (thisOBJ.getEntity() != null) {
-            if (thisOBJ.getEntity().getType().equals(EntityType.CREEPER) && RuntimeController.getCurrentTParams().blocksFriendlyCreepers()) {
+        Entity sourceEntity = this.getEntity();
+        if (sourceEntity != null) {
+            if (sourceEntity.getType().equals(EntityType.CREEPER) && RuntimeController.getCurrentTParams().blocksFriendlyCreepers()) {
                 shouldDestroyBlocks = false;
             }
         }

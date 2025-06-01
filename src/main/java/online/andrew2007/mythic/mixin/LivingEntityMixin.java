@@ -13,8 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class LivingEntityMixin {
     @Inject(at = @At(value = "HEAD"), method = "tickInVoid", cancellable = true)
     private void tickInVoid(CallbackInfo info) {
-        Entity thisOBJ = ((Entity) (Object) this);
-        if (RuntimeController.getCurrentTParams().creativePlayerVoidResistance() && thisOBJ instanceof PlayerEntity player) {
+        if ((Entity) (Object) this instanceof PlayerEntity player && RuntimeController.getCurrentTParams().creativePlayerVoidResistance()) {
             if (player.isInCreativeMode()) {
                 info.cancel();
             }
