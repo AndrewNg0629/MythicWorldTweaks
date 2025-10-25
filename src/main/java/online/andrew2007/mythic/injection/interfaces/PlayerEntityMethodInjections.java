@@ -1,4 +1,4 @@
-package online.andrew2007.mythic.injectedInterfaces;
+package online.andrew2007.mythic.injection.interfaces;
 
 public interface PlayerEntityMethodInjections {
     default boolean mythicWorldTweaks$isFake() {

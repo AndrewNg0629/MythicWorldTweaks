@@ -11,7 +11,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import online.andrew2007.mythic.config.ConfigLoader;
-import online.andrew2007.mythic.config.configFileParser.CustomJsonDeserializer;
+import online.andrew2007.mythic.config.patterns.CustomJsonDeserializer;
 import online.andrew2007.mythic.item.ItemEditor;
 
 import java.lang.reflect.Field;

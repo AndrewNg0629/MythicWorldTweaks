@@ -8,7 +8,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Unit;
 import online.andrew2007.mythic.config.RuntimeController;
-import online.andrew2007.mythic.injectedInterfaces.client.SleepingChatScreenMethodInjection;
+import online.andrew2007.mythic.injection.interfaces.client.SleepingChatScreenMethodInjection;
 import online.andrew2007.mythic.network.payloads.SleepingExtrasPayload;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;

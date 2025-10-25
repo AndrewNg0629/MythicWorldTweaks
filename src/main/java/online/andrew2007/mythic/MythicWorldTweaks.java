@@ -14,8 +14,8 @@ import net.minecraft.text.Text;
 import online.andrew2007.mythic.config.ConfigLoader;
 import online.andrew2007.mythic.config.RuntimeController;
 import online.andrew2007.mythic.item.ItemInitializer;
-import online.andrew2007.mythic.modFunctions.FireBallEntityManager;
-import online.andrew2007.mythic.modFunctions.WardenEntityStuff;
+import online.andrew2007.mythic.misc.FireBallEntityManager;
+import online.andrew2007.mythic.misc.WardenEntityStuff;
 import online.andrew2007.mythic.network.MythicNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ public class MythicWorldTweaks implements ModInitializer {
 
     public static void staticInit() {
         try {
-            Class.forName("online.andrew2007.mythic.modFunctions.PlayerEntityStuff");
+            Class.forName("online.andrew2007.mythic.misc.PlayerEntityStuff");
         } catch (ClassNotFoundException e) {
             LOGGER.error("Failed to find specific class to load.", e);
         }

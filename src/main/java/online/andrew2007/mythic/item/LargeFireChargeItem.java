@@ -13,7 +13,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import online.andrew2007.mythic.config.RuntimeController;
-import online.andrew2007.mythic.modFunctions.ReflectionCenter;
+import online.andrew2007.mythic.misc.ReflectionCenter;
 
 public class LargeFireChargeItem extends Item {
     public LargeFireChargeItem(Settings settings) {

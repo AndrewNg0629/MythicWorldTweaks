@@ -1,4 +1,4 @@
-package online.andrew2007.mythic.modFunctions;
+package online.andrew2007.mythic.misc;
 
 import net.minecraft.entity.player.PlayerEntity;
 

@@ -1,4 +1,4 @@
-package online.andrew2007.mythic.modFunctions;
+package online.andrew2007.mythic.misc;
 
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import net.minecraft.component.ComponentMap;

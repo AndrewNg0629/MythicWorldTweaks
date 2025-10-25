@@ -22,7 +22,7 @@
       "online.andrew2007.mythic.MythicWorldTweaksClient"
     ],
     "modmenu": [
-      "online.andrew2007.mythic.modFunctions.client.ModMenuHandler"
+      "online.andrew2007.mythic.misc.client.ModMenuHandler"
     ]
   },
   "mixins": [
@@ -46,16 +46,16 @@
     },
     "loom:injected_interfaces": {
       "net/minecraft/class_1657": [
-        "online/andrew2007/mythic/injectedInterfaces/PlayerEntityMethodInjections"
+        "online/andrew2007/mythic/injection/interfaces/PlayerEntityMethodInjections"
       ],
       "net/minecraft/class_3222": [
-        "online/andrew2007/mythic/injectedInterfaces/ServerPlayerEntityMethodInjections"
+        "online/andrew2007/mythic/injection/interfaces/ServerPlayerEntityMethodInjections"
       ],
       "net/minecraft/class_1542": [
-        "online/andrew2007/mythic/injectedInterfaces/ItemEntityMethodInjections"
+        "online/andrew2007/mythic/injection/interfaces/ItemEntityMethodInjections"
       ],
       "net/minecraft/class_423": [
-        "online/andrew2007/mythic/injectedInterfaces/client/SleepingChatScreenMethodInjection"
+        "online/andrew2007/mythic/injection/interfaces/client/SleepingChatScreenMethodInjection"
       ]
     }
   }

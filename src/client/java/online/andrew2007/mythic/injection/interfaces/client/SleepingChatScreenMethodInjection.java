@@ -1,4 +1,4 @@
-package online.andrew2007.mythic.injectedInterfaces.client;
+package online.andrew2007.mythic.injection.interfaces.client;
 
 import net.minecraft.client.gui.widget.ButtonWidget;
 

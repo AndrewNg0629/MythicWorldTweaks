@@ -1,4 +1,4 @@
-package online.andrew2007.mythic.modFunctions;
+package online.andrew2007.mythic.misc;
 
 public class EnvironmentDetection {
     public static final boolean isYarn;
