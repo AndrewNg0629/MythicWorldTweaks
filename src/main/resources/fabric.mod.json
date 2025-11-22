@@ -46,16 +46,16 @@
     },
     "loom:injected_interfaces": {
       "net/minecraft/class_1657": [
-        "online/andrew2007/mythic/injection/interfaces/PlayerEntityMethodInjections"
+        "online/andrew2007/mythic/injected/interfaces/PlayerEntityMethodInjections"
       ],
       "net/minecraft/class_3222": [
-        "online/andrew2007/mythic/injection/interfaces/ServerPlayerEntityMethodInjections"
+        "online/andrew2007/mythic/injected/interfaces/ServerPlayerEntityMethodInjections"
       ],
       "net/minecraft/class_1542": [
-        "online/andrew2007/mythic/injection/interfaces/ItemEntityMethodInjections"
+        "online/andrew2007/mythic/injected/interfaces/ItemEntityMethodInjections"
       ],
       "net/minecraft/class_423": [
-        "online/andrew2007/mythic/injection/interfaces/client/SleepingChatScreenMethodInjection"
+        "online/andrew2007/mythic/injected/interfaces/client/SleepingChatScreenMethodInjections"
       ]
     }
   }

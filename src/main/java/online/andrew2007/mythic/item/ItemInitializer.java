@@ -24,7 +24,7 @@ import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 import online.andrew2007.mythic.MythicWorldTweaks;
 import online.andrew2007.mythic.config.RuntimeController;
-import online.andrew2007.mythic.misc.ReflectionCenter;
+import online.andrew2007.mythic.misc.ReflectionUtils;
 
 @SuppressWarnings("resource") //We can't close the ServerWorld after playing sounds.
 public class ItemInitializer {
@@ -61,7 +61,7 @@ public class ItemInitializer {
                     FireballEntity fireballEntity = new FireballEntity(EntityType.FIREBALL, world);
                     fireballEntity.setPosition(initPosX, initPosY, initPosZ);
                     fireballEntity.setVelocity(direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ(), 1.0F, 1.0F);
-                    ReflectionCenter.setFieldValue(ReflectionCenter.explosionPower, fireballEntity, 1);
+                    ReflectionUtils.FireballEntity$explosionPower.setFieldValue(fireballEntity, 1);
                     world.spawnEntity(fireballEntity);
                     stack.decrement(1);
                     return stack;
@@ -116,9 +116,9 @@ public class ItemInitializer {
                     double initPosY = position.getY() + (double) ((float) direction.getOffsetY() * 0.3F);
                     double initPosZ = position.getZ() + (double) ((float) direction.getOffsetZ() * 0.3F);
                     TridentEntity tridentEntity = new TridentEntity(EntityType.TRIDENT, world);
-                    ReflectionCenter.setFieldValue(ReflectionCenter.stack, tridentEntity, stack.copy());
+                    ReflectionUtils.PersistentProjectileEntity$stack.setFieldValue(tridentEntity, stack.copy());
                     tridentEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
-                    tridentEntity.getDataTracker().set(ReflectionCenter.getFieldValue(ReflectionCenter.ENCHANTED, null), stack.hasGlint());
+                    tridentEntity.getDataTracker().set(ReflectionUtils.TridentEntity$ENCHANTED.getFieldValue(null), stack.hasGlint());
                     tridentEntity.setPos(initPosX, initPosY, initPosZ);
                     tridentEntity.setVelocity(direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ(), 2.5F, 1.0F);
                     world.spawnEntity(tridentEntity);

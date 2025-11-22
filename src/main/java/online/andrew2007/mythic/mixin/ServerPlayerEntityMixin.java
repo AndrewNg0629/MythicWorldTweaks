@@ -19,7 +19,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import online.andrew2007.mythic.config.RuntimeController;
 import online.andrew2007.mythic.config.runtimeParams.TransmittableRuntimeParams;
-import online.andrew2007.mythic.injection.interfaces.ServerPlayerEntityMethodInjections;
+import online.andrew2007.mythic.injected.interfaces.ServerPlayerEntityMethodInjections;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;

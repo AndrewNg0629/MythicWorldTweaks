@@ -22,6 +22,7 @@
     "LoginQueryResponseC2SPacketMixin",
     "MobEntityMixin",
     "PlayerEntityMixin",
+    "PowderSnowBucketItemMixin",
     "ResourcePackManagerMixin",
     "RideCommandMixin",
     "ServerLoginNetworkAddonMixin",

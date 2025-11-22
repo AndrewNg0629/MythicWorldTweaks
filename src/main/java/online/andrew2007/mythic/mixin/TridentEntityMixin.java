@@ -8,7 +8,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import online.andrew2007.mythic.config.RuntimeController;
-import online.andrew2007.mythic.misc.ReflectionCenter;
+import online.andrew2007.mythic.misc.ReflectionUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,7 +31,7 @@ public abstract class TridentEntityMixin extends PersistentProjectileEntity {
     private void tick(CallbackInfo info) {
         if (this.getY() <= this.getWorld().getBottomY() + 12 && this.getDataTracker().get(LOYALTY) > 0 && RuntimeController.getCurrentTParams().voidReturnableTrident()) {
             this.setVelocity(Vec3d.ZERO);
-            ReflectionCenter.setFieldValue(ReflectionCenter.dealtDamage, (TridentEntity) (Object) this, true);
+            ReflectionUtils.TridentEntity$dealtDamage.setFieldValue((TridentEntity) (Object) this, true);
         }
     }
 

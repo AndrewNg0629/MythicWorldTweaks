@@ -11,7 +11,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 import online.andrew2007.mythic.config.RuntimeController;
-import online.andrew2007.mythic.injection.interfaces.PlayerEntityMethodInjections;
+import online.andrew2007.mythic.injected.interfaces.PlayerEntityMethodInjections;
 import online.andrew2007.mythic.misc.PlayerEntityStuff;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
