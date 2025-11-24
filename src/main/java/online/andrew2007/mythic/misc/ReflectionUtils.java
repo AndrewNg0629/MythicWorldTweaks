@@ -42,6 +42,8 @@ public class ReflectionUtils {
     public static final ReflectedField<WardenEntity, TrackedData<Integer>> WardenEntity$ANGER = new ReflectedField<>(WardenEntity.class, (Class<TrackedData<Integer>>) (Class<?>) TrackedData.class, "ANGER", "field_38148");
     public static final ReflectedField<WardenEntity, WardenAngerManager> WardenEntity$angerManager = new ReflectedField<>(WardenEntity.class, WardenAngerManager.class, "angerManager", "field_38141");
 
+    private static final ReflectedField<Item, ComponentMap> Item$components = new ReflectedField<>(Item.class, ComponentMap.class, "components", "field_49263");
+
     private static final Method SimpleComponentMap$map;
 
     static {
@@ -56,7 +58,7 @@ public class ReflectionUtils {
     public static class ReflectedField<C, F> {
         private final Field containedField;
         private final Class<F> fieldType;
-        private final boolean isConstant;
+        private final boolean isStaticConstant;
         private final F cachedConstant;
         private static final ImmutableMap<Class<?>, Class<?>> PRIMITIVE_TO_BOXED = new ImmutableMap.Builder<Class<?>, Class<?>>()
                 .put(byte.class, Byte.class)
@@ -83,14 +85,14 @@ public class ReflectionUtils {
             }
             int mod = this.containedField.getModifiers();
             if (Modifier.isFinal(mod) && Modifier.isStatic(mod)) {
-                this.isConstant = true;
+                this.isStaticConstant = true;
                 try {
                     this.cachedConstant = this.fieldType.cast(this.containedField.get(null));
                 } catch (IllegalAccessException | ClassCastException e) {
                     throw new RuntimeException(String.format("Failed to get value of field: %s", this.containedField), e);
                 }
             } else {
-                this.isConstant = false;
+                this.isStaticConstant = false;
                 this.cachedConstant = null;
             }
         }
@@ -102,7 +104,7 @@ public class ReflectionUtils {
         }
 
         public void setFieldValue(C instance, F targetValue) {
-            if (this.isConstant) {
+            if (this.isStaticConstant) {
                 throw new UnsupportedOperationException(String.format("Field %s is constant, modification not supported.", cachedConstant));
             }
             try {
@@ -113,7 +115,7 @@ public class ReflectionUtils {
         }
 
         public F getFieldValue(C instance) {
-            if (this.isConstant) {
+            if (this.isStaticConstant) {
                 return this.cachedConstant;
             }
             try {
@@ -135,5 +137,10 @@ public class ReflectionUtils {
             throw new RuntimeException("Failed to get underlying map of item components.", e);
         }
         return underlyingMap;
+    }
+
+    public static void separateItemComponents(Item item) {
+        ComponentMap copiedComponents = ComponentMap.builder().addAll(item.getComponents()).build();
+        Item$components.setFieldValue(item, copiedComponents);
     }
 }

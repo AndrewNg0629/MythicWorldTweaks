@@ -15,7 +15,6 @@
     "InventoryMixin",
     "ItemEntityMixin",
     "ItemMixin",
-    "ItemSettingsMixin",
     "ItemStackMixin",
     "LivingEntityMixin",
     "LoginQueryRequestS2CPacketMixin",

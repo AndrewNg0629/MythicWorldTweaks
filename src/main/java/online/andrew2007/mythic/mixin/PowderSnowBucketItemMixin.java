@@ -17,7 +17,7 @@ public class PowderSnowBucketItemMixin {
             ItemStack usedStack = context.getStack();
             ItemStack bucketStack = new ItemStack(Items.BUCKET);
             if (player.isCreative()) {
-                instance.setStackInHand(hand, context.getStack());
+                instance.setStackInHand(hand, usedStack);
                 if (!player.getInventory().contains(bucketStack)) {
                     player.getInventory().insertStack(bucketStack);
                 }

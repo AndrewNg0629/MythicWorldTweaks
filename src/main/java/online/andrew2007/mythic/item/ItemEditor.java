@@ -32,6 +32,7 @@ public class ItemEditor {
     private ItemEditor(@NotNull Item item) {
         itemEditors.put(item, this);
         this.carriedItem = item;
+        ReflectionUtils.separateItemComponents(this.carriedItem);
         this.vanillaMaxStackSize = item.getComponents().getOrDefault(DataComponentTypes.MAX_STACK_SIZE, 1);
         this.vanillaMaxDamage = item.getComponents().getOrDefault(DataComponentTypes.MAX_DAMAGE, 0);
         this.vanillaRarity = item.getComponents().getOrDefault(DataComponentTypes.RARITY, Rarity.COMMON);
