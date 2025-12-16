@@ -15,9 +15,13 @@ import java.util.List;
 public class SleepManagerMixin {
     @ModifyVariable(at = @At(value = "HEAD"), method = "update", ordinal = 1, argsOnly = true)
     private List<ServerPlayerEntity> removeFakePlayers(List<ServerPlayerEntity> players) {
-        ArrayList<ServerPlayerEntity> list = new ArrayList<>(players);
-        list.removeIf(ServerPlayerEntity::mythicWorldTweaks$isFake);
-        return list;
+        if (RuntimeController.getCurrentTParams().fakePlayerSleepExclusion()) {
+            ArrayList<ServerPlayerEntity> list = new ArrayList<>(players);
+            list.removeIf(ServerPlayerEntity::mythicWorldTweaks$isFake);
+            return list;
+        } else {
+            return players;
+        }
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;isSleeping()Z"), method = "update")
