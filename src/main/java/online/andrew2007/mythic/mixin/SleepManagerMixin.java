@@ -13,7 +13,7 @@ import java.util.List;
 
 @Mixin(SleepManager.class)
 public class SleepManagerMixin {
-    @ModifyVariable(at = @At(value = "HEAD"), method = "update", ordinal = 1, argsOnly = true)
+    @ModifyVariable(at = @At(value = "HEAD"), method = "update", ordinal = 0, argsOnly = true)
     private List<ServerPlayerEntity> removeFakePlayers(List<ServerPlayerEntity> players) {
         if (RuntimeController.getCurrentTParams().fakePlayerSleepExclusion()) {
             ArrayList<ServerPlayerEntity> list = new ArrayList<>(players);
