@@ -77,6 +77,7 @@ public class RuntimeController {
                     binaryToggleTweaksConfig.alwaysDragonEgg(),
                     binaryToggleTweaksConfig.bowEnchantmentsForCrossbow(),
                     binaryToggleTweaksConfig.creativePlayerVoidResistance(),
+                    binaryToggleTweaksConfig.goldTrimsCalmPiglins(),
                     paramsRequiredTweaksConfig.autoDiscardingFireBallConfig().enabled(),
                     paramsRequiredTweaksConfig.stuffedShulkerBoxStackLimitConfig().enabled(),
                     paramsRequiredTweaksConfig.shulkerBoxNestingLimitConfig().enabled(),

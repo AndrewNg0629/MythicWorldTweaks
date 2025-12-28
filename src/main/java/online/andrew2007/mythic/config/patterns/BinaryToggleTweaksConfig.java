@@ -30,7 +30,8 @@ public record BinaryToggleTweaksConfig(
         boolean keepExperience,
         boolean alwaysDragonEgg,
         boolean bowEnchantmentsForCrossbow,
-        boolean creativePlayerVoidResistance
+        boolean creativePlayerVoidResistance,
+        boolean goldTrimsCalmPiglins
 ) {
     public static class Deserializer implements CustomJsonDeserializer<BinaryToggleTweaksConfig> {
 
@@ -59,7 +60,8 @@ public record BinaryToggleTweaksConfig(
                             "keep_experience",
                             "always_dragon_egg",
                             "bow_enchantments_for_crossbow",
-                            "creative_player_void_resistance"
+                            "creative_player_void_resistance",
+                            "gold_trims_calm_piglins"
                     ),
                     jsonObject.keySet(),
                     true
@@ -86,7 +88,8 @@ public record BinaryToggleTweaksConfig(
                     readBoolean(jsonObject.get("keep_experience")),
                     readBoolean(jsonObject.get("always_dragon_egg")),
                     readBoolean(jsonObject.get("bow_enchantments_for_crossbow")),
-                    readBoolean(jsonObject.get("creative_player_void_resistance"))
+                    readBoolean(jsonObject.get("creative_player_void_resistance")),
+                    readBoolean(jsonObject.get("gold_trims_calm_piglins"))
             );
         }
     }

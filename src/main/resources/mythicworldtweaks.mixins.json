@@ -20,6 +20,7 @@
     "LoginQueryRequestS2CPacketMixin",
     "LoginQueryResponseC2SPacketMixin",
     "MobEntityMixin",
+    "PiglinBrainMixin",
     "PlayerEntityMixin",
     "PowderSnowBucketItemMixin",
     "ResourcePackManagerMixin",

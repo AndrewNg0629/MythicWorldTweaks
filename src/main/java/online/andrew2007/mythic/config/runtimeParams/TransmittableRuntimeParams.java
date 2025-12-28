@@ -42,6 +42,7 @@ public record TransmittableRuntimeParams(
         boolean alwaysDragonEgg,
         boolean bowEnchantmentsForCrossbow,
         boolean creativePlayerVoidResistance,
+        boolean goldTrimsCalmPiglins,
         boolean autoDiscardingFireBallEnabled,
         boolean stuffedShulkerBoxStackLimitEnabled,
         boolean shulkerBoxNestingLimitEnabled,
@@ -91,6 +92,7 @@ public record TransmittableRuntimeParams(
 
     public static TransmittableRuntimeParams getDefaultInstance() {
         return new TransmittableRuntimeParams(
+                false,
                 false,
                 false,
                 false,
