@@ -1,10 +1,10 @@
-package online.andrew2007.mythic.modFunctions.client;
+package online.andrew2007.mythic.misc.client;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.Text;
 import online.andrew2007.mythic.MythicWorldTweaks;
-import online.andrew2007.mythic.modFunctions.LocalToaster;
+import online.andrew2007.mythic.misc.LocalToaster;
 
 import java.lang.reflect.Method;
 

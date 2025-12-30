@@ -7,7 +7,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.util.Rarity;
-import online.andrew2007.mythic.modFunctions.ReflectionCenter;
+import online.andrew2007.mythic.misc.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -32,6 +32,7 @@ public class ItemEditor {
     private ItemEditor(@NotNull Item item) {
         itemEditors.put(item, this);
         this.carriedItem = item;
+        ReflectionUtils.separateItemComponents(this.carriedItem);
         this.vanillaMaxStackSize = item.getComponents().getOrDefault(DataComponentTypes.MAX_STACK_SIZE, 1);
         this.vanillaMaxDamage = item.getComponents().getOrDefault(DataComponentTypes.MAX_DAMAGE, 0);
         this.vanillaRarity = item.getComponents().getOrDefault(DataComponentTypes.RARITY, Rarity.COMMON);
@@ -91,7 +92,7 @@ public class ItemEditor {
     }
 
     public void apply() {
-        Reference2ObjectMap<ComponentType<?>, Object> underlyingMap = ReflectionCenter.BoxedMethods.map(this.carriedItem.getComponents());
+        Reference2ObjectMap<ComponentType<?>, Object> underlyingMap = ReflectionUtils.getItemComponentsUnderlyingMap(this.carriedItem);
         if (this.itemDamageable) {
             underlyingMap.put(DataComponentTypes.MAX_DAMAGE, this.maxDamage);
         } else {
@@ -108,6 +109,6 @@ public class ItemEditor {
         } else {
             underlyingMap.remove(DataComponentTypes.FIRE_RESISTANT);
         }
-        ReflectionCenter.setFieldValue(ReflectionCenter.recipeRemainder, this.carriedItem, this.recipeRemainder);
+        ReflectionUtils.Item$recipeRemainder.setFieldValue(this.carriedItem, this.recipeRemainder);
     }
 }

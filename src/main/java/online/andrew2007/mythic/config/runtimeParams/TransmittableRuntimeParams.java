@@ -11,7 +11,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import online.andrew2007.mythic.config.ConfigLoader;
-import online.andrew2007.mythic.config.configFileParser.CustomJsonDeserializer;
+import online.andrew2007.mythic.config.patterns.CustomJsonDeserializer;
 import online.andrew2007.mythic.item.ItemEditor;
 
 import java.lang.reflect.Field;
@@ -42,6 +42,7 @@ public record TransmittableRuntimeParams(
         boolean alwaysDragonEgg,
         boolean bowEnchantmentsForCrossbow,
         boolean creativePlayerVoidResistance,
+        boolean goldTrimsCalmPiglins,
         boolean autoDiscardingFireBallEnabled,
         boolean stuffedShulkerBoxStackLimitEnabled,
         boolean shulkerBoxNestingLimitEnabled,
@@ -91,6 +92,7 @@ public record TransmittableRuntimeParams(
 
     public static TransmittableRuntimeParams getDefaultInstance() {
         return new TransmittableRuntimeParams(
+                false,
                 false,
                 false,
                 false,

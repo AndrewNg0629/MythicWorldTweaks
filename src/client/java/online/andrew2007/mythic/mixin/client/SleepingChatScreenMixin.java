@@ -8,7 +8,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Unit;
 import online.andrew2007.mythic.config.RuntimeController;
-import online.andrew2007.mythic.injectedInterfaces.client.SleepingChatScreenMethodInjection;
+import online.andrew2007.mythic.injected.interfaces.client.SleepingChatScreenMethodInjections;
 import online.andrew2007.mythic.network.payloads.SleepingExtrasPayload;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SleepingChatScreen.class)
-public class SleepingChatScreenMixin extends ChatScreen implements SleepingChatScreenMethodInjection {
+public class SleepingChatScreenMixin extends ChatScreen implements SleepingChatScreenMethodInjections {
     public SleepingChatScreenMixin(String originalChatText) {
         super(originalChatText);
     }

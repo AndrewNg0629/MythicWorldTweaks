@@ -1,4 +1,4 @@
-package online.andrew2007.mythic.injectedInterfaces;
+package online.andrew2007.mythic.injected.interfaces;
 
 import online.andrew2007.mythic.config.runtimeParams.TransmittableRuntimeParams;
 

@@ -1,4 +1,4 @@
-package online.andrew2007.mythic.injectedInterfaces;
+package online.andrew2007.mythic.injected.interfaces;
 
 public interface ItemEntityMethodInjections {
     default boolean mythicWorldTweaks$isUnderProtection() {

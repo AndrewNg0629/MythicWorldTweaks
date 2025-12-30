@@ -1,4 +1,4 @@
-package online.andrew2007.mythic.config.configFileParser;
+package online.andrew2007.mythic.config.patterns;
 
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;

@@ -13,7 +13,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import online.andrew2007.mythic.config.RuntimeController;
-import online.andrew2007.mythic.modFunctions.ReflectionCenter;
+import online.andrew2007.mythic.misc.ReflectionUtils;
 
 public class LargeFireChargeItem extends Item {
     public LargeFireChargeItem(Settings settings) {
@@ -40,7 +40,7 @@ public class LargeFireChargeItem extends Item {
         );
         if (!world.isClient) {
             FireballEntity fireballEntity = new FireballEntity(EntityType.FIREBALL, world);
-            ReflectionCenter.setFieldValue(ReflectionCenter.explosionPower, fireballEntity, 1);
+            ReflectionUtils.FireballEntity$explosionPower.setFieldValue(fireballEntity, 1);
             fireballEntity.setPosition(user.getX(), user.getEyeY() - 0.1F, user.getZ());
             fireballEntity.setOwner(user);
             fireballEntity.setVelocity(user, user.getPitch(), user.getYaw(), 0.0F, 1.0F, 1.0F);

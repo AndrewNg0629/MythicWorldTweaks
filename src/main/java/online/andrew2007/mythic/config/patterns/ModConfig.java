@@ -1,4 +1,4 @@
-package online.andrew2007.mythic.config.configFileParser;
+package online.andrew2007.mythic.config.patterns;
 
 import com.google.gson.*;
 import online.andrew2007.mythic.config.ConfigLoader;
