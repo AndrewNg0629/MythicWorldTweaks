@@ -30,7 +30,8 @@
     "keep_experience": false,
     "always_dragon_egg": false,
     "bow_enchantments_for_crossbow": false,
-    "creative_player_void_resistance": false
+    "creative_player_void_resistance": false,
+    "gold_trims_calm_piglins": false
   },
   "params_required_tweaks": {
     "auto_discarding_fire_ball": {

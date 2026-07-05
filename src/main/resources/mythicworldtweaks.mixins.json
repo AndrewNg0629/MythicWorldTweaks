@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "online.andrew2007.mythic.mixin",
+  "package": "top.aenp.mwt.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "BedBlockMixin",

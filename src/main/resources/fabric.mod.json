@@ -16,13 +16,13 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "online.andrew2007.mythic.MythicWorldTweaks"
+      "top.aenp.mwt.MythicWorldTweaks"
     ],
     "client": [
-      "online.andrew2007.mythic.MythicWorldTweaksClient"
+      "top.aenp.mwt.MythicWorldTweaksClient"
     ],
     "modmenu": [
-      "online.andrew2007.mythic.misc.client.ModMenuHandler"
+      "top.aenp.mwt.misc.client.ModMenuHandler"
     ]
   },
   "mixins": [
@@ -46,16 +46,16 @@
     },
     "loom:injected_interfaces": {
       "net/minecraft/class_1657": [
-        "online/andrew2007/mythic/injected/interfaces/PlayerEntityMethodInjections"
+        "top/aenp/mwt/injected/interfaces/PlayerEntityMethodInjections"
       ],
       "net/minecraft/class_3222": [
-        "online/andrew2007/mythic/injected/interfaces/ServerPlayerEntityMethodInjections"
+        "top/aenp/mwt/injected/interfaces/ServerPlayerEntityMethodInjections"
       ],
       "net/minecraft/class_1542": [
-        "online/andrew2007/mythic/injected/interfaces/ItemEntityMethodInjections"
+        "top/aenp/mwt/injected/interfaces/ItemEntityMethodInjections"
       ],
       "net/minecraft/class_423": [
-        "online/andrew2007/mythic/injected/interfaces/client/SleepingChatScreenMethodInjections"
+        "top/aenp/mwt/injected/interfaces/client/SleepingChatScreenMethodInjections"
       ]
     }
   }
