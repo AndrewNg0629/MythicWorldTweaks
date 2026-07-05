@@ -16,9 +16,13 @@ import top.aenp.mwt.config.RuntimeController;
 import top.aenp.mwt.item.ItemInitializer;
 import top.aenp.mwt.misc.FireBallEntityManager;
 import top.aenp.mwt.misc.WardenEntityStuff;
-import top.aenp.mwt.network.MythicNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.aenp.mwt.network.v2.MythicNetwork;
+import top.aenp.mwt.network.v2.test.TestCommonS2CPayload;
+import top.aenp.mwt.network.v2.test.TestLoginC2SPayload;
+import top.aenp.mwt.network.v2.test.TestLoginS2CPayload;
+import top.aenp.mwt.network.v2.test.TestPlayC2SPayload;
 
 import java.util.Objects;
 
@@ -62,6 +66,11 @@ public class MythicWorldTweaks implements ModInitializer {
                             source.sendFeedback(() -> Text.translatable("commands.kill.success.single", entity.getDisplayName()), false);
                             return 1;
                         })));
-        MythicNetwork.commonInitialization();
+        top.aenp.mwt.network.MythicNetwork.commonInitialization();
+
+        MythicNetwork.LOGIN_S2C_CODECS.put(TestLoginS2CPayload.ID, TestLoginS2CPayload.CODEC);
+        MythicNetwork.LOGIN_C2S_CODECS.put(TestLoginC2SPayload.ID, TestLoginC2SPayload.CODEC);
+        MythicNetwork.CUSTOM_PAYLOAD_CODECS.put(TestCommonS2CPayload.ID.id(), TestCommonS2CPayload.CODEC);
+        MythicNetwork.CUSTOM_PAYLOAD_CODECS.put(TestPlayC2SPayload.ID.id(), TestPlayC2SPayload.CODEC);
     }
 }

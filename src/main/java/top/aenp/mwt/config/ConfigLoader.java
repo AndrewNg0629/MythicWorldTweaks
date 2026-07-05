@@ -23,6 +23,7 @@ import java.util.TimerTask;
 
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
+@Deprecated(forRemoval = true)
 public class ConfigLoader {
     private static final Timer notifier = new Timer(true);
     private static boolean initState = false;

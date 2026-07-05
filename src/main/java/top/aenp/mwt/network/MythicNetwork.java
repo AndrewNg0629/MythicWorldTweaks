@@ -18,6 +18,7 @@ import top.aenp.mwt.network.payloads.SleepingExtrasPayload;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+@Deprecated(forRemoval = true)
 public class MythicNetwork {
     public static final PacketCodec<ByteBuf, Unit> UNIT_CODEC = new PacketCodec<>() {
         public Unit decode(ByteBuf byteBuf) {

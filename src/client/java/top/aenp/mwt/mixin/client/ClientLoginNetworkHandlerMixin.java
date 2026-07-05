@@ -9,6 +9,7 @@ import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import top.aenp.mwt.MythicWorldTweaks;
 import top.aenp.mwt.config.ConfigLoader;
 import top.aenp.mwt.config.RuntimeController;
+import top.aenp.mwt.config.v2.NetworkSyncedConfig;
 import top.aenp.mwt.network.payloads.LoginConfigPushC2SPayload;
 import top.aenp.mwt.network.payloads.LoginConfigPushS2CPayload;
 import top.aenp.mwt.network.payloads.ValidationC2SPayload;
@@ -20,9 +21,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.aenp.mwt.config.runtimeParams.TransmittableRuntimeParams;
+import top.aenp.mwt.network.v2.MythicNetwork;
+import top.aenp.mwt.network.v2.injections.ClientLoginNetworkHandlerMethodInjections;
+import top.aenp.mwt.network.v2.payloads.MythicLoginS2CPayload;
+import top.aenp.mwt.network.v2.test.TestLoginC2SPayload;
+import top.aenp.mwt.network.v2.test.TestLoginS2CPayload;
 
-@Mixin(value = ClientLoginNetworkHandler.class, priority = 999)
-public class ClientLoginNetworkHandlerMixin {
+@Mixin(value = ClientLoginNetworkHandler.class, priority = 990)
+public class ClientLoginNetworkHandlerMixin implements ClientLoginNetworkHandlerMethodInjections {
     @Shadow
     @Final
     private ClientConnection connection;
@@ -63,5 +69,27 @@ public class ClientLoginNetworkHandlerMixin {
             });
             info.cancel();
         }
+    }
+
+    //TODO: Remove
+    @Inject(method = "onQueryRequest", at = @At(value = "HEAD"), cancellable = true)
+    private void handleRequest(LoginQueryRequestS2CPacket packet, CallbackInfo info) {
+        if (packet.queryId() == MythicNetwork.QUERY_ID) {
+            MythicLoginS2CPayload payload = (MythicLoginS2CPayload) packet.payload();
+            payload.handle(this);
+            info.cancel();
+        }
+    }
+
+    @Override
+    public void labmod$onTestLoginS2C(TestLoginS2CPayload payload) {
+        MythicWorldTweaks.LOGGER.info("Client received: {}", payload.hello());
+        this.connection.send(new LoginQueryResponseC2SPacket(MythicNetwork.QUERY_ID, new TestLoginC2SPayload("Hello server!")));
+        this.connection.send(new LoginQueryResponseC2SPacket(MythicNetwork.QUERY_ID, new TestLoginC2SPayload("Hello server!")));
+    }
+
+    @Override
+    public void labmod$onConfigPush(NetworkSyncedConfig config) {
+
     }
 }

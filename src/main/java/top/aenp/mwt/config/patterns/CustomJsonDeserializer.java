@@ -12,6 +12,7 @@ import top.aenp.mwt.config.ConfigLoader;
 import java.util.HashSet;
 import java.util.Set;
 
+@Deprecated(forRemoval = true)
 public interface CustomJsonDeserializer<T> extends JsonDeserializer<T> {
     static int getCharCount(String string, char character) {
         return string.split(String.valueOf(character), -1).length - 1;

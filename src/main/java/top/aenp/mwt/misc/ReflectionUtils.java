@@ -19,7 +19,15 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
+import net.minecraft.network.packet.c2s.login.LoginQueryResponsePayload;
+import net.minecraft.network.packet.s2c.login.LoginQueryRequestPayload;
+import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.server.network.ServerLoginNetworkHandler;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,8 +36,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
+import java.util.Objects;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "unused"})
 public class ReflectionUtils {
     public static final ReflectedField<FireballEntity, Integer> FireballEntity$explosionPower = new ReflectedField<>(FireballEntity.class, Integer.class, "explosionPower", "field_7624");
     public static final ReflectedField<PersistentProjectileEntity, ItemStack> PersistentProjectileEntity$stack = new ReflectedField<>(PersistentProjectileEntity.class, ItemStack.class, "stack", "field_46970");
@@ -41,17 +50,35 @@ public class ReflectionUtils {
     public static final ReflectedField<Item, Item> Item$recipeRemainder = new ReflectedField<>(Item.class, Item.class, "recipeRemainder", "field_8008");
     public static final ReflectedField<WardenEntity, TrackedData<Integer>> WardenEntity$ANGER = new ReflectedField<>(WardenEntity.class, (Class<TrackedData<Integer>>) (Class<?>) TrackedData.class, "ANGER", "field_38148");
     public static final ReflectedField<WardenEntity, WardenAngerManager> WardenEntity$angerManager = new ReflectedField<>(WardenEntity.class, WardenAngerManager.class, "angerManager", "field_38141");
+    public static final ReflectedField<FeatureSet, Long> FeatureSet$featuresMask = new ReflectedField<>(FeatureSet.class, Long.class, "featuresMask", "field_40175");
 
     private static final ReflectedField<Item, ComponentMap> Item$components = new ReflectedField<>(Item.class, ComponentMap.class, "components", "field_49263");
 
+    private static final Class<Enum<?>> ServerLoginNetworkHandler$State;
+    private static final Enum<?>[] serverLoginStates;
+    public static final ReflectedField<ServerLoginNetworkHandler, Enum<?>> ServerLoginNetworkHandler$state;
+
     private static final Method SimpleComponentMap$map;
+    private static final Method LoginQueryRequestS2CPacket$readPayload0;
+    private static final Method LoginQueryResponseC2SPacket$readPayload0;
 
     static {
         try {
             SimpleComponentMap$map = DataComponentTypes.DEFAULT_ITEM_COMPONENTS.getClass().getDeclaredMethod(EnvironmentDetection.isYarn ? "map" : "comp_2440");
             SimpleComponentMap$map.setAccessible(true);
+            LoginQueryRequestS2CPacket$readPayload0 = LoginQueryRequestS2CPacket.class.getDeclaredMethod(EnvironmentDetection.isYarn ? "readPayload" : "method_52287", Identifier.class, PacketByteBuf.class);
+            LoginQueryRequestS2CPacket$readPayload0.setAccessible(true);
+            LoginQueryResponseC2SPacket$readPayload0 = LoginQueryResponseC2SPacket.class.getDeclaredMethod(EnvironmentDetection.isYarn ? "readPayload" : "method_52290", Integer.TYPE, PacketByteBuf.class);
+            LoginQueryResponseC2SPacket$readPayload0.setAccessible(true);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("Unable to get method object.", e);
+        }
+        try {
+            ServerLoginNetworkHandler$State = (Class<Enum<?>>) Class.forName(EnvironmentDetection.isYarn ? "net.minecraft.server.network.ServerLoginNetworkHandler$State" : "net.minecraft.class_3248$class_3249");
+            ServerLoginNetworkHandler$state = new ReflectedField<>(ServerLoginNetworkHandler.class, ServerLoginNetworkHandler$State, "state", "field_14163");
+            serverLoginStates = ServerLoginNetworkHandler$State.getEnumConstants();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Unable to get class.", e);
         }
     }
 
@@ -142,5 +169,29 @@ public class ReflectionUtils {
     public static void separateItemComponents(Item item) {
         ComponentMap copiedComponents = ComponentMap.builder().addAll(item.getComponents()).build();
         Item$components.setFieldValue(item, copiedComponents);
+    }
+
+    public static void setLoginHandlerState(ServerLoginNetworkHandler instance, int state) {
+        ServerLoginNetworkHandler$state.setFieldValue(instance, serverLoginStates[state]);
+    }
+
+    public static boolean isHandlerNegotiating(ServerLoginNetworkHandler instance) {
+        return Objects.equals(ServerLoginNetworkHandler$state.getFieldValue(instance), serverLoginStates[3]);
+    }
+
+    public static LoginQueryRequestPayload LoginQueryRequestS2CPacket$readPayload(Identifier id, PacketByteBuf buf) {
+        try {
+            return (LoginQueryRequestPayload) LoginQueryRequestS2CPacket$readPayload0.invoke(null, id, buf);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static LoginQueryResponsePayload LoginQueryResponseC2SPacket$readPayload(int id, PacketByteBuf buf) {
+        try {
+            return (LoginQueryResponsePayload) LoginQueryResponseC2SPacket$readPayload0.invoke(null, id, buf);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

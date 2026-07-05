@@ -6,6 +6,7 @@ import top.aenp.mwt.network.MythicNetwork;
 
 import java.util.Set;
 
+@Deprecated(forRemoval = true)
 public record ValidationC2SPayload(String modVersion, Set<String> allModIds) implements LoginQueryResponsePayload {
     @Override
     public void write(PacketByteBuf buf) {

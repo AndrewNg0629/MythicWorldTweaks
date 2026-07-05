@@ -8,6 +8,7 @@ import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import java.util.Set;
 
+@Deprecated(forRemoval = true)
 public record ParamsRequiredTweaksConfig(
         AutoDiscardingFireBallConfig autoDiscardingFireBallConfig,
         StuffedShulkerBoxStackLimitConfig stuffedShulkerBoxStackLimitConfig,

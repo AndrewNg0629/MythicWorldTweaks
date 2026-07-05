@@ -6,6 +6,7 @@ import top.aenp.mwt.config.ConfigLoader;
 import java.lang.reflect.Type;
 import java.util.Set;
 
+@Deprecated(forRemoval = true)
 public record ModConfig(
         boolean modEnabled,
         boolean modDataPackEnabled,

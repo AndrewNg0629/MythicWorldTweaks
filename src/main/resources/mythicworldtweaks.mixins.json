@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "BedBlockMixin",
+    "ClientConnectionMixin",
     "DataComponentTypesMixin",
     "EditPlayerDataMixin",
     "EnchantmentMixin",
@@ -29,11 +30,13 @@
     "ServerLoginNetworkHandlerMixin",
     "ServerMainMixin",
     "ServerPlayerEntityMixin",
+    "ServerPlayNetworkHandlerMixin",
     "ShulkerBoxSlotMixin",
     "SleepManagerMixin",
     "SonicBoomTaskMixin",
     "ThrowFireChargeMixin",
     "TridentEntityMixin",
+    "UnknownCustomPayloadMixin",
     "WardenBrainMixin",
     "WardenEntityMixin",
     "ZombieEntityMixin"

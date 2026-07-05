@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@Deprecated(forRemoval = true)
 public record ItemEditorConfig(
         boolean enabled,
         ItemEditorConfigUnit[] itemEditorConfigUnits

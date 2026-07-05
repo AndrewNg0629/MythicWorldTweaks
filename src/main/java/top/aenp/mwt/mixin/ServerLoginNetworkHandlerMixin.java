@@ -11,7 +11,7 @@ import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.text.Text;
 import top.aenp.mwt.MythicWorldTweaks;
 import top.aenp.mwt.config.RuntimeController;
-import top.aenp.mwt.network.MythicNetwork;
+
 import top.aenp.mwt.network.payloads.LoginConfigPushC2SPayload;
 import top.aenp.mwt.network.payloads.LoginConfigPushS2CPayload;
 import top.aenp.mwt.network.payloads.ValidationC2SPayload;
@@ -24,9 +24,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.aenp.mwt.config.runtimeParams.TransmittableRuntimeParams;
+import top.aenp.mwt.network.v2.MythicNetwork;
+import top.aenp.mwt.network.v2.injections.ServerLoginNetworkHandlerMethodInjections;
+import top.aenp.mwt.network.v2.payloads.MythicLoginC2SPayload;
+import top.aenp.mwt.network.v2.test.TestLoginC2SPayload;
+import top.aenp.mwt.network.v2.test.TestLoginS2CPayload;
 
-@Mixin(value = ServerLoginNetworkHandler.class, priority = 999)
-public abstract class ServerLoginNetworkHandlerMixin {
+@Mixin(value = ServerLoginNetworkHandler.class, priority = 990)
+public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetworkHandlerMethodInjections {
     @Shadow
     @Final
     ClientConnection connection;
@@ -56,10 +61,10 @@ public abstract class ServerLoginNetworkHandlerMixin {
     public abstract void disconnect(Text reason);
 
     @Inject(at = @At(value = "HEAD"), method = "tick", cancellable = true)
-    private void tick(CallbackInfo info) {
+    private void tick0(CallbackInfo info) {
         if (!this.connection.isLocal() && RuntimeController.getLocalRuntimeParams().serverPlaySupportEnabled()) {
             if (!isValidationRequestSent) {
-                this.connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.registerRequest(ValidationS2CPayload.payloadId),
+                this.connection.send(new LoginQueryRequestS2CPacket(top.aenp.mwt.network.MythicNetwork.registerRequest(ValidationS2CPayload.payloadId),
                         new ValidationS2CPayload(
                                 RuntimeController.getLocalRuntimeParams().serverName(),
                                 MythicWorldTweaks.GAME_VERSION,
@@ -82,7 +87,7 @@ public abstract class ServerLoginNetworkHandlerMixin {
             }
             if (!this.isConfigPushed) {
                 this.tickSincePush = this.loginTicks;
-                this.connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.registerRequest(LoginConfigPushS2CPayload.payloadId),
+                this.connection.send(new LoginQueryRequestS2CPacket(top.aenp.mwt.network.MythicNetwork.registerRequest(LoginConfigPushS2CPayload.payloadId),
                         new LoginConfigPushS2CPayload(RuntimeController.getCurrentTParams())));
                 this.isConfigPushed = true;
             }
@@ -158,5 +163,34 @@ public abstract class ServerLoginNetworkHandlerMixin {
             });
             info.cancel();
         }
+    }
+
+    //TODO: Remove everything above this.
+
+    @Unique private boolean testDone = false;
+    @Inject(method = "tick", at = @At(value = "HEAD"))
+    private void tick(CallbackInfo info) {
+        if (!this.testDone) {
+            this.testDone = true;
+            this.connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new TestLoginS2CPayload("Hello world!")));
+        }
+    }
+
+    @Inject(method = "onQueryResponse", at = @At(value = "HEAD"), cancellable = true)
+    private void handleResponse(LoginQueryResponseC2SPacket packet, CallbackInfo info) {
+        if (packet.queryId() == MythicNetwork.QUERY_ID) {
+            if (packet.response() != null) {
+                MythicLoginC2SPayload payload = (MythicLoginC2SPayload) packet.response();
+                payload.handle(this);
+            } else {
+                this.disconnect(Text.of("Please have labmod installed."));
+            }
+            info.cancel();
+        }
+    }
+
+    @Override
+    public void labmod$onTestLoginC2S(TestLoginC2SPayload payload) {
+        MythicWorldTweaks.LOGGER.info("Server received: {}", payload.hello());
     }
 }

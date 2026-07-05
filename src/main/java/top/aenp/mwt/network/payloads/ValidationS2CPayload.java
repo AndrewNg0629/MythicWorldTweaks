@@ -5,6 +5,7 @@ import net.minecraft.network.packet.s2c.login.LoginQueryRequestPayload;
 import net.minecraft.util.Identifier;
 import top.aenp.mwt.MythicWorldTweaks;
 
+@Deprecated(forRemoval = true)
 public record ValidationS2CPayload(String serverName, String gameVersion,
                                    String modVersion) implements LoginQueryRequestPayload {
     public static final Identifier payloadId = Identifier.of(MythicWorldTweaks.MOD_ID, "login_validation");

@@ -5,6 +5,7 @@
   "client": [
     "ClientConnectionMixin",
     "ClientLoginNetworkHandlerMixin",
+    "ClientPlayNetworkHandlerMixin",
     "DrawContextMixin",
     "SleepingChatScreenMixin"
   ],

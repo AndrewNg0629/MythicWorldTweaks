@@ -1,5 +1,6 @@
 package top.aenp.mwt.config.runtimeParams;
 
+@Deprecated(forRemoval = true)
 public record LocalRuntimeParams(
         boolean modEnabled,
         boolean modDataPackEnabled,

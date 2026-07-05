@@ -19,6 +19,8 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.*;
 
+
+@Deprecated(forRemoval = true)
 public record TransmittableRuntimeParams(
         boolean throwableFireCharge,
         boolean largeFireCharge,

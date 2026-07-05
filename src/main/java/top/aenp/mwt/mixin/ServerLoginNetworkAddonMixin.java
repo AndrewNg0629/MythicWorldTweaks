@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Set;
 
 @SuppressWarnings("UnstableApiUsage")
-@Mixin(ServerLoginNetworkAddon.class)
+@Mixin(ServerLoginNetworkAddon.class) //TODO Remove
 public class ServerLoginNetworkAddonMixin {
     @Inject(at = @At(value = "HEAD"), method = "registerOutgoingPacket", cancellable = true)
     private void registerOutgoingPacket(LoginQueryRequestS2CPacket packet, CallbackInfo info) {

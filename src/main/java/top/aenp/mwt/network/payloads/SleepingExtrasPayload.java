@@ -8,6 +8,7 @@ import net.minecraft.util.Unit;
 import top.aenp.mwt.MythicWorldTweaks;
 import top.aenp.mwt.network.MythicNetwork;
 
+@Deprecated(forRemoval = true)
 public record SleepingExtrasPayload(Unit unit) implements CustomPayload {
     public static final Identifier packetIdentifier = Identifier.of(MythicWorldTweaks.MOD_ID, "player_sleep_payload");
     public static final CustomPayload.Id<SleepingExtrasPayload> ID = new CustomPayload.Id<>(packetIdentifier);

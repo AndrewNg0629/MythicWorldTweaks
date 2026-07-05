@@ -5,8 +5,10 @@ import net.minecraft.component.ComponentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -14,6 +16,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import top.aenp.mwt.MythicWorldTweaks;
 import top.aenp.mwt.config.RuntimeController;
+import top.aenp.mwt.network.v2.test.TestCommonS2CPayload;
 
 import java.util.Arrays;
 
@@ -32,6 +35,13 @@ public class DebuggerItem extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
+        if (!world.isClient()) {
+            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) user;
+            serverPlayerEntity.networkHandler.send(new CustomPayloadS2CPacket(new TestCommonS2CPayload("Hello world!")), null);
+        }
+        return TypedActionResult.success(stack, world.isClient());
+        /*
+        ItemStack stack = user.getStackInHand(hand);
         if (stack.contains(DEBUG_SELECTION)) {
             int debugSelection = stack.getOrDefault(DEBUG_SELECTION, 1);
             if (user.isSneaking() && !world.isClient()) {
@@ -49,6 +59,8 @@ public class DebuggerItem extends Item {
         } else {
             return super.use(world, user, hand);
         }
+
+         */
     }
 
     private void debugAction(int debugSelection, World world, PlayerEntity user) {

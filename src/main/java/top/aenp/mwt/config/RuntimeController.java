@@ -20,6 +20,7 @@ import top.aenp.mwt.network.payloads.PlayConfigPushPayload;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+@Deprecated(forRemoval = true)
 public class RuntimeController {
     private static LocalRuntimeParams localRuntimeParams = LocalRuntimeParams.getDefaultInstance();
     private static boolean localRuntimeParamsInitialized = false;

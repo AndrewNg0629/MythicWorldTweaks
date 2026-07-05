@@ -6,6 +6,7 @@ import net.minecraft.util.Identifier;
 import top.aenp.mwt.MythicWorldTweaks;
 import top.aenp.mwt.config.runtimeParams.TransmittableRuntimeParams;
 
+@Deprecated(forRemoval = true)
 public record LoginConfigPushS2CPayload(TransmittableRuntimeParams params) implements LoginQueryRequestPayload {
     public static final Identifier payloadId = Identifier.of(MythicWorldTweaks.MOD_ID, "login_config_push");
 

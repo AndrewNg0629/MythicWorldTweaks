@@ -8,6 +8,7 @@ import net.minecraft.util.Identifier;
 import top.aenp.mwt.MythicWorldTweaks;
 import top.aenp.mwt.config.runtimeParams.TransmittableRuntimeParams;
 
+@Deprecated(forRemoval = true)
 public record PlayConfigPushPayload(TransmittableRuntimeParams params) implements CustomPayload {
     public static final Identifier payloadIdentifier = Identifier.of(MythicWorldTweaks.MOD_ID, "play_config_push");
     public static final CustomPayload.Id<PlayConfigPushPayload> ID = new CustomPayload.Id<>(payloadIdentifier);
