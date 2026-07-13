@@ -6,7 +6,7 @@
     "BedBlockMixin",
     "ClientConnectionMixin",
     "DataComponentTypesMixin",
-    "EditPlayerDataMixin",
+    "EntityDataObjectMixin",
     "EnchantmentMixin",
     "EnderDragonFightMixin",
     "EntityMixin",

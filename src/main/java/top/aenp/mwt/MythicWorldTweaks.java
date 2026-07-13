@@ -33,20 +33,11 @@ public class MythicWorldTweaks implements ModInitializer {
     public static final String MOD_VERSION = Objects.requireNonNull(FabricLoader.getInstance().getModContainer(MOD_ID).orElse(null)).getMetadata().getVersion().getFriendlyString();
     public static final String GAME_VERSION = MinecraftVersion.CURRENT.getName();
 
-    public static void staticInit() {
-        try {
-            Class.forName("top.aenp.mwt.misc.PlayerEntityStuff");
-        } catch (ClassNotFoundException e) {
-            LOGGER.error("Failed to find specific class to load.", e);
-        }
-    }
-
     @Override
     public void onInitialize() {
         LOGGER.info("MythicWorldTweaks mod starts to be initialized!");
         RuntimeController.loadLocalParamsFromConfig();
         ItemInitializer.generalInitialization();
-        staticInit();
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (RuntimeController.getCurrentTParams().autoDiscardingFireBallEnabled()) {
                 FireBallEntityManager.tick();

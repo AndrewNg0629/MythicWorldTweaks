@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.UUID;
 
 @Mixin(EntityDataObject.class)
-public class EditPlayerDataMixin {
+public class EntityDataObjectMixin {
     @Shadow
     @Final
     private Entity entity;

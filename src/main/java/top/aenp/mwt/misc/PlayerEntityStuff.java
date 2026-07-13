@@ -6,12 +6,12 @@ public class PlayerEntityStuff {
     public static final Class<?> carpetFPClass;
 
     static {
-        Class<?> gotFPClass = null;
+        Class<?> carpetFPClass0 = null;
         try {
-            gotFPClass = Class.forName("carpet.patches.EntityPlayerMPFake");
+            carpetFPClass0 = Class.forName("carpet.patches.EntityPlayerMPFake");
         } catch (ClassNotFoundException ignored) {
         }
-        carpetFPClass = gotFPClass;
+        carpetFPClass = carpetFPClass0;
     }
 
     public static boolean determineFake(PlayerEntity playerEntity) {

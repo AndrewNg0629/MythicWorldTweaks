@@ -2,9 +2,9 @@ package top.aenp.mwt.config.runtimeParams;
 
 @Deprecated(forRemoval = true)
 public record LocalRuntimeParams(
-        boolean modEnabled,
+        boolean modEnabled, //Yes
         boolean modDataPackEnabled,
-        boolean serverPlaySupportEnabled,
+        boolean serverPlaySupportEnabled, //Yes
         String serverName,
         boolean modIdValidationEnabled,
         String[] modIdList
