@@ -21,13 +21,13 @@ public class SleepingChatScreenMixin extends ChatScreen implements SleepingChatS
     @Unique
     private ButtonWidget sleepButton;
 
+    public SleepingChatScreenMixin(String originalChatText) {
+        super(originalChatText);
+    }
+
     @Override
     public ButtonWidget mythicWorldTweaks$getSleepButton() {
         return this.sleepButton;
-    }
-
-    public SleepingChatScreenMixin(String originalChatText) {
-        super(originalChatText);
     }
 
     @SuppressWarnings("ConstantConditions")

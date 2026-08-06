@@ -50,7 +50,8 @@ public record ModConfig(
                             new Tweaks.ValueTweaks.ShulkerBoxNesting(false, 2),
                             new Tweaks.ValueTweaks.WardenAttributesControl(false, 500.0, 1.0, 30.0, 1.5, 1.2, 18),
                             new Tweaks.ValueTweaks.WardenSonicBoomControl(false, true, 10.0, 1.0, 34),
-                            new Tweaks.ValueTweaks.PlayerDeathItemProtection(false, 12000, false, false)
+                            new Tweaks.ValueTweaks.PlayerDeathItemProtection(false, 12000, false, false),
+                            new Tweaks.ValueTweaks.VaultReuse(false, 300, false, 600)
                     )
             ),
             new ItemEditorConfig(false, List.of()),
@@ -157,7 +158,8 @@ public record ModConfig(
                 ShulkerBoxNesting shulkerBoxNesting,
                 WardenAttributesControl wardenAttributesControl,
                 WardenSonicBoomControl wardenSonicBoomControl,
-                PlayerDeathItemProtection playerDeathItemProtection
+                PlayerDeathItemProtection playerDeathItemProtection,
+                VaultReuse vaultReuse
         ) {
             public static final MapCodec<ValueTweaks> CODEC = RecordCodecBuilder.mapCodec(
                     instance -> instance.group(
@@ -166,7 +168,8 @@ public record ModConfig(
                             ShulkerBoxNesting.CODEC.fieldOf("shulker_box_nesting").forGetter(ValueTweaks::shulkerBoxNesting),
                             WardenAttributesControl.CODEC.fieldOf("warden_attributes_control").forGetter(ValueTweaks::wardenAttributesControl),
                             WardenSonicBoomControl.CODEC.fieldOf("warden_sonic_boom_control").forGetter(ValueTweaks::wardenSonicBoomControl),
-                            PlayerDeathItemProtection.CODEC.fieldOf("player_death_item_protection").forGetter(ValueTweaks::playerDeathItemProtection)
+                            PlayerDeathItemProtection.CODEC.fieldOf("player_death_item_protection").forGetter(ValueTweaks::playerDeathItemProtection),
+                            VaultReuse.CODEC.fieldOf("vault_reuse").forGetter(ValueTweaks::vaultReuse)
                     ).apply(instance, ValueTweaks::new)
             );
 
@@ -259,6 +262,22 @@ public record ModConfig(
                                 Codec.BOOL.fieldOf("prevent_mob_pickup").forGetter(PlayerDeathItemProtection::preventMobPickup),
                                 Codec.BOOL.fieldOf("strict_pickup").forGetter(PlayerDeathItemProtection::strictPickup)
                         ).apply(instance, PlayerDeathItemProtection::new)
+                );
+            }
+
+            public record VaultReuse(
+                    boolean reuseRegularVault,
+                    int regularVaultCooldown,
+                    boolean reuseOminousVault,
+                    int ominousVaultCooldown
+            ) {
+                public static final Codec<VaultReuse> CODEC = RecordCodecBuilder.create(
+                        instance -> instance.group(
+                                Codec.BOOL.fieldOf("reuse_regular_vault").forGetter(VaultReuse::reuseRegularVault),
+                                Codec.INT.fieldOf("regular_vault_cooldown").forGetter(VaultReuse::regularVaultCooldown),
+                                Codec.BOOL.fieldOf("reuse_ominous_vault").forGetter(VaultReuse::reuseOminousVault),
+                                Codec.INT.fieldOf("ominous_vault_cooldown").forGetter(VaultReuse::ominousVaultCooldown)
+                        ).apply(instance, VaultReuse::new)
                 );
             }
         }

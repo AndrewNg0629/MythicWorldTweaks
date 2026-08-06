@@ -25,10 +25,10 @@ import java.nio.file.*;
 import java.util.Objects;
 
 public class ConfigManager {
+    public static final Codec<RegistryEntry<Item>> ITEM_ENTRY_CODEC = Registries.ITEM.getEntryCodec();
     private static final String configPathPrefix = System.getProperty("user.dir") + "/config/" + MythicWorldTweaks.MOD_ID;
     private static final String configFileName = "config.json";
     private static final String defaultConfigFileName = "default_config_v0.json";
-    public static final Codec<RegistryEntry<Item>> ITEM_ENTRY_CODEC = Registries.ITEM.getEntryCodec();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private volatile static ConfigManager instance = new ConfigManager(ModConfig.DEFAULT_CONFIG);
     private static volatile boolean initialized = false;
@@ -163,7 +163,8 @@ public class ConfigManager {
     }
 
     private void combineConfig() {
-        ModConfig.Tweaks.ValueTweaks.WardenAttributesControl wardenAttributesControlConfig = this.configFromNetwork != null ? this.configFromNetwork.wardenAttributesControl() : this.configFromFile.tweaks().valueTweaks().wardenAttributesControl();
+        ModConfig.Tweaks.ValueTweaks valueTweaksFromFile = this.configFromFile.tweaks().valueTweaks();
+        ModConfig.Tweaks.ValueTweaks.WardenAttributesControl wardenAttributesControlConfig = this.configFromNetwork != null ? this.configFromNetwork.wardenAttributesControl() : valueTweaksFromFile.wardenAttributesControl();
         ModConfig.ItemEditorConfig itemEditorConfig = this.configFromNetwork != null ? this.configFromNetwork.itemEditorConfig() : this.configFromFile.itemEditorConfig();
         this.combinedConfig = this.modEnabled ?
                 new ModConfig(
@@ -175,12 +176,13 @@ public class ConfigManager {
                                 this.configFromFile.tweaks().localToggleTweaks1(),
                                 this.configFromNetwork != null ? this.configFromNetwork.syncedToggleTweaks1() : this.configFromFile.tweaks().syncedToggleTweaks1(),
                                 new ModConfig.Tweaks.ValueTweaks(
-                                        this.configFromFile.tweaks().valueTweaks().fireballAutoDiscarding().enabled() ? this.configFromFile.tweaks().valueTweaks().fireballAutoDiscarding() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().fireballAutoDiscarding(),
-                                        this.configFromFile.tweaks().valueTweaks().stuffedShulkerBoxStacking().enabled() ? this.configFromFile.tweaks().valueTweaks().stuffedShulkerBoxStacking() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().stuffedShulkerBoxStacking(),
-                                        this.configFromFile.tweaks().valueTweaks().shulkerBoxNesting().enabled() ? this.configFromFile.tweaks().valueTweaks().shulkerBoxNesting() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().shulkerBoxNesting(),
+                                        valueTweaksFromFile.fireballAutoDiscarding().enabled() ? valueTweaksFromFile.fireballAutoDiscarding() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().fireballAutoDiscarding(),
+                                        valueTweaksFromFile.stuffedShulkerBoxStacking().enabled() ? valueTweaksFromFile.stuffedShulkerBoxStacking() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().stuffedShulkerBoxStacking(),
+                                        valueTweaksFromFile.shulkerBoxNesting().enabled() ? valueTweaksFromFile.shulkerBoxNesting() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().shulkerBoxNesting(),
                                         wardenAttributesControlConfig.enabled() ? wardenAttributesControlConfig : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().wardenAttributesControl(),
-                                        this.configFromFile.tweaks().valueTweaks().wardenSonicBoomControl().enabled() ? this.configFromFile.tweaks().valueTweaks().wardenSonicBoomControl() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().wardenSonicBoomControl(),
-                                        this.configFromFile.tweaks().valueTweaks().playerDeathItemProtection().enabled() ? this.configFromFile.tweaks().valueTweaks().playerDeathItemProtection() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().playerDeathItemProtection()
+                                        valueTweaksFromFile.wardenSonicBoomControl().enabled() ? valueTweaksFromFile.wardenSonicBoomControl() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().wardenSonicBoomControl(),
+                                        valueTweaksFromFile.playerDeathItemProtection().enabled() ? valueTweaksFromFile.playerDeathItemProtection() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().playerDeathItemProtection(),
+                                        valueTweaksFromFile.vaultReuse()
                                 )
                         ) : ModConfig.DEFAULT_CONFIG.tweaks(),
                         itemEditorConfig.enabled() ? itemEditorConfig : ModConfig.DEFAULT_CONFIG.itemEditorConfig(),

@@ -20,6 +20,7 @@ public record SleepingStateUpdateS2CPayload(boolean isReallySleeping) implements
             buf.writeBoolean(value.isReallySleeping);
         }
     };
+
     @Override
     public void handle(ClientPlayNetworkHandlerMethodInjections handler) {
         handler.mythicworldtweaks$onSleepingStateUpdate(this);

@@ -35,6 +35,9 @@
     "ThrowFireChargeMixin",
     "TridentEntityMixin",
     "UnknownCustomPayloadMixin",
+    "VaultBlockEntityMixin",
+    "VaultBlockMixin",
+    "VaultServerDataMixin",
     "WardenBrainMixin",
     "WardenEntityMixin",
     "ZombieEntityMixin"

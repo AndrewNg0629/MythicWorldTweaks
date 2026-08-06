@@ -62,6 +62,12 @@
       ],
       "net/minecraft/class_423": [
         "top/aenp/mwt/injected/interfaces/client/SleepingChatScreenMethodInjections"
+      ],
+      "net/minecraft/class_9199": [
+        "top/aenp/mwt/injected/interfaces/VaultBlockEntityMethodInjections"
+      ],
+      "net/minecraft/class_9204": [
+        "top/aenp/mwt/injected/interfaces/VaultServerDataMethodInjections"
       ]
     }
   }
