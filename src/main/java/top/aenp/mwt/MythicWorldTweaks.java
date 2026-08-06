@@ -22,8 +22,8 @@ public class MythicWorldTweaks implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        MythicNetwork.INSTANCE.initialize();
         ConfigManager.initialize();
+        MythicNetwork.INSTANCE.initialize();
         ItemInitializer.generalInitialization();
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (ConfigManager.getConfig().tweaks().valueTweaks().fireballAutoDiscarding().enabled()) {
@@ -42,7 +42,6 @@ public class MythicWorldTweaks implements ModInitializer {
                             source.sendFeedback(() -> Text.translatable("commands.kill.success.single", entity.getDisplayName()), false);
                             return 1;
                         })));
-        LOGGER.info("MythicWorldTweaks hsa been initialized!");
-
+        LOGGER.info("MythicWorldTweaks has been initialized!");
     }
 }

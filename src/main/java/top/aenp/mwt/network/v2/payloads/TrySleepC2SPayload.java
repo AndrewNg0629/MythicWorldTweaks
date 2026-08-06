@@ -7,22 +7,22 @@ import net.minecraft.util.Identifier;
 import top.aenp.mwt.network.v2.injections.ServerPlayNetworkHandlerMethodInjections;
 import top.aenp.mwt.network.v2.payloads.interfaces.MythicPlayC2SPayload;
 
-public class BedIdleSignalPayload implements MythicPlayC2SPayload {
-    public static final CustomPayload.Id<BedIdleSignalPayload> ID = new Id<>(Identifier.of("mwt", "bed_idle_signal"));
-    public static final PacketCodec<PacketByteBuf, BedIdleSignalPayload> CODEC = new PacketCodec<>() {
+public class TrySleepC2SPayload implements MythicPlayC2SPayload {
+    public static final CustomPayload.Id<TrySleepC2SPayload> ID = new Id<>(Identifier.of("mwt", "try_sleep"));
+    public static final PacketCodec<PacketByteBuf, TrySleepC2SPayload> CODEC = new PacketCodec<>() {
         @Override
-        public BedIdleSignalPayload decode(PacketByteBuf buf) {
-            return new BedIdleSignalPayload();
+        public TrySleepC2SPayload decode(PacketByteBuf buf) {
+            return new TrySleepC2SPayload();
         }
 
         @Override
-        public void encode(PacketByteBuf buf, BedIdleSignalPayload value) {
+        public void encode(PacketByteBuf buf, TrySleepC2SPayload value) {
         }
     };
 
     @Override
     public void handle(ServerPlayNetworkHandlerMethodInjections handler) {
-        handler.mythicworldtweaks$onBedIdleSignal();
+        handler.mythicworldtweaks$onTrySleep();
     }
 
     @Override

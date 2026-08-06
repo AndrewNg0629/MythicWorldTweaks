@@ -59,6 +59,9 @@
       ],
       "net/minecraft/class_634": [
         "top/aenp/mwt/network/v2/injections/ClientPlayNetworkHandlerMethodInjections"
+      ],
+      "net/minecraft/class_423": [
+        "top/aenp/mwt/injected/interfaces/client/SleepingChatScreenMethodInjections"
       ]
     }
   }

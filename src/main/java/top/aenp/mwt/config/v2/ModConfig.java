@@ -11,7 +11,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.dynamic.Codecs;
@@ -37,7 +36,6 @@ public record ModConfig(
                     Codec.INT.fieldOf("config_version").forGetter(ModConfig::configVersion)
             ).apply(instance, ModConfig::new)
     );
-    public static final Codec<RegistryEntry<Item>> ITEM_ENTRY_CODEC;
     public static final ModConfig DEFAULT_CONFIG = new ModConfig(
             true,
             true,
@@ -58,10 +56,6 @@ public record ModConfig(
             new ItemEditorConfig(false, List.of()),
             0
     );
-
-    static {
-        ITEM_ENTRY_CODEC = Registries.ITEM.getEntryCodec();
-    }
 
     public static Codec<Double> rangedDouble(double min, double max, boolean leftInclusive, boolean rightInclusive) {
         return Codec.DOUBLE
@@ -294,12 +288,12 @@ public record ModConfig(
             public static final Codec<ItemEditorUnit> CODEC = Codecs.exceptionCatching(
                     RecordCodecBuilder.create(
                             instance -> instance.group(
-                                    ITEM_ENTRY_CODEC.fieldOf("item").forGetter(ItemEditorUnit::itemEntry),
+                                    ConfigManager.ITEM_ENTRY_CODEC.fieldOf("item").forGetter(ItemEditorUnit::itemEntry),
                                     Codec.INT.optionalFieldOf("max_stack_size").forGetter(ItemEditorUnit::maxStackSize),
                                     Codec.INT.optionalFieldOf("durability").forGetter(ItemEditorUnit::durability),
                                     Codec.BOOL.optionalFieldOf("fire_resistant").forGetter(ItemEditorUnit::fireResistant),
                                     Rarity.CODEC.optionalFieldOf("rarity").forGetter(ItemEditorUnit::rarity),
-                                    ITEM_ENTRY_CODEC.optionalFieldOf("crafting_remains").forGetter(ItemEditorUnit::craftingRemainsEntry),
+                                    ConfigManager.ITEM_ENTRY_CODEC.optionalFieldOf("crafting_remains").forGetter(ItemEditorUnit::craftingRemainsEntry),
                                     Codec.BOOL.optionalFieldOf("is_food").forGetter(ItemEditorUnit::isFood),
                                     WrappedFoodComponents.CODEC.optionalFieldOf("food_components").forGetter(ItemEditorUnit::wrappedFoodComponents)
                             ).apply(instance, ItemEditorUnit::new)
@@ -331,7 +325,7 @@ public record ModConfig(
                                 rangedDouble(0.0, Double.MAX_VALUE, true, true).fieldOf("saturation").forGetter(WrappedFoodComponents::saturation),
                                 Codec.BOOL.optionalFieldOf("can_always_eat", false).forGetter(WrappedFoodComponents::canAlwaysEat),
                                 rangedDouble(0.0, Double.MAX_VALUE, false, true).optionalFieldOf("eat_seconds", 1.6D).forGetter(WrappedFoodComponents::eatSeconds),
-                                ITEM_ENTRY_CODEC.optionalFieldOf("eating_remains").forGetter(WrappedFoodComponents::eatingRemains),
+                                ConfigManager.ITEM_ENTRY_CODEC.optionalFieldOf("eating_remains").forGetter(WrappedFoodComponents::eatingRemains),
                                 WrappedStatusEffectEntry.CODEC.listOf().optionalFieldOf("effects", List.of()).forGetter(WrappedFoodComponents::effects)
                         ).apply(instance, WrappedFoodComponents::new)
                 );

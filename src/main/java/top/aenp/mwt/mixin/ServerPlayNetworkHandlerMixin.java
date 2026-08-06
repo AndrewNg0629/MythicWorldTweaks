@@ -39,7 +39,7 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonNetworkH
     }
 
     @Override
-    public void mythicworldtweaks$onBedIdleSignal() {
+    public void mythicworldtweaks$onTrySleep() {
         if (ConfigManager.getConfig().tweaks().syncedToggleTweaks1().bedIdle()) {
             if (this.player.isSleeping()) {
                 if (this.player.getWorld().isDay()) {
