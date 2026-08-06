@@ -2,11 +2,11 @@ package top.aenp.mwt.mixin;
 
 import net.minecraft.SharedConstants;
 import net.minecraft.server.Main;
-import top.aenp.mwt.misc.EnvironmentDetection;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import top.aenp.mwt.misc.EnvironmentDetection;
 
 @Mixin(Main.class)
 public class ServerMainMixin {

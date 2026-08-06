@@ -1,15 +1,15 @@
 package top.aenp.mwt.network.v2.injections;
 
 import org.apache.commons.lang3.NotImplementedException;
-import top.aenp.mwt.config.v2.NetworkSyncedConfig;
-import top.aenp.mwt.network.v2.test.TestLoginS2CPayload;
+import top.aenp.mwt.network.v2.payloads.LoginModVersionS2CPayload;
+
 
 public interface ClientLoginNetworkHandlerMethodInjections {
-    default void labmod$onTestLoginS2C(TestLoginS2CPayload payload) {
+    default void mythicworldtweaks$onModVersion(LoginModVersionS2CPayload version) {
         throw new NotImplementedException();
     }
 
-    default void labmod$onConfigPush(NetworkSyncedConfig config) {
+    default void mythicworldtweaks$onModIdRequest() {
         throw new NotImplementedException();
     }
 }

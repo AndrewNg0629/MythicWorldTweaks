@@ -12,7 +12,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import top.aenp.mwt.config.RuntimeController;
+import top.aenp.mwt.config.v2.ConfigManager;
 import top.aenp.mwt.misc.ReflectionUtils;
 
 public class LargeFireChargeItem extends Item {
@@ -22,7 +22,7 @@ public class LargeFireChargeItem extends Item {
 
     @Override
     public boolean isEnabled(FeatureSet enabledFeatures) {
-        return RuntimeController.getCurrentTParams().largeFireCharge();
+        return ConfigManager.getConfig().tweaks().syncedToggleTweaks1().largeFireCharge();
     }
 
     @Override

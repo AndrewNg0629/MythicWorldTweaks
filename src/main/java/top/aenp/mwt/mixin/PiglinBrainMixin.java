@@ -9,16 +9,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.trim.ArmorTrim;
 import net.minecraft.item.trim.ArmorTrimMaterials;
 import net.minecraft.registry.entry.RegistryEntry;
-import top.aenp.mwt.config.RuntimeController;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import top.aenp.mwt.config.v2.ConfigManager;
 
 @Mixin(PiglinBrain.class)
 public class PiglinBrainMixin {
     @WrapOperation(method = "wearsGoldArmor", at = @At(value = "INVOKE", target = "Lnet/minecraft/registry/entry/RegistryEntry;matches(Lnet/minecraft/registry/entry/RegistryEntry;)Z"))
     private static <T> boolean wearsGoldArmor(RegistryEntry<T> instance, RegistryEntry<T> registryEntry, Operation<Boolean> original, @Local ItemStack itemStack) {
         boolean result = original.call(instance, registryEntry);
-        if (RuntimeController.getCurrentTParams().goldTrimsCalmPiglins()) {
+        if (ConfigManager.getConfig().tweaks().localToggleTweaks1().armorTrimPacify()) {
             boolean withGoldTrims = false;
             ArmorTrim trim = itemStack.getComponents().getOrDefault(DataComponentTypes.TRIM, null);
             if (trim != null) {

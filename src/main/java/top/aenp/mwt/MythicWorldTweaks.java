@@ -2,54 +2,39 @@ package top.aenp.mwt;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.MinecraftVersion;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
-import top.aenp.mwt.config.ConfigLoader;
-import top.aenp.mwt.config.RuntimeController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import top.aenp.mwt.config.v2.ConfigManager;
 import top.aenp.mwt.item.ItemInitializer;
 import top.aenp.mwt.misc.FireBallEntityManager;
 import top.aenp.mwt.misc.WardenEntityStuff;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import top.aenp.mwt.network.v2.MythicNetwork;
-import top.aenp.mwt.network.v2.test.TestCommonS2CPayload;
-import top.aenp.mwt.network.v2.test.TestLoginC2SPayload;
-import top.aenp.mwt.network.v2.test.TestLoginS2CPayload;
-import top.aenp.mwt.network.v2.test.TestPlayC2SPayload;
-
-import java.util.Objects;
 
 public class MythicWorldTweaks implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("MythicWorldTweaks");
     public static final String MOD_ID = "mythicworldtweaks";
-    public static final String DATA_MOD_ID = "mythicworlddata";
-    public static final String MOD_VERSION = Objects.requireNonNull(FabricLoader.getInstance().getModContainer(MOD_ID).orElse(null)).getMetadata().getVersion().getFriendlyString();
-    public static final String GAME_VERSION = MinecraftVersion.CURRENT.getName();
 
     @Override
     public void onInitialize() {
-        LOGGER.info("MythicWorldTweaks mod starts to be initialized!");
-        RuntimeController.loadLocalParamsFromConfig();
+        MythicNetwork.INSTANCE.initialize();
+        ConfigManager.initialize();
         ItemInitializer.generalInitialization();
         ServerTickEvents.END_SERVER_TICK.register(server -> {
-            if (RuntimeController.getCurrentTParams().autoDiscardingFireBallEnabled()) {
+            if (ConfigManager.getConfig().tweaks().valueTweaks().fireballAutoDiscarding().enabled()) {
                 FireBallEntityManager.tick();
             }
             WardenEntityStuff.WardenEntityTrack.tick();
         });
         ServerWorldEvents.UNLOAD.register((server, world) -> WardenEntityStuff.WardenEntityTrack.clearEntities());
-        ServerLifecycleEvents.SERVER_STARTING.register(ConfigLoader::onServerStarting);
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> ConfigLoader.onServerStopping());
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
                 CommandManager.literal("suicide")
-                        .requires(source -> source.isExecutedByPlayer() && RuntimeController.getCurrentTParams().suicideCommand())
+                        .requires(source -> source.isExecutedByPlayer() && ConfigManager.getConfig().tweaks().syncedToggleTweaks1().suicideCommand())
                         .executes(context -> {
                             ServerCommandSource source = context.getSource();
                             Entity entity = source.getPlayerOrThrow();
@@ -57,11 +42,7 @@ public class MythicWorldTweaks implements ModInitializer {
                             source.sendFeedback(() -> Text.translatable("commands.kill.success.single", entity.getDisplayName()), false);
                             return 1;
                         })));
-        top.aenp.mwt.network.MythicNetwork.commonInitialization();
+        LOGGER.info("MythicWorldTweaks hsa been initialized!");
 
-        MythicNetwork.LOGIN_S2C_CODECS.put(TestLoginS2CPayload.ID, TestLoginS2CPayload.CODEC);
-        MythicNetwork.LOGIN_C2S_CODECS.put(TestLoginC2SPayload.ID, TestLoginC2SPayload.CODEC);
-        MythicNetwork.CUSTOM_PAYLOAD_CODECS.put(TestCommonS2CPayload.ID.id(), TestCommonS2CPayload.CODEC);
-        MythicNetwork.CUSTOM_PAYLOAD_CODECS.put(TestPlayC2SPayload.ID.id(), TestPlayC2SPayload.CODEC);
     }
 }

@@ -1,11 +1,11 @@
 package top.aenp.mwt.mixin;
 
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
-import top.aenp.mwt.misc.FireBallEntityManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import top.aenp.mwt.misc.FireBallEntityManager;
 
 @SuppressWarnings("DataFlowIssue")
 @Mixin(ExplosiveProjectileEntity.class)

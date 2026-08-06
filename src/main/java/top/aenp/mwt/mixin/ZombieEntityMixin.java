@@ -6,10 +6,10 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
-import top.aenp.mwt.config.RuntimeController;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import top.aenp.mwt.config.v2.ConfigManager;
 
 @Mixin(ZombieEntity.class)
 public abstract class ZombieEntityMixin extends HostileEntity {
@@ -19,6 +19,6 @@ public abstract class ZombieEntityMixin extends HostileEntity {
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getDifficulty()Lnet/minecraft/world/Difficulty;"), method = "onKilledOther")
     private Difficulty geuDifficulty(ServerWorld world) {
-        return RuntimeController.getCurrentTParams().constantVillagerConversion() ? Difficulty.HARD : world.getDifficulty();
+        return ConfigManager.getConfig().tweaks().localToggleTweaks1().villagersAlwaysZombify() ? Difficulty.HARD : world.getDifficulty();
     }
 }

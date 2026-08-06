@@ -10,30 +10,28 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
-import top.aenp.mwt.config.RuntimeController;
-import top.aenp.mwt.injected.interfaces.PlayerEntityMethodInjections;
-import top.aenp.mwt.misc.PlayerEntityStuff;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import top.aenp.mwt.config.v2.ConfigManager;
+import top.aenp.mwt.injected.interfaces.PlayerEntityMethodInjections;
+import top.aenp.mwt.misc.PlayerEntityStuff;
 
 @SuppressWarnings("DataFlowIssue")
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEntityMethodInjections {
+    @Unique
+    private final boolean isFake = PlayerEntityStuff.determineFake((PlayerEntity) (Object) this);
+    @Unique
+    private boolean isUnderFallProtection = false;
+    @Unique
+    private boolean isReallySleeping = false;
+
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
-
-    @Unique
-    private final boolean isFake = PlayerEntityStuff.determineFake((PlayerEntity) (Object) this);
-
-    @Unique
-    private boolean isUnderFallProtection = false;
-
-    @Unique
-    private boolean isReallySleeping = false;
 
     @Override
     public boolean mythicWorldTweaks$isFake() {
@@ -65,14 +63,14 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
         if ((PlayerEntity) (Object) this instanceof ServerPlayerEntity serverPlayerEntity) {
             if (serverPlayerEntity.mythicWorldTweaks$isUnderFallProtection()) {
                 serverPlayerEntity.mythicWorldTweaks$setUnderFallProtection(false);
-                info.setReturnValue(!RuntimeController.getCurrentTParams().playerRidingProtection());
+                info.setReturnValue(!ConfigManager.getConfig().tweaks().localToggleTweaks1().playerRidingFallProtection());
             }
         }
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSleeping()Z", ordinal = 0), method = "tick")
     private boolean sleepingTimerControl(PlayerEntity instance) {
-        if (RuntimeController.getCurrentTParams().sleepingExtras()) {
+        if (ConfigManager.getConfig().tweaks().syncedToggleTweaks1().bedIdle()) {
             return instance.isSleeping() && instance.mythicWorldTweaks$isReallySleeping();
         } else {
             return instance.isSleeping();
@@ -81,7 +79,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSleeping()Z", ordinal = 0), method = "canResetTimeBySleeping")
     private boolean canReallySkipNight(PlayerEntity instance) {
-        if (RuntimeController.getCurrentTParams().sleepingExtras()) {
+        if (ConfigManager.getConfig().tweaks().syncedToggleTweaks1().bedIdle()) {
             return instance.isSleeping() && instance.mythicWorldTweaks$isReallySleeping();
         } else {
             return instance.isSleeping();
@@ -90,16 +88,16 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
     @Inject(at = @At(value = "HEAD"), method = "getXpToDrop", cancellable = true)
     private void getXpToDrop(CallbackInfoReturnable<Integer> info) {
-        if (RuntimeController.getCurrentTParams().keepExperience()) {
+        if (ConfigManager.getConfig().tweaks().localToggleTweaks1().keepExperienceAfterDeath()) {
             info.setReturnValue(0);
         }
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ItemEntity;setPickupDelay(I)V", shift = At.Shift.AFTER), method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;")
     private void dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> info, @Local ItemEntity itemEntity) {
-        if (RuntimeController.getCurrentTParams().playerDeathItemProtectionEnabled() && this.isDead()) {
+        if (ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().enabled() && this.isDead()) {
             itemEntity.mythicWorldTweaks$setUnderProtection(true);
-            if (!retainOwnership && RuntimeController.getCurrentTParams().strictPickup()) {
+            if (!retainOwnership && ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().strictPickup()) {
                 itemEntity.setThrower(this);
             }
         }
@@ -107,7 +105,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
     @ModifyConstant(constant = @Constant(floatValue = 0.5F), method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;")
     private float throwSpeed(float constant) {
-        if (RuntimeController.getCurrentTParams().playerDeathItemProtectionEnabled()) {
+        if (ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().enabled()) {
             return this.getY() < this.getWorld().getBottomY() - 16 ? 0.05F : 0.15F;
         } else {
             return constant;

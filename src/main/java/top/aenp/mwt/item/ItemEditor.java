@@ -8,15 +8,17 @@ import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.Rarity;
+import top.aenp.mwt.config.v2.ConfigManager;
 import top.aenp.mwt.config.v2.ModConfig;
 import top.aenp.mwt.misc.ReflectionUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Objects;
 
 public class ItemEditor {
     private final static HashMap<Item, ItemEditor> itemEditors = new HashMap<>();
+    private static final LinkedList<ItemEditor> effectiveEditors = new LinkedList<>();
     private final Item carriedItem;
     private final boolean itemDamageable;
     private final int vanillaMaxStackSize;
@@ -34,7 +36,7 @@ public class ItemEditor {
     private boolean fireResistance;
     private Item recipeRemainder;
 
-    private ItemEditor(@NotNull Item item) {
+    private ItemEditor(Item item) {
         itemEditors.put(item, this);
         this.carriedItem = item;
         ReflectionUtils.separateItemComponents(this.carriedItem);
@@ -49,7 +51,7 @@ public class ItemEditor {
         this.revertVanilla();
     }
 
-    public static ItemEditor getInstance(@NotNull Item item) {
+    private static ItemEditor getInstance(Item item) {
         ItemEditor editor = itemEditors.get(item);
         if (editor == null) {
             editor = new ItemEditor(item);
@@ -57,7 +59,21 @@ public class ItemEditor {
         return editor;
     }
 
-    public void revertVanilla() {
+    public static void applyFromModConfig() {
+        for (ItemEditor effectiveEditors : effectiveEditors) {
+            effectiveEditors.revertVanilla();
+            effectiveEditors.applyEdits();
+        }
+        effectiveEditors.clear();
+        for (ModConfig.ItemEditorConfig.ItemEditorUnit unit : ConfigManager.getConfig().itemEditorConfig().units()) {
+            ItemEditor editor = getInstance(unit.itemEntry().value());
+            effectiveEditors.add(editor);
+            editor.loadFromConfigUnit(unit);
+            editor.applyEdits();
+        }
+    }
+
+    private void revertVanilla() {
         this.maxStackSize = this.vanillaMaxStackSize;
         this.maxDamage = this.vanillaMaxDamage;
         this.rarity = this.vanillaRarity;
@@ -67,43 +83,7 @@ public class ItemEditor {
         this.recipeRemainder = this.vanillaRecipeRemainder;
     }
 
-    @Deprecated(forRemoval = true)
-    public void setMaxStackSize(int maxStackSize) {
-        if (this.itemDamageable) {
-            this.maxStackSize = 1;
-        } else {
-            this.maxStackSize = maxStackSize;
-        }
-    }
-
-    @Deprecated(forRemoval = true)
-    public void setMaxDamage(int maxDamage) {
-        if (this.itemDamageable) {
-            this.maxDamage = maxDamage;
-        }
-    }
-
-    @Deprecated(forRemoval = true)
-    public void setRarity(Rarity rarity) {
-        this.rarity = rarity;
-    }
-
-    @Deprecated(forRemoval = true)
-    public void setFoodComponent(FoodComponent foodComponent) {
-        this.foodComponent = foodComponent;
-    }
-
-    @Deprecated(forRemoval = true)
-    public void setFireResistance(boolean fireResistance) {
-        this.fireResistance = fireResistance;
-    }
-
-    @Deprecated(forRemoval = true)
-    public void setRecipeRemainder(Item recipeRemainder) {
-        this.recipeRemainder = recipeRemainder;
-    }
-
-    public void loadFromConfigUnit(ModConfig.ItemEditorConfig.ItemEditorUnit unit) {
+    private void loadFromConfigUnit(ModConfig.ItemEditorConfig.ItemEditorUnit unit) {
         unit.maxStackSize().ifPresent(size -> this.maxStackSize = size);
         unit.durability().ifPresent(durability -> this.maxDamage = durability);
         unit.fireResistant().ifPresent(resistant -> this.fireResistance = resistant);
@@ -113,7 +93,7 @@ public class ItemEditor {
         unit.wrappedFoodComponents().ifPresent(wrappedComponents -> this.foodComponent = wrappedComponents.createComponents());
     }
 
-    public void apply() {
+    private void applyEdits() {
         Reference2ObjectMap<ComponentType<?>, Object> underlyingMap = ReflectionUtils.getItemComponentsUnderlyingMap(this.carriedItem);
         if (this.itemDamageable) {
             underlyingMap.put(DataComponentTypes.MAX_DAMAGE, this.maxDamage);

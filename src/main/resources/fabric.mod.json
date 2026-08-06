@@ -48,24 +48,14 @@
       "net/minecraft/class_1657": [
         "top/aenp/mwt/injected/interfaces/PlayerEntityMethodInjections"
       ],
-      "net/minecraft/class_3222": [
-        "top/aenp/mwt/injected/interfaces/ServerPlayerEntityMethodInjections"
-      ],
       "net/minecraft/class_1542": [
         "top/aenp/mwt/injected/interfaces/ItemEntityMethodInjections"
       ],
-      "net/minecraft/class_423": [
-        "top/aenp/mwt/injected/interfaces/client/SleepingChatScreenMethodInjections"
-      ],
-
       "net/minecraft/class_3248": [
         "top/aenp/mwt/network/v2/injections/ServerLoginNetworkHandlerMethodInjections"
       ],
       "net/minecraft/class_635": [
         "top/aenp/mwt/network/v2/injections/ClientLoginNetworkHandlerMethodInjections"
-      ],
-      "net/minecraft/class_3244": [
-        "top/aenp/mwt/network/v2/injections/ServerPlayNetworkHandlerMethodInjections"
       ],
       "net/minecraft/class_634": [
         "top/aenp/mwt/network/v2/injections/ClientPlayNetworkHandlerMethodInjections"

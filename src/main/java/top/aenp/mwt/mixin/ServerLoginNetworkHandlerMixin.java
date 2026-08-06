@@ -2,20 +2,15 @@ package top.aenp.mwt.mixin;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
-import net.minecraft.network.packet.c2s.login.LoginQueryResponsePayload;
 import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.text.Text;
-import top.aenp.mwt.MythicWorldTweaks;
-import top.aenp.mwt.config.RuntimeController;
-
-import top.aenp.mwt.network.payloads.LoginConfigPushC2SPayload;
-import top.aenp.mwt.network.payloads.LoginConfigPushS2CPayload;
-import top.aenp.mwt.network.payloads.ValidationC2SPayload;
-import top.aenp.mwt.network.payloads.ValidationS2CPayload;
+import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,12 +18,15 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.aenp.mwt.config.runtimeParams.TransmittableRuntimeParams;
+import top.aenp.mwt.config.v2.ConfigManager;
+import top.aenp.mwt.config.v2.ModConfig;
+import top.aenp.mwt.misc.ReflectionUtils;
 import top.aenp.mwt.network.v2.MythicNetwork;
 import top.aenp.mwt.network.v2.injections.ServerLoginNetworkHandlerMethodInjections;
-import top.aenp.mwt.network.v2.payloads.MythicLoginC2SPayload;
-import top.aenp.mwt.network.v2.test.TestLoginC2SPayload;
-import top.aenp.mwt.network.v2.test.TestLoginS2CPayload;
+import top.aenp.mwt.network.v2.payloads.*;
+import top.aenp.mwt.network.v2.payloads.interfaces.MythicLoginC2SPayload;
+
+import java.util.Set;
 
 @Mixin(value = ServerLoginNetworkHandler.class, priority = 990)
 public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetworkHandlerMethodInjections {
@@ -39,140 +37,76 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
     @Final
     MinecraftServer server;
     @Shadow
-    private int loginTicks;
+    private @Nullable GameProfile profile;
     @Unique
-    private boolean isValidationRequestSent = false;
-    @Unique
-    private boolean isValidationProcessed = false;
-    @Unique
-    private boolean isValidationPassed = false;
-    @Unique
-    private String failReason = "Player validation response timed out, you must have MythicWorldTweaks " + MythicWorldTweaks.MOD_VERSION + " installed and its \"server_play_support\" config enabled.";
-    @Unique
-    private int tickSincePush;
-    @Unique
-    private boolean isConfigPushed = false;
-    @Unique
-    private boolean isConfigPushResponded = false;
-    @Unique
-    private boolean isConfigPushSuccess = false;
+    private MythicNetwork.NegotiationStates negotiationState = MythicNetwork.NegotiationStates.VERSION_S2C;
 
     @Shadow
     public abstract void disconnect(Text reason);
 
-    @Inject(at = @At(value = "HEAD"), method = "tick", cancellable = true)
-    private void tick0(CallbackInfo info) {
-        if (!this.connection.isLocal() && RuntimeController.getLocalRuntimeParams().serverPlaySupportEnabled()) {
-            if (!isValidationRequestSent) {
-                this.connection.send(new LoginQueryRequestS2CPacket(top.aenp.mwt.network.MythicNetwork.registerRequest(ValidationS2CPayload.payloadId),
-                        new ValidationS2CPayload(
-                                RuntimeController.getLocalRuntimeParams().serverName(),
-                                MythicWorldTweaks.GAME_VERSION,
-                                MythicWorldTweaks.MOD_VERSION
-                        )));
-                this.isValidationRequestSent = true;
-            }
-            if (!this.isValidationProcessed) {
-                if (++this.loginTicks >= 60) {
-                    this.disconnect(Text.of(this.failReason));
-                }
-                info.cancel();
-                return;
-            } else {
-                if (!this.isValidationPassed) {
-                    this.disconnect(Text.of(this.failReason));
-                    info.cancel();
-                    return;
-                }
-            }
-            if (!this.isConfigPushed) {
-                this.tickSincePush = this.loginTicks;
-                this.connection.send(new LoginQueryRequestS2CPacket(top.aenp.mwt.network.MythicNetwork.registerRequest(LoginConfigPushS2CPayload.payloadId),
-                        new LoginConfigPushS2CPayload(RuntimeController.getCurrentTParams())));
-                this.isConfigPushed = true;
-            }
-            if (!this.isConfigPushResponded) {
-                if (++this.loginTicks >= this.tickSincePush + 60) {
-                    this.disconnect(Text.of("Config push response timed out, regarded as failure."));
-                }
-                info.cancel();
-            } else {
-                if (!this.isConfigPushSuccess) {
-                    this.disconnect(Text.of("Config push failed, received config is not equivalent to the server's."));
-                    info.cancel();
-                }
-            }
+    @Shadow
+    protected abstract void sendSuccessPacket(GameProfile profile);
+
+    @Unique
+    private void sendConfig() {
+        ModConfig modConfig = ConfigManager.getConfig();
+        this.connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new NetworkSyncedConfig(modConfig.tweaks().syncedToggleTweaks1(), modConfig.tweaks().valueTweaks().wardenAttributesControl(), modConfig.itemEditorConfig())));
+        if (!this.server.getPlayerManager().disconnectDuplicateLogins(this.profile)) {
+            ReflectionUtils.setLoginHandlerState((ServerLoginNetworkHandler) (Object) this, 5);
+        } else {
+            this.sendSuccessPacket(this.profile);
         }
     }
 
-    @Inject(at = @At(value = "HEAD"), method = "onQueryResponse", cancellable = true)
-    private void onQueryResponse(LoginQueryResponseC2SPacket packet, CallbackInfo info) {
-        LoginQueryResponsePayload rawPayload = packet.response();
-        if (rawPayload != null) {
-            if (rawPayload instanceof ValidationC2SPayload(String modVersion, java.util.Set<String> allModIds)) {
-                this.server.execute(() -> {
-                    if (RuntimeController.getLocalRuntimeParams().serverPlaySupportEnabled()) {
-                        boolean versionValidationFailed = false;
-                        boolean modIdsValidationFailed = false;
-                        if (!MythicWorldTweaks.MOD_VERSION.equals(modVersion)) {
-                            versionValidationFailed = true;
-                            this.failReason = String.format("The version of your MythicWorldTweaks is %s, while the version %s is required to join the server.", modVersion, MythicWorldTweaks.MOD_VERSION);
-                        }
-                        if (RuntimeController.getLocalRuntimeParams().modIdValidationEnabled() && !versionValidationFailed) {
-                            ImmutableSet<String> submittedModIds = ImmutableSet.copyOf(allModIds);
-                            ImmutableSet<String> requiredModIds = ImmutableSet.copyOf(RuntimeController.getLocalRuntimeParams().modIdList());
-                            ImmutableSet<String> modIdsNotPresent = Sets.difference(requiredModIds, submittedModIds).immutableCopy();
-                            if (!modIdsNotPresent.isEmpty()) {
-                                modIdsValidationFailed = true;
-                                StringBuilder missingModsMessage = new StringBuilder();
-                                for (String modId : modIdsNotPresent) {
-                                    if (!missingModsMessage.isEmpty()) {
-                                        missingModsMessage.append(", ");
-                                    }
-                                    missingModsMessage.append(modId);
-                                }
-                                this.failReason = String.format("Some mods required by the server are missing on your side, please have them installed: %s", missingModsMessage);
-                            }
-                        }
-                        this.isValidationPassed = !versionValidationFailed && !modIdsValidationFailed;
-                        this.isValidationProcessed = true;
-                    }
-                });
-                info.cancel();
-            } else if (rawPayload instanceof LoginConfigPushC2SPayload(
-                    TransmittableRuntimeParams params
-            )) {
-                this.server.execute(() -> {
-                    if (RuntimeController.getLocalRuntimeParams().serverPlaySupportEnabled()) {
-                        this.isConfigPushSuccess = params.equals(RuntimeController.getCurrentTParams());
-                        this.isConfigPushResponded = true;
-                    }
-                });
-                info.cancel();
-            }
-        }
-    }
-
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;disconnect(Lnet/minecraft/text/Text;)V"),
-            method = "onQueryResponse", cancellable = true)
-    private void handleAbnormalPacket(LoginQueryResponseC2SPacket packet, CallbackInfo info) {
-        if (RuntimeController.getLocalRuntimeParams().serverPlaySupportEnabled()) {
-            this.server.execute(() -> {
-                MythicWorldTweaks.LOGGER.warn("Received unrecognized login query response packet from client.");
-                MythicWorldTweaks.LOGGER.warn("Maybe it is caused by missing mods, or simply the packet reflection from clients without MythicWorldTweaks");
-            });
+    @Inject(method = "tickVerify", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;disconnectDuplicateLogins(Lcom/mojang/authlib/GameProfile;)Z"), cancellable = true)
+    private void onTickVerify(GameProfile profile, CallbackInfo info) {
+        if (!this.connection.isLocal() && ConfigManager.getConfig().multiplayerSupportEnabled()) {
+            ReflectionUtils.setLoginHandlerState((ServerLoginNetworkHandler) (Object) this, 3);
+            this.connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new LoginModVersionS2CPayload(MythicNetwork.MOD_VERSION)));
+            this.negotiationState = MythicNetwork.NegotiationStates.VERSION_C2S;
             info.cancel();
         }
     }
 
-    //TODO: Remove everything above this.
+    @Override
+    public void mythicworldtweaks$onModVersion(LoginModVersionC2SPayload version) {
+        Validate.validState(this.negotiationState == MythicNetwork.NegotiationStates.VERSION_C2S, "Unexpected mod version c2s packet.");
+        if (MythicNetwork.NETWORK_COMPATIBLE_VERSIONS.contains(version.modVersion())) {
+            if (ConfigManager.getConfig().modIdValidationConfig().enabled()) {
+                this.negotiationState = MythicNetwork.NegotiationStates.MOD_LIST;
+                this.connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new LoginModIdRequestS2CPayload()));
+            } else {
+                this.sendConfig();
+            }
+        } else {
+            this.disconnect(Text.of("Incompatible client version: " + version.modVersion()));
+        }
+    }
 
-    @Unique private boolean testDone = false;
-    @Inject(method = "tick", at = @At(value = "HEAD"))
-    private void tick(CallbackInfo info) {
-        if (!this.testDone) {
-            this.testDone = true;
-            this.connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new TestLoginS2CPayload("Hello world!")));
+    @Override
+    public void mythicworldtweaks$onModIdList(LoginModIdListC2SPayload list) {
+        Validate.validState(this.negotiationState == MythicNetwork.NegotiationStates.MOD_LIST, "Unexpected mod ID list packet.");
+        ImmutableSet<String> receivedMods = ImmutableSet.copyOf(list.modIdList());
+        ImmutableSet<String> missingMods = Sets.difference(Set.copyOf(ConfigManager.getConfig().modIdValidationConfig().requiredMods()), receivedMods).immutableCopy();
+        ImmutableSet<String> excessMods = Sets.intersection(Set.copyOf(ConfigManager.getConfig().modIdValidationConfig().prohibitedMods()), receivedMods).immutableCopy();
+        boolean passed = true;
+        StringBuilder failMessage = new StringBuilder("Your installed mods don't meet the requirements to join this server.");
+        if (!missingMods.isEmpty()) {
+            passed = false;
+            failMessage.append("\nInstall those mods: ");
+            String missingModsString = missingMods.toString();
+            failMessage.append(missingModsString, 1, missingModsString.length() - 1);
+        }
+        if (!excessMods.isEmpty()) {
+            passed = false;
+            failMessage.append("\nRemove or disable those mods: ");
+            String excessModsString = excessMods.toString();
+            failMessage.append(excessModsString, 1, excessModsString.length() - 1);
+        }
+        if (passed) {
+            this.sendConfig();
+        } else {
+            this.disconnect(Text.of(failMessage.toString()));
         }
     }
 
@@ -183,14 +117,9 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
                 MythicLoginC2SPayload payload = (MythicLoginC2SPayload) packet.response();
                 payload.handle(this);
             } else {
-                this.disconnect(Text.of("Please have labmod installed."));
+                this.disconnect(Text.of(String.format("Please have MythicWorldTweaks %s installed.", MythicNetwork.MOD_VERSION)));
             }
             info.cancel();
         }
-    }
-
-    @Override
-    public void labmod$onTestLoginC2S(TestLoginC2SPayload payload) {
-        MythicWorldTweaks.LOGGER.info("Server received: {}", payload.hello());
     }
 }

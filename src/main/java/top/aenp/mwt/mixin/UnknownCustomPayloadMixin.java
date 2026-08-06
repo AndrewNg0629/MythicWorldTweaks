@@ -15,7 +15,7 @@ import top.aenp.mwt.network.v2.MythicNetwork;
 public class UnknownCustomPayloadMixin {
     @Inject(method = "createCodec", at = @At(value = "HEAD"), cancellable = true)
     private static void supplyMythicCodec(Identifier id, int maxBytes, CallbackInfoReturnable<PacketCodec<PacketByteBuf, ? extends CustomPayload>> info) {
-        PacketCodec<PacketByteBuf, ? extends CustomPayload> codec = MythicNetwork.CUSTOM_PAYLOAD_CODECS.get(id);
+        PacketCodec<PacketByteBuf, ? extends CustomPayload> codec = MythicNetwork.INSTANCE.CUSTOM_PAYLOAD_CODECS.get(id);
         if (codec != null) {
             info.setReturnValue(codec);
         }

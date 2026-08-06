@@ -17,23 +17,20 @@ import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Rarity;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 import top.aenp.mwt.MythicWorldTweaks;
-import top.aenp.mwt.config.RuntimeController;
+import top.aenp.mwt.config.v2.ConfigManager;
 import top.aenp.mwt.misc.ReflectionUtils;
 
 @SuppressWarnings("resource") //We can't close the ServerWorld after playing sounds.
 public class ItemInitializer {
     public static final Item LARGE_FIRE_CHARGE = registerItem("large_fire_charge", new LargeFireChargeItem(new Item.Settings()));
-    public static final Item DEBUGGER = registerItem("debugger", new DebuggerItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
 
     public static void generalInitialization() {
         largeFireChargeInit();
-        debuggerInit();
         dispensableTrident();
     }
 
@@ -41,16 +38,12 @@ public class ItemInitializer {
         return Registry.register(Registries.ITEM, Identifier.of(MythicWorldTweaks.MOD_ID, itemKey), item);
     }
 
-    public static void debuggerInit() {
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register((itemGroup) -> itemGroup.add(DEBUGGER));
-    }
-
     public static void largeFireChargeInit() {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register((itemGroup) -> itemGroup.addAfter(Items.FIRE_CHARGE, LARGE_FIRE_CHARGE));
         DispenserBlock.registerBehavior(LARGE_FIRE_CHARGE, new ItemDispenserBehavior() {
             @Override
             public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-                if (RuntimeController.getCurrentTParams().largeFireCharge()) {
+                if (ConfigManager.getConfig().tweaks().syncedToggleTweaks1().largeFireCharge()) {
                     Direction direction = pointer.state().get(DispenserBlock.FACING);
                     Position position = DispenserBlock.getOutputLocation(pointer);
                     World world = pointer.world();
@@ -71,7 +64,7 @@ public class ItemInitializer {
 
             @Override
             protected void playSound(BlockPointer pointer) {
-                if (RuntimeController.getCurrentTParams().largeFireCharge()) {
+                if (ConfigManager.getConfig().tweaks().syncedToggleTweaks1().largeFireCharge()) {
                     pointer.world().playSound(
                             null,
                             pointer.pos().getX(),
@@ -92,7 +85,7 @@ public class ItemInitializer {
         DispenserBlock.registerBehavior(Items.TRIDENT, new FallibleItemDispenserBehavior() {
             @Override
             public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-                if (RuntimeController.getCurrentTParams().dispensableTridents()) {
+                if (ConfigManager.getConfig().tweaks().localToggleTweaks1().dispensableTridents()) {
                     this.setSuccess(false);
                     if (stack.getMaxDamage() - stack.getDamage() <= 1) {
                         pointer.world().playSound(
@@ -140,7 +133,7 @@ public class ItemInitializer {
 
             @Override
             protected void playSound(BlockPointer pointer) {
-                if (!RuntimeController.getCurrentTParams().dispensableTridents()) {
+                if (!ConfigManager.getConfig().tweaks().localToggleTweaks1().dispensableTridents()) {
                     super.playSound(pointer);
                 }
             }

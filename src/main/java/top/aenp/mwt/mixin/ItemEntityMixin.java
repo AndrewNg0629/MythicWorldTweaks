@@ -7,14 +7,14 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import top.aenp.mwt.config.RuntimeController;
-import top.aenp.mwt.injected.interfaces.ItemEntityMethodInjections;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import top.aenp.mwt.config.v2.ConfigManager;
+import top.aenp.mwt.injected.interfaces.ItemEntityMethodInjections;
 
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity implements ItemEntityMethodInjections {
@@ -30,6 +30,17 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityMethod
         super(type, world);
     }
 
+    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ItemEntity;merge(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;I)Lnet/minecraft/item/ItemStack;"),
+            method = "merge(Lnet/minecraft/entity/ItemEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)V"
+            , index = 2)
+    private static int mergeCountFix(int maxCount) {
+        if (ConfigManager.getConfig().itemEditorConfig().enabled()) {
+            return Integer.MAX_VALUE;
+        } else {
+            return maxCount;
+        }
+    }
+
     @Override
     public boolean mythicWorldTweaks$isUnderProtection() {
         return this.isUnderProtection;
@@ -40,23 +51,12 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityMethod
         this.isUnderProtection = value;
     }
 
-    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ItemEntity;merge(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;I)Lnet/minecraft/item/ItemStack;"),
-            method = "merge(Lnet/minecraft/entity/ItemEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)V"
-            , index = 2)
-    private static int mergeCountFix(int maxCount) {
-        if (RuntimeController.getCurrentTParams().itemEditorEnabled()) {
-            return Integer.MAX_VALUE;
-        } else {
-            return maxCount;
-        }
-    }
-
     @Shadow
     protected abstract double getGravity();
 
     @Unique
     private boolean isUnderProtection() {
-        return RuntimeController.getCurrentTParams().playerDeathItemProtectionEnabled() && this.isUnderProtection;
+        return ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().enabled() && this.isUnderProtection;
     }
 
     @Inject(at = @At(value = "RETURN"), method = "getGravity", cancellable = true)
@@ -83,7 +83,7 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityMethod
                     this.setPosition(this.getX(), this.getY() + 0.5D, this.getZ());
                 }
             }
-            if (RuntimeController.getCurrentTParams().itemDiscardTicks() <= 0) {
+            if (ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().itemDespawnTicks() <= 0) {
                 this.itemAge = 0;
             }
         }
@@ -105,7 +105,7 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityMethod
 
     @Inject(at = @At(value = "HEAD"), method = "tryMerge(Lnet/minecraft/entity/ItemEntity;)V", cancellable = true)
     private void tryMerge(ItemEntity other, CallbackInfo info) {
-        if (RuntimeController.getCurrentTParams().playerDeathItemProtectionEnabled() &&
+        if (ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().enabled() &&
                 (this.mythicWorldTweaks$isUnderProtection()) ^ (other.mythicWorldTweaks$isUnderProtection())
         ) {
             info.cancel();
@@ -114,7 +114,7 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityMethod
 
     @ModifyConstant(constant = @Constant(intValue = 6000), method = "tick")
     private int discardTicks(int value) {
-        int itemDiscardTicks = RuntimeController.getCurrentTParams().itemDiscardTicks();
+        int itemDiscardTicks = ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().itemDespawnTicks();
         return itemDiscardTicks > 0 && this.isUnderProtection() ? itemDiscardTicks : value;
     }
 

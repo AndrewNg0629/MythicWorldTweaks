@@ -5,13 +5,13 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import top.aenp.mwt.config.RuntimeController;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import top.aenp.mwt.config.v2.ConfigManager;
 
 @Mixin(DrawContext.class)
 public abstract class DrawContextMixin {
@@ -20,7 +20,7 @@ public abstract class DrawContextMixin {
     private MatrixStack matrices;
 
     @Unique
-    private static String processDouble(double num) {
+    private static String trimDouble(double num) {
         String string = String.valueOf(num).substring(0, 3);
         if (string.endsWith(".")) {
             string = string.substring(0, 2);
@@ -31,15 +31,15 @@ public abstract class DrawContextMixin {
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Ljava/lang/String;IIIZ)I"),
             method = "drawItemInSlot(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V")
     private int drawText(DrawContext instance, TextRenderer textRenderer, String text, int x, int y, int color, boolean shadow, @Local(argsOnly = true, ordinal = 0) int originalX, @Local(argsOnly = true, ordinal = 1) int originalY, @Local(argsOnly = true) ItemStack itemStack) {
-        if (RuntimeController.getCurrentTParams().itemEditorEnabled()) {
+        if (ConfigManager.getConfig().itemEditorConfig().enabled()) {
             int count = itemStack.getCount();
             if (count >= 100000) {
                 if (count < 1000000) {
-                    text = processDouble((double) count / 1000) + "k";
+                    text = trimDouble((double) count / 1000) + "k";
                 } else if (count < 1000000000) {
-                    text = processDouble((double) count / 1000000) + "M";
+                    text = trimDouble((double) count / 1000000) + "M";
                 } else {
-                    text = processDouble((double) count / 1000000000) + "G";
+                    text = trimDouble((double) count / 1000000000) + "G";
                 }
             }
             float scale = switch (text.length()) {

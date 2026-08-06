@@ -11,7 +11,7 @@ import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import top.aenp.mwt.config.RuntimeController;
+import top.aenp.mwt.config.v2.ConfigManager;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -20,19 +20,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class WardenEntityStuff {
     public static void modifyWardenAttributes() {
         Map<RegistryEntry<EntityAttribute>, EntityAttributeInstance> wardenAttributes = ReflectionUtils.DefaultAttributeContainer$instances.getFieldValue(ReflectionUtils.DefaultAttributeRegistry$DEFAULT_ATTRIBUTE_REGISTRY.getFieldValue(null).get(EntityType.WARDEN));
-        if (RuntimeController.getCurrentTParams().wardenAttributesWeakeningEnabled()) {
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_MAX_HEALTH, RuntimeController.getCurrentTParams().wardenMaxHealth());
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, RuntimeController.getCurrentTParams().wardenKnockBackResistance());
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_ATTACK_DAMAGE, RuntimeController.getCurrentTParams().wardenMeleeAttackDamage());
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_ATTACK_KNOCKBACK, RuntimeController.getCurrentTParams().wardenMeleeAttackKnockBack());
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_MOVEMENT_SPEED, RuntimeController.getCurrentTParams().wardenIdleMovementSpeed());
-        } else {
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_MAX_HEALTH, 500.0D);
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0D);
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_ATTACK_DAMAGE, 30.0D);
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.5D);
-            modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F);
-        }
+        modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_MAX_HEALTH, ConfigManager.getConfig().tweaks().valueTweaks().wardenAttributesControl().maxHealth());
+        modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, ConfigManager.getConfig().tweaks().valueTweaks().wardenAttributesControl().knockbackResistance());
+        modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_ATTACK_DAMAGE, ConfigManager.getConfig().tweaks().valueTweaks().wardenAttributesControl().meleeAttackDamage());
+        modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_ATTACK_KNOCKBACK, ConfigManager.getConfig().tweaks().valueTweaks().wardenAttributesControl().meleeAttackKnockback());
     }
 
     private static void modifyEntityDA(Map<RegistryEntry<EntityAttribute>, EntityAttributeInstance> attributeInstances, RegistryEntry<EntityAttribute> targetAttribute, double targetValue) {
@@ -62,18 +53,15 @@ public class WardenEntityStuff {
             while (iterator.hasNext()) {
                 wardenEntity = iterator.next();
                 if (wardenEntity != null) {
-                    if (parseRemovalReason(wardenEntity.getRemovalReason())) {
+                    if (shouldRemove(wardenEntity.getRemovalReason())) {
                         wardenEntityList.remove(wardenEntity);
                     }
                 }
             }
         }
 
-        public static void wardenRefresh() {
-            Iterator<WardenEntity> iterator = wardenEntityList.iterator();
-            WardenEntity wardenEntity;
-            while (iterator.hasNext()) {
-                wardenEntity = iterator.next();
+        public static void refreshWardens() {
+            for (WardenEntity wardenEntity : wardenEntityList) {
                 if (wardenEntity != null) {
                     World world = wardenEntity.getWorld();
                     float healthRate = wardenEntity.getHealth() / wardenEntity.getMaxHealth();
@@ -90,7 +78,7 @@ public class WardenEntityStuff {
             }
         }
 
-        public static boolean parseRemovalReason(Entity.RemovalReason reason) {
+        public static boolean shouldRemove(Entity.RemovalReason reason) {
             if (reason != null) {
                 return reason.equals(Entity.RemovalReason.CHANGED_DIMENSION) || reason.equals(Entity.RemovalReason.KILLED) || reason.equals(Entity.RemovalReason.DISCARDED);
             } else {

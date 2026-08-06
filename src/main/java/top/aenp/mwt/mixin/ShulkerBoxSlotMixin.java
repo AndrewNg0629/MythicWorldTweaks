@@ -6,12 +6,12 @@ import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.ShulkerBoxSlot;
-import top.aenp.mwt.config.RuntimeController;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import top.aenp.mwt.config.v2.ConfigManager;
 
 @Mixin(ShulkerBoxSlot.class)
 public class ShulkerBoxSlotMixin {
@@ -43,12 +43,8 @@ public class ShulkerBoxSlotMixin {
 
     @Inject(at = @At("HEAD"), method = "canInsert", cancellable = true)
     private void canInsert(ItemStack stack, CallbackInfoReturnable<Boolean> info) {
-        if (isShulkerBox(stack) && RuntimeController.getCurrentTParams().nestableShulkerBoxes()) {
-            if (RuntimeController.getCurrentTParams().shulkerBoxNestingLimitEnabled()) {
-                info.setReturnValue(determineNesting(1, RuntimeController.getCurrentTParams().shulkerBoxMaxLayers(), stack));
-            } else {
-                info.setReturnValue(true);
-            }
+        if (isShulkerBox(stack) && ConfigManager.getConfig().tweaks().valueTweaks().shulkerBoxNesting().enabled()) {
+            info.setReturnValue(determineNesting(1, ConfigManager.getConfig().tweaks().valueTweaks().shulkerBoxNesting().maxLayers(), stack));
         }
     }
 }

@@ -5,11 +5,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import top.aenp.mwt.config.RuntimeController;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import top.aenp.mwt.config.v2.ConfigManager;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class ItemMixin {
     @Inject(at = @At(value = "HEAD"), method = "appendTooltip")
     private void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type, CallbackInfo info) {
         int count = stack.getCount();
-        if (RuntimeController.getCurrentTParams().itemEditorEnabled() && count >= 100000) {
+        if (ConfigManager.getConfig().itemEditorConfig().enabled() && count >= 100000) {
             tooltip.add(Text.translatable("mythicworldtweaks.item_editor.item_count_tooltip", count).formatted(Formatting.AQUA));
         }
     }

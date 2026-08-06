@@ -1,20 +1,16 @@
 package top.aenp.mwt.mixin.client;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.DisconnectionInfo;
-import top.aenp.mwt.config.RuntimeController;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import top.aenp.mwt.config.v2.ConfigManager;
 
-@Environment(EnvType.CLIENT)
 @Mixin(ClientConnection.class)
 public class ClientConnectionMixin {
-    @Inject(at = @At(value = "TAIL"), method = "disconnect(Lnet/minecraft/network/DisconnectionInfo;)V")
-    private void disconnect(DisconnectionInfo disconnectionInfo, CallbackInfo info) {
-        RuntimeController.exitMythicServerPlay();
+    @Inject(method = "handleDisconnection", at = @At(value = "HEAD"))
+    private void handleDisconnection(CallbackInfo info) {
+        ConfigManager.getInstance().exitMythicServerPlay();
     }
 }

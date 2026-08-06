@@ -1,7 +1,7 @@
 package top.aenp.mwt.misc;
 
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
-import top.aenp.mwt.config.RuntimeController;
+import top.aenp.mwt.config.v2.ConfigManager;
 
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +22,7 @@ public class FireBallEntityManager {
                 if (entity.isRemoved()) {
                     fireballEntityList.remove(entity);
                 } else {
-                    if (fireballEntityList.get(entity) >= RuntimeController.getCurrentTParams().fireBallMaxLifeTicks()) {
+                    if (fireballEntityList.get(entity) >= ConfigManager.getConfig().tweaks().valueTweaks().fireballAutoDiscarding().discardTicks()) {
                         entity.discard();
                         fireballEntityList.remove(entity);
                     } else {
