@@ -18,12 +18,14 @@ import top.aenp.mwt.network.v2.payloads.interfaces.MythicPlayS2CPayload;
 public record NetworkSyncedConfig(
         ModConfig.Tweaks.SyncedToggleTweaks1 syncedToggleTweaks1,
         ModConfig.Tweaks.ValueTweaks.WardenAttributesControl wardenAttributesControl,
+        ModConfig.Tweaks.ValueTweaks.VaultReuse vaultReuse,
         ModConfig.ItemEditorConfig itemEditorConfig
 ) implements MythicLoginS2CPayload, MythicPlayS2CPayload {
     public static final Codec<NetworkSyncedConfig> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                     ModConfig.Tweaks.SyncedToggleTweaks1.CODEC.fieldOf("synced_toggle_tweaks1").forGetter(NetworkSyncedConfig::syncedToggleTweaks1),
                     ModConfig.Tweaks.ValueTweaks.WardenAttributesControl.CODEC.fieldOf("warden_attributes_control").forGetter(NetworkSyncedConfig::wardenAttributesControl),
+                    ModConfig.Tweaks.ValueTweaks.VaultReuse.CODEC.fieldOf("vault_reuse").forGetter(NetworkSyncedConfig::vaultReuse),
                     ModConfig.ItemEditorConfig.CODEC.fieldOf("item_editor_config").forGetter(NetworkSyncedConfig::itemEditorConfig)
             ).apply(instance, NetworkSyncedConfig::new)
     );

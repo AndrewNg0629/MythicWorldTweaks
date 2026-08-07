@@ -23,6 +23,13 @@ repositories {
 		name = "Terraformers"
 		url = "https://maven.terraformersmc.com/"
 	}
+	maven {
+		url "https://maven2.bai.lol"
+		content {
+			includeGroup "lol.bai"
+			includeGroup "mcp.mobius.waila"
+		}
+	}
 }
 
 loom {
@@ -49,14 +56,12 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	modImplementation "carpet:fabric-carpet:${project.carpet_minecraft_version}-${project.carpet_core_version}"
-	modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
-	/*
-	afterEvaluate {
-		api(project(":MythicWorldData"))
-		include(project(":MythicWorldData"))
-	}
 
-	 */
+	modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+
+	modCompileOnly "mcp.mobius.waila:wthit-api:fabric-${wthitVersion}"
+	modRuntimeOnly "mcp.mobius.waila:wthit:fabric-${wthitVersion}"
+	modRuntimeOnly "lol.bai:badpackets:fabric-${badpacketsVersion}"
 }
 
 

@@ -42,6 +42,11 @@ public class MythicWorldTweaks implements ModInitializer {
                             source.sendFeedback(() -> Text.translatable("commands.kill.success.single", entity.getDisplayName()), false);
                             return 1;
                         })));
+        try {
+            Class.forName("net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage");
+        } catch (ClassNotFoundException e) {
+            LOGGER.warn("Failed to touch FluidStorage");
+        }
         LOGGER.info("MythicWorldTweaks has been initialized!");
     }
 }

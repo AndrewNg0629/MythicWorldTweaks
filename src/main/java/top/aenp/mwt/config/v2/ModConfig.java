@@ -51,7 +51,7 @@ public record ModConfig(
                             new Tweaks.ValueTweaks.WardenAttributesControl(false, 500.0, 1.0, 30.0, 1.5, 1.2, 18),
                             new Tweaks.ValueTweaks.WardenSonicBoomControl(false, true, 10.0, 1.0, 34),
                             new Tweaks.ValueTweaks.PlayerDeathItemProtection(false, 12000, false, false),
-                            new Tweaks.ValueTweaks.VaultReuse(false, 300, false, 600)
+                            new Tweaks.ValueTweaks.VaultReuse(false, 300, false, 600, false)
                     )
             ),
             new ItemEditorConfig(false, List.of()),
@@ -269,14 +269,16 @@ public record ModConfig(
                     boolean reuseRegularVault,
                     int regularVaultCooldown,
                     boolean reuseOminousVault,
-                    int ominousVaultCooldown
+                    int ominousVaultCooldown,
+                    boolean wthitIntegration
             ) {
                 public static final Codec<VaultReuse> CODEC = RecordCodecBuilder.create(
                         instance -> instance.group(
                                 Codec.BOOL.fieldOf("reuse_regular_vault").forGetter(VaultReuse::reuseRegularVault),
                                 Codec.INT.fieldOf("regular_vault_cooldown").forGetter(VaultReuse::regularVaultCooldown),
                                 Codec.BOOL.fieldOf("reuse_ominous_vault").forGetter(VaultReuse::reuseOminousVault),
-                                Codec.INT.fieldOf("ominous_vault_cooldown").forGetter(VaultReuse::ominousVaultCooldown)
+                                Codec.INT.fieldOf("ominous_vault_cooldown").forGetter(VaultReuse::ominousVaultCooldown),
+                                Codec.BOOL.fieldOf("wthit_integration").forGetter(VaultReuse::wthitIntegration)
                         ).apply(instance, VaultReuse::new)
                 );
             }

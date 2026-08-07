@@ -1,0 +1,10 @@
+{
+  "mythicworldtweaks:plugin": {
+    "entrypoints": {
+      "common": "top.aenp.mwt.wthit.MythicWailaCommonPlugin",
+      "client": "top.aenp.mwt.wthit.client.MythicWailaClientPlugin"
+    },
+    "side": "*",
+    "defaultEnabled": true
+  }
+}

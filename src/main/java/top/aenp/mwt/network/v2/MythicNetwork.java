@@ -79,7 +79,7 @@ public class MythicNetwork {
             }
             players.removeIf(player -> player.getGameProfile().getName().equalsIgnoreCase(hostPlayerName));
             ModConfig modConfig = ConfigManager.getConfig();
-            NetworkSyncedConfig syncedConfig = new NetworkSyncedConfig(modConfig.tweaks().syncedToggleTweaks1(), modConfig.tweaks().valueTweaks().wardenAttributesControl(), modConfig.itemEditorConfig());
+            NetworkSyncedConfig syncedConfig = new NetworkSyncedConfig(modConfig.tweaks().syncedToggleTweaks1(), modConfig.tweaks().valueTweaks().wardenAttributesControl(), modConfig.tweaks().valueTweaks().vaultReuse(), modConfig.itemEditorConfig());
             for (ServerPlayerEntity player : players) {
                 player.networkHandler.sendPacket(new CustomPayloadS2CPacket(syncedConfig));
             }

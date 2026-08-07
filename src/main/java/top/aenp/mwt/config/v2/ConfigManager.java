@@ -165,6 +165,7 @@ public class ConfigManager {
     private void combineConfig() {
         ModConfig.Tweaks.ValueTweaks valueTweaksFromFile = this.configFromFile.tweaks().valueTweaks();
         ModConfig.Tweaks.ValueTweaks.WardenAttributesControl wardenAttributesControlConfig = this.configFromNetwork != null ? this.configFromNetwork.wardenAttributesControl() : valueTweaksFromFile.wardenAttributesControl();
+        ModConfig.Tweaks.ValueTweaks.VaultReuse vaultReuseConfig = this.configFromNetwork != null ? this.configFromNetwork.vaultReuse() : valueTweaksFromFile.vaultReuse();
         ModConfig.ItemEditorConfig itemEditorConfig = this.configFromNetwork != null ? this.configFromNetwork.itemEditorConfig() : this.configFromFile.itemEditorConfig();
         this.combinedConfig = this.modEnabled ?
                 new ModConfig(
@@ -182,7 +183,7 @@ public class ConfigManager {
                                         wardenAttributesControlConfig.enabled() ? wardenAttributesControlConfig : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().wardenAttributesControl(),
                                         valueTweaksFromFile.wardenSonicBoomControl().enabled() ? valueTweaksFromFile.wardenSonicBoomControl() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().wardenSonicBoomControl(),
                                         valueTweaksFromFile.playerDeathItemProtection().enabled() ? valueTweaksFromFile.playerDeathItemProtection() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().playerDeathItemProtection(),
-                                        valueTweaksFromFile.vaultReuse()
+                                        vaultReuseConfig
                                 )
                         ) : ModConfig.DEFAULT_CONFIG.tweaks(),
                         itemEditorConfig.enabled() ? itemEditorConfig : ModConfig.DEFAULT_CONFIG.itemEditorConfig(),

@@ -50,7 +50,7 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
     @Unique
     private void sendConfig() {
         ModConfig modConfig = ConfigManager.getConfig();
-        this.connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new NetworkSyncedConfig(modConfig.tweaks().syncedToggleTweaks1(), modConfig.tweaks().valueTweaks().wardenAttributesControl(), modConfig.itemEditorConfig())));
+        this.connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new NetworkSyncedConfig(modConfig.tweaks().syncedToggleTweaks1(), modConfig.tweaks().valueTweaks().wardenAttributesControl(), modConfig.tweaks().valueTweaks().vaultReuse(), modConfig.itemEditorConfig())));
         if (!this.server.getPlayerManager().disconnectDuplicateLogins(this.profile)) {
             ReflectionUtils.setLoginHandlerState((ServerLoginNetworkHandler) (Object) this, 5);
         } else {

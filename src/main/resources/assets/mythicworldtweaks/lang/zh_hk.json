@@ -2,5 +2,7 @@
   "item.mythicworldtweaks.large_fire_charge": "大火焰彈",
   "item.mythicworldtweaks.debugger": "調試器",
   "mythicworldtweaks.item_editor.item_count_tooltip": "物品數量：%s個",
-  "mythicworldtweaks.sleeping_extras.sleep_button": "入睡"
+  "mythicworldtweaks.sleeping_extras.sleep_button": "入睡",
+  "mythicworldtweaks.wthit.tooltip.vault.ready": "可解鎖",
+  "mythicworldtweaks.wthit.tooltip.vault.cooldown": "冷卻時間：%s"
 }
