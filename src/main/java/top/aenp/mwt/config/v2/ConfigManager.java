@@ -40,11 +40,11 @@ public class ConfigManager {
     private volatile ModConfig combinedConfig = null;
 
     public ConfigManager(ModConfig initialConfig) {
-        this.modEnabled = initialConfig.modEnabled();
-        this.multiplayerSupportEnabled = initialConfig.multiplayerSupportEnabled();
-        this.modIdValidationConfig = initialConfig.modIdValidationConfig().enabled() ? initialConfig.modIdValidationConfig() : ModConfig.DEFAULT_CONFIG.modIdValidationConfig();
-        this.configFromFile = initialConfig;
-        this.combineConfig();
+        modEnabled = initialConfig.modEnabled();
+        multiplayerSupportEnabled = initialConfig.multiplayerSupportEnabled();
+        modIdValidationConfig = initialConfig.modIdValidationConfig().enabled() ? initialConfig.modIdValidationConfig() : ModConfig.DEFAULT_CONFIG.modIdValidationConfig();
+        configFromFile = initialConfig;
+        combineConfig();
     }
 
     public static ConfigManager getInstance() {
@@ -132,15 +132,15 @@ public class ConfigManager {
 
     public void updateConfigFromFile() {
         readConfigFromFile().ifSuccess(result -> {
-            if (!(result.modEnabled() == this.configFromFile.modEnabled() && result.multiplayerSupportEnabled() == this.configFromFile.multiplayerSupportEnabled() && Objects.equals(result.modIdValidationConfig(), this.configFromFile.modIdValidationConfig()))) {
+            if (!(result.modEnabled() == configFromFile.modEnabled() && result.multiplayerSupportEnabled() == configFromFile.multiplayerSupportEnabled() && Objects.equals(result.modIdValidationConfig(), configFromFile.modIdValidationConfig()))) {
                 MythicWorldTweaks.LOGGER.warn("You edited immutable config, which can't be reloaded on-the-fly. Restart minecraft to change them.");
             }
-            if (Objects.equals(result.tweaks(), this.configFromFile.tweaks()) && Objects.equals(result.itemEditorConfig(), this.configFromFile.itemEditorConfig())) {
+            if (Objects.equals(result.tweaks(), configFromFile.tweaks()) && Objects.equals(result.itemEditorConfig(), configFromFile.itemEditorConfig())) {
                 MythicWorldTweaks.LOGGER.info("Your mutable config didn't change.");
             } else {
-                this.configFromFile = result;
-                this.combineConfig();
-                this.applyBakedConfig();
+                configFromFile = result;
+                combineConfig();
+                applyBakedConfig();
                 MythicWorldTweaks.LOGGER.info("Your mutable config has been successfully updated.");
                 MythicNetwork.INSTANCE.pushConfigDuringPlay();
             }
@@ -149,33 +149,33 @@ public class ConfigManager {
 
     public void onConfigPush(NetworkSyncedConfig syncedConfig) {
         if (EnvironmentDetection.isPhyClient) {
-            this.configFromNetwork = syncedConfig;
-            this.combineConfig();
-            this.applyBakedConfig();
+            configFromNetwork = syncedConfig;
+            combineConfig();
+            applyBakedConfig();
             MythicWorldTweaks.LOGGER.info("Applied config from the server.");
         }
     }
 
     public void exitMythicServerPlay() {
-        this.configFromNetwork = null;
-        this.combineConfig();
-        this.applyBakedConfig();
+        configFromNetwork = null;
+        combineConfig();
+        applyBakedConfig();
     }
 
     private void combineConfig() {
-        ModConfig.Tweaks.ValueTweaks valueTweaksFromFile = this.configFromFile.tweaks().valueTweaks();
-        ModConfig.Tweaks.ValueTweaks.WardenAttributesControl wardenAttributesControlConfig = this.configFromNetwork != null ? this.configFromNetwork.wardenAttributesControl() : valueTweaksFromFile.wardenAttributesControl();
-        ModConfig.Tweaks.ValueTweaks.VaultReuse vaultReuseConfig = this.configFromNetwork != null ? this.configFromNetwork.vaultReuse() : valueTweaksFromFile.vaultReuse();
-        ModConfig.ItemEditorConfig itemEditorConfig = this.configFromNetwork != null ? this.configFromNetwork.itemEditorConfig() : this.configFromFile.itemEditorConfig();
-        this.combinedConfig = this.modEnabled ?
+        ModConfig.Tweaks.ValueTweaks valueTweaksFromFile = configFromFile.tweaks().valueTweaks();
+        ModConfig.Tweaks.ValueTweaks.WardenAttributesControl wardenAttributesControlConfig = configFromNetwork != null ? configFromNetwork.wardenAttributesControl() : valueTweaksFromFile.wardenAttributesControl();
+        ModConfig.Tweaks.ValueTweaks.VaultReuse vaultReuseConfig = configFromNetwork != null ? configFromNetwork.vaultReuse() : valueTweaksFromFile.vaultReuse();
+        ModConfig.ItemEditorConfig itemEditorConfig = configFromNetwork != null ? configFromNetwork.itemEditorConfig() : configFromFile.itemEditorConfig();
+        combinedConfig = modEnabled ?
                 new ModConfig(
                         true,
-                        this.multiplayerSupportEnabled,
-                        this.modIdValidationConfig,
-                        this.configFromFile.tweaks().localTweaksEnabled() ? new ModConfig.Tweaks(
+                        multiplayerSupportEnabled,
+                        modIdValidationConfig,
+                        configFromFile.tweaks().localTweaksEnabled() ? new ModConfig.Tweaks(
                                 true,
-                                this.configFromFile.tweaks().localToggleTweaks1(),
-                                this.configFromNetwork != null ? this.configFromNetwork.syncedToggleTweaks1() : this.configFromFile.tweaks().syncedToggleTweaks1(),
+                                configFromFile.tweaks().localToggleTweaks1(),
+                                configFromNetwork != null ? configFromNetwork.syncedToggleTweaks1() : configFromFile.tweaks().syncedToggleTweaks1(),
                                 new ModConfig.Tweaks.ValueTweaks(
                                         valueTweaksFromFile.fireballAutoDiscarding().enabled() ? valueTweaksFromFile.fireballAutoDiscarding() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().fireballAutoDiscarding(),
                                         valueTweaksFromFile.stuffedShulkerBoxStacking().enabled() ? valueTweaksFromFile.stuffedShulkerBoxStacking() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().stuffedShulkerBoxStacking(),
@@ -187,7 +187,7 @@ public class ConfigManager {
                                 )
                         ) : ModConfig.DEFAULT_CONFIG.tweaks(),
                         itemEditorConfig.enabled() ? itemEditorConfig : ModConfig.DEFAULT_CONFIG.itemEditorConfig(),
-                        this.configFromFile.configVersion()
+                        configFromFile.configVersion()
                 )
                 : ModConfig.DEFAULT_CONFIG;
     }

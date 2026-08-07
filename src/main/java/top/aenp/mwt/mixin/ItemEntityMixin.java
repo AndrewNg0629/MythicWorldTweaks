@@ -19,7 +19,7 @@ import top.aenp.mwt.injected.interfaces.ItemEntityMethodInjections;
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity implements ItemEntityMethodInjections {
     @Unique
-    private final int worldMinY = this.getWorld().getBottomY() + 1;
+    private final int worldMinY = getWorld().getBottomY() + 1;
     @Shadow
     private int itemAge;
 
@@ -43,12 +43,12 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityMethod
 
     @Override
     public boolean mythicWorldTweaks$isUnderProtection() {
-        return this.isUnderProtection;
+        return isUnderProtection;
     }
 
     @Override
     public void mythicWorldTweaks$setUnderProtection(boolean value) {
-        this.isUnderProtection = value;
+        isUnderProtection = value;
     }
 
     @Shadow
@@ -56,49 +56,49 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityMethod
 
     @Unique
     private boolean isUnderProtection() {
-        return ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().enabled() && this.isUnderProtection;
+        return ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().enabled() && isUnderProtection;
     }
 
     @Inject(at = @At(value = "RETURN"), method = "getGravity", cancellable = true)
     private void getGravity(CallbackInfoReturnable<Double> info) {
-        if (this.isUnderProtection() && this.getY() <= this.worldMinY) {
+        if (isUnderProtection() && getY() <= worldMinY) {
             info.setReturnValue(0D);
         }
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;tick()V", shift = At.Shift.AFTER), method = "tick")
     private void tick(CallbackInfo info) {
-        if (this.isUnderProtection()) {
-            BlockPos blockPosAbove = this.getBlockPos().up();
-            if (this.getY() <= this.worldMinY + 0.3D && !this.getWorld().getBlockState(blockPosAbove).isSolidBlock(this.getWorld(), blockPosAbove)) {
-                this.setVelocity(new Vec3d(this.getVelocity().x, 0D, this.getVelocity().z));
-                double relevantHeight = Math.abs(this.getY() - this.worldMinY);
+        if (isUnderProtection()) {
+            BlockPos blockPosAbove = getBlockPos().up();
+            if (getY() <= worldMinY + 0.3D && !getWorld().getBlockState(blockPosAbove).isSolidBlock(getWorld(), blockPosAbove)) {
+                setVelocity(new Vec3d(getVelocity().x, 0D, getVelocity().z));
+                double relevantHeight = Math.abs(getY() - worldMinY);
                 if (relevantHeight <= 0.5D) {
                     if (relevantHeight > 0.1D) {
-                        this.setPosition(this.getX(), this.worldMinY, this.getZ());
+                        setPosition(getX(), worldMinY, getZ());
                     } else {
-                        this.setVelocity(Vec3d.ZERO);
+                        setVelocity(Vec3d.ZERO);
                     }
                 } else {
-                    this.setPosition(this.getX(), this.getY() + 0.5D, this.getZ());
+                    setPosition(getX(), getY() + 0.5D, getZ());
                 }
             }
             if (ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().itemDespawnTicks() <= 0) {
-                this.itemAge = 0;
+                itemAge = 0;
             }
         }
     }
 
     @Inject(at = @At(value = "RETURN"), method = "isFireImmune", cancellable = true)
     private void isFireImmune(CallbackInfoReturnable<Boolean> info) {
-        if (this.isUnderProtection()) {
+        if (isUnderProtection()) {
             info.setReturnValue(true);
         }
     }
 
     @Inject(at = @At(value = "HEAD"), method = "damage", cancellable = true)
     private void damage(CallbackInfoReturnable<Boolean> info) {
-        if (this.isUnderProtection()) {
+        if (isUnderProtection()) {
             info.setReturnValue(false);
         }
     }
@@ -106,7 +106,7 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityMethod
     @Inject(at = @At(value = "HEAD"), method = "tryMerge(Lnet/minecraft/entity/ItemEntity;)V", cancellable = true)
     private void tryMerge(ItemEntity other, CallbackInfo info) {
         if (ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().enabled() &&
-                (this.mythicWorldTweaks$isUnderProtection()) ^ (other.mythicWorldTweaks$isUnderProtection())
+                (mythicWorldTweaks$isUnderProtection()) ^ (other.mythicWorldTweaks$isUnderProtection())
         ) {
             info.cancel();
         }
@@ -115,20 +115,20 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityMethod
     @ModifyConstant(constant = @Constant(intValue = 6000), method = "tick")
     private int discardTicks(int value) {
         int itemDiscardTicks = ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().itemDespawnTicks();
-        return itemDiscardTicks > 0 && this.isUnderProtection() ? itemDiscardTicks : value;
+        return itemDiscardTicks > 0 && isUnderProtection() ? itemDiscardTicks : value;
     }
 
     @Inject(at = @At(value = "RETURN"), method = "writeCustomDataToNbt")
     private void writeCustomDataToNbt(NbtCompound nbt, CallbackInfo ci) {
-        nbt.putBoolean("isUnderProtection", this.isUnderProtection);
+        nbt.putBoolean("isUnderProtection", isUnderProtection);
     }
 
     @Inject(at = @At(value = "RETURN"), method = "readCustomDataFromNbt")
     private void readCustomDataFromNbt(NbtCompound nbt, CallbackInfo ci) {
         if (nbt.contains("isUnderProtection")) {
-            this.isUnderProtection = nbt.getBoolean("isUnderProtection");
+            isUnderProtection = nbt.getBoolean("isUnderProtection");
         } else {
-            this.isUnderProtection = false;
+            isUnderProtection = false;
         }
     }
 }

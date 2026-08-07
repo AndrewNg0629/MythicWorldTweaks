@@ -35,13 +35,13 @@ public abstract class ClientPlayNetworkHandlerMixin extends ClientCommonNetworkH
     @SuppressWarnings("ConstantConditions")
     @Override
     public void mythicworldtweaks$onSleepingStateUpdate(SleepingStateUpdateS2CPayload payload) {
-        this.client.player.mythicWorldTweaks$setReallySleeping(payload.isReallySleeping());
+        client.player.mythicWorldTweaks$setReallySleeping(payload.isReallySleeping());
         if (ConfigManager.getConfig().tweaks().syncedToggleTweaks1().bedIdle()) {
-            Screen screen = this.client.currentScreen;
+            Screen screen = client.currentScreen;
             if (screen instanceof SleepingChatScreen sleepingChatScreen) {
                 ButtonWidget sleepButton = sleepingChatScreen.mythicWorldTweaks$getSleepButton();
                 if (sleepButton != null) {
-                    sleepButton.visible = !this.client.player.mythicWorldTweaks$isReallySleeping();
+                    sleepButton.visible = !client.player.mythicWorldTweaks$isReallySleeping();
                 }
             }
         }

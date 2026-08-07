@@ -41,16 +41,16 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonNetworkH
     @Override
     public void mythicworldtweaks$onTrySleep() {
         if (ConfigManager.getConfig().tweaks().syncedToggleTweaks1().bedIdle()) {
-            if (this.player.isSleeping()) {
-                if (this.player.getWorld().isDay()) {
-                    this.player.sendMessage(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW.getMessage(), true);
+            if (player.isSleeping()) {
+                if (player.getWorld().isDay()) {
+                    player.sendMessage(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW.getMessage(), true);
                 } else {
-                    this.player.mythicWorldTweaks$setReallySleeping(true);
-                    Criteria.SLEPT_IN_BED.trigger(this.player);
-                    if (!this.player.getServerWorld().isSleepingEnabled()) {
-                        this.player.sendMessage(Text.translatable("sleep.not_possible"), true);
+                    player.mythicWorldTweaks$setReallySleeping(true);
+                    Criteria.SLEPT_IN_BED.trigger(player);
+                    if (!player.getServerWorld().isSleepingEnabled()) {
+                        player.sendMessage(Text.translatable("sleep.not_possible"), true);
                     }
-                    this.player.getServerWorld().updateSleepingPlayers();
+                    player.getServerWorld().updateSleepingPlayers();
                 }
             }
         }

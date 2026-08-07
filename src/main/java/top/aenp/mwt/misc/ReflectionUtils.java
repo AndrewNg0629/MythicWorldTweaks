@@ -138,26 +138,26 @@ public class ReflectionUtils {
         public ReflectedField(@NotNull Class<C> fieldClass, @NotNull Class<F> fieldType, @NotNull String prettyName, @Nullable String intermediaryName) {
             String fieldName = EnvironmentDetection.isYarn || intermediaryName == null ? prettyName : intermediaryName;
             try {
-                this.containedField = fieldClass.getDeclaredField(fieldName);
+                containedField = fieldClass.getDeclaredField(fieldName);
                 this.fieldType = fieldType;
             } catch (NoSuchFieldException e) {
                 throw new IllegalArgumentException(String.format("Unable to find field with name: %s, %s", prettyName, intermediaryName), e);
             }
-            this.containedField.setAccessible(true);
-            if (!getBoxedType(this.containedField).isAssignableFrom(fieldType)) {
+            containedField.setAccessible(true);
+            if (!getBoxedType(containedField).isAssignableFrom(fieldType)) {
                 throw new IllegalArgumentException("Wrong field type! Check the generics type!");
             }
-            int mod = this.containedField.getModifiers();
+            int mod = containedField.getModifiers();
             if (Modifier.isFinal(mod) && Modifier.isStatic(mod)) {
-                this.isStaticConstant = true;
+                isStaticConstant = true;
                 try {
-                    this.cachedConstant = this.fieldType.cast(this.containedField.get(null));
+                    cachedConstant = this.fieldType.cast(containedField.get(null));
                 } catch (IllegalAccessException | ClassCastException e) {
-                    throw new RuntimeException(String.format("Failed to get value of field: %s", this.containedField), e);
+                    throw new RuntimeException(String.format("Failed to get value of field: %s", containedField), e);
                 }
             } else {
-                this.isStaticConstant = false;
-                this.cachedConstant = null;
+                isStaticConstant = false;
+                cachedConstant = null;
             }
         }
 
@@ -168,22 +168,22 @@ public class ReflectionUtils {
         }
 
         public void setFieldValue(C instance, F targetValue) {
-            if (this.isStaticConstant) {
+            if (isStaticConstant) {
                 throw new UnsupportedOperationException(String.format("Field %s is constant, modification not supported.", cachedConstant));
             }
             try {
-                this.containedField.set(instance, targetValue);
+                containedField.set(instance, targetValue);
             } catch (IllegalAccessException | IllegalArgumentException e) {
                 throw new RuntimeException(String.format("Failed to set value of field: %s", containedField), e);
             }
         }
 
         public F getFieldValue(C instance) {
-            if (this.isStaticConstant) {
-                return this.cachedConstant;
+            if (isStaticConstant) {
+                return cachedConstant;
             }
             try {
-                Object value = this.containedField.get(instance);
+                Object value = containedField.get(instance);
                 Class<F> fieldType = this.fieldType;
                 return fieldType.cast(value);
             } catch (IllegalAccessException | ClassCastException e) {

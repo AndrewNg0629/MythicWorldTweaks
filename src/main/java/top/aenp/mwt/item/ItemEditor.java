@@ -38,17 +38,17 @@ public class ItemEditor {
 
     private ItemEditor(Item item) {
         itemEditors.put(item, this);
-        this.carriedItem = item;
-        ReflectionUtils.separateItemComponents(this.carriedItem);
-        this.vanillaMaxStackSize = item.getComponents().getOrDefault(DataComponentTypes.MAX_STACK_SIZE, 1);
-        this.vanillaMaxDamage = item.getComponents().getOrDefault(DataComponentTypes.MAX_DAMAGE, 0);
-        this.vanillaRarity = item.getComponents().getOrDefault(DataComponentTypes.RARITY, Rarity.COMMON);
-        this.vanillaIsFood = item.getComponents().contains(DataComponentTypes.FOOD);
-        this.vanillaFoodComponent = item.getComponents().getOrDefault(DataComponentTypes.FOOD, null);
-        this.vanillaFireResistance = item.getComponents().contains(DataComponentTypes.FIRE_RESISTANT);
-        this.vanillaRecipeRemainder = item.getRecipeRemainder();
-        this.itemDamageable = this.carriedItem.getComponents().contains(DataComponentTypes.MAX_DAMAGE);
-        this.revertVanilla();
+        carriedItem = item;
+        ReflectionUtils.separateItemComponents(carriedItem);
+        vanillaMaxStackSize = item.getComponents().getOrDefault(DataComponentTypes.MAX_STACK_SIZE, 1);
+        vanillaMaxDamage = item.getComponents().getOrDefault(DataComponentTypes.MAX_DAMAGE, 0);
+        vanillaRarity = item.getComponents().getOrDefault(DataComponentTypes.RARITY, Rarity.COMMON);
+        vanillaIsFood = item.getComponents().contains(DataComponentTypes.FOOD);
+        vanillaFoodComponent = item.getComponents().getOrDefault(DataComponentTypes.FOOD, null);
+        vanillaFireResistance = item.getComponents().contains(DataComponentTypes.FIRE_RESISTANT);
+        vanillaRecipeRemainder = item.getRecipeRemainder();
+        itemDamageable = carriedItem.getComponents().contains(DataComponentTypes.MAX_DAMAGE);
+        revertVanilla();
     }
 
     private static ItemEditor getInstance(Item item) {
@@ -74,43 +74,43 @@ public class ItemEditor {
     }
 
     private void revertVanilla() {
-        this.maxStackSize = this.vanillaMaxStackSize;
-        this.maxDamage = this.vanillaMaxDamage;
-        this.rarity = this.vanillaRarity;
-        this.isFood = this.vanillaIsFood;
-        this.foodComponent = vanillaFoodComponent;
-        this.fireResistance = this.vanillaFireResistance;
-        this.recipeRemainder = this.vanillaRecipeRemainder;
+        maxStackSize = vanillaMaxStackSize;
+        maxDamage = vanillaMaxDamage;
+        rarity = vanillaRarity;
+        isFood = vanillaIsFood;
+        foodComponent = vanillaFoodComponent;
+        fireResistance = vanillaFireResistance;
+        recipeRemainder = vanillaRecipeRemainder;
     }
 
     private void loadFromConfigUnit(ModConfig.ItemEditorConfig.ItemEditorUnit unit) {
-        unit.maxStackSize().ifPresent(size -> this.maxStackSize = size);
-        unit.durability().ifPresent(durability -> this.maxDamage = durability);
-        unit.fireResistant().ifPresent(resistant -> this.fireResistance = resistant);
+        unit.maxStackSize().ifPresent(size -> maxStackSize = size);
+        unit.durability().ifPresent(durability -> maxDamage = durability);
+        unit.fireResistant().ifPresent(resistant -> fireResistance = resistant);
         unit.rarity().ifPresent(rarity -> this.rarity = rarity);
-        unit.craftingRemainsEntry().ifPresent(remains -> this.recipeRemainder = remains.value());
+        unit.craftingRemainsEntry().ifPresent(remains -> recipeRemainder = remains.value());
         unit.isFood().ifPresent(isFood -> this.isFood = isFood);
-        unit.wrappedFoodComponents().ifPresent(wrappedComponents -> this.foodComponent = wrappedComponents.createComponents());
+        unit.wrappedFoodComponents().ifPresent(wrappedComponents -> foodComponent = wrappedComponents.createComponents());
     }
 
     private void applyEdits() {
-        Reference2ObjectMap<ComponentType<?>, Object> underlyingMap = ReflectionUtils.getItemComponentsUnderlyingMap(this.carriedItem);
-        if (this.itemDamageable) {
-            underlyingMap.put(DataComponentTypes.MAX_DAMAGE, this.maxDamage);
+        Reference2ObjectMap<ComponentType<?>, Object> underlyingMap = ReflectionUtils.getItemComponentsUnderlyingMap(carriedItem);
+        if (itemDamageable) {
+            underlyingMap.put(DataComponentTypes.MAX_DAMAGE, maxDamage);
         } else {
-            underlyingMap.put(DataComponentTypes.MAX_STACK_SIZE, this.maxStackSize);
+            underlyingMap.put(DataComponentTypes.MAX_STACK_SIZE, maxStackSize);
         }
-        underlyingMap.put(DataComponentTypes.RARITY, this.rarity);
-        if (this.isFood) {
-            underlyingMap.put(DataComponentTypes.FOOD, this.foodComponent);
+        underlyingMap.put(DataComponentTypes.RARITY, rarity);
+        if (isFood) {
+            underlyingMap.put(DataComponentTypes.FOOD, foodComponent);
         } else {
             underlyingMap.remove(DataComponentTypes.FOOD);
         }
-        if (this.fireResistance) {
+        if (fireResistance) {
             underlyingMap.put(DataComponentTypes.FIRE_RESISTANT, Unit.INSTANCE);
         } else {
             underlyingMap.remove(DataComponentTypes.FIRE_RESISTANT);
         }
-        ReflectionUtils.Item$recipeRemainder.setFieldValue(this.carriedItem, Objects.equals(this.recipeRemainder, Items.AIR) ? null : this.recipeRemainder);
+        ReflectionUtils.Item$recipeRemainder.setFieldValue(carriedItem, Objects.equals(recipeRemainder, Items.AIR) ? null : recipeRemainder);
     }
 }

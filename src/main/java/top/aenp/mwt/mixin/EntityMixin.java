@@ -61,7 +61,7 @@ public abstract class EntityMixin {
     private void tickInVoid(CallbackInfo info) {
         if ((Entity) (Object) this instanceof ItemEntity item && ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().enabled()) {
             if (item.mythicWorldTweaks$isUnderProtection()) {
-                this.setPosition(new Vec3d(this.getX(), this.getY() + 1.0D, this.getZ()));
+                setPosition(new Vec3d(getX(), getY() + 1.0D, getZ()));
                 info.cancel();
             }
         }

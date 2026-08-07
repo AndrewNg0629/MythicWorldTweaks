@@ -17,7 +17,7 @@ public abstract class EnderDragonFightMixin {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/boss/dragon/EnderDragonFight;generateNewEndGateway()V", shift = At.Shift.AFTER), method = "dragonKilled")
     private void dragonKilled(EnderDragonEntity dragon, CallbackInfo info) {
         if (ConfigManager.getConfig().tweaks().localToggleTweaks1().alwaysDropDragonEgg()) {
-            this.previouslyKilled = false;
+            previouslyKilled = false;
         }
     }
 }

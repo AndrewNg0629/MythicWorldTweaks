@@ -31,10 +31,10 @@ public class ClientLoginNetworkHandlerMixin implements ClientLoginNetworkHandler
         if (ConfigManager.getConfig().multiplayerSupportEnabled()) {
             MythicWorldTweaks.LOGGER.info("Server initiated negotiation.");
             if (MythicNetwork.NETWORK_COMPATIBLE_VERSIONS.contains(version.modVersion())) {
-                this.connection.send(new LoginQueryResponseC2SPacket(MythicNetwork.QUERY_ID, new LoginModVersionC2SPayload(MythicNetwork.MOD_VERSION)));
+                connection.send(new LoginQueryResponseC2SPacket(MythicNetwork.QUERY_ID, new LoginModVersionC2SPayload(MythicNetwork.MOD_VERSION)));
             } else {
                 String message = "Incompatible server version: " + version.modVersion();
-                this.connection.disconnect(Text.of(message));
+                connection.disconnect(Text.of(message));
                 MythicWorldTweaks.LOGGER.warn(message);
             }
         } else {
@@ -44,7 +44,7 @@ public class ClientLoginNetworkHandlerMixin implements ClientLoginNetworkHandler
 
     @Override
     public void mythicworldtweaks$onModIdRequest() {
-        this.connection.send(new LoginQueryResponseC2SPacket(MythicNetwork.QUERY_ID, new LoginModIdListC2SPayload(MythicNetwork.ALL_MODS.asList())));
+        connection.send(new LoginQueryResponseC2SPacket(MythicNetwork.QUERY_ID, new LoginModIdListC2SPayload(MythicNetwork.ALL_MODS.asList())));
     }
 
     @Inject(method = "onQueryRequest", at = @At(value = "HEAD"), cancellable = true)

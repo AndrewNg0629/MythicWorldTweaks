@@ -29,11 +29,11 @@ public abstract class ClientConnectionMixin {
     private void sendImmediately(Packet<?> packet, @Nullable PacketCallbacks callbacks, boolean flush, CallbackInfo info) {
         if (packet instanceof LoginQueryRequestS2CPacket queryPacket) {
             if (queryPacket.queryId() == MythicNetwork.QUERY_ID) {
-                this.packetsSentCounter++;
-                if (this.channel.eventLoop().inEventLoop()) {
-                    this.sendInternal(packet, callbacks, flush);
+                packetsSentCounter++;
+                if (channel.eventLoop().inEventLoop()) {
+                    sendInternal(packet, callbacks, flush);
                 } else {
-                    this.channel.eventLoop().execute(() -> this.sendInternal(packet, callbacks, flush));
+                    channel.eventLoop().execute(() -> sendInternal(packet, callbacks, flush));
                 }
                 info.cancel();
             }

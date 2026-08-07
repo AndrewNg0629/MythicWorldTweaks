@@ -37,29 +37,29 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
     @Override
     public boolean mythicWorldTweaks$isFake() {
-        return this.isFake;
+        return isFake;
     }
 
     @Override
     public boolean mythicWorldTweaks$isUnderFallProtection() {
-        return this.isUnderFallProtection;
+        return isUnderFallProtection;
     }
 
     @Override
     public void mythicWorldTweaks$setUnderFallProtection(boolean value) {
-        this.isUnderFallProtection = value;
+        isUnderFallProtection = value;
     }
 
     @Override
     public boolean mythicWorldTweaks$isReallySleeping() {
-        return this.isReallySleeping;
+        return isReallySleeping;
     }
 
     @Override
     public void mythicWorldTweaks$setReallySleeping(boolean value) {
-        this.isReallySleeping = value;
+        isReallySleeping = value;
         if (((PlayerEntity) (Object) this) instanceof ServerPlayerEntity serverPlayerEntity) {
-            serverPlayerEntity.networkHandler.sendPacket(new CustomPayloadS2CPacket(new SleepingStateUpdateS2CPayload(this.isReallySleeping)));
+            serverPlayerEntity.networkHandler.sendPacket(new CustomPayloadS2CPacket(new SleepingStateUpdateS2CPayload(isReallySleeping)));
         }
     }
 
@@ -100,7 +100,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ItemEntity;setPickupDelay(I)V", shift = At.Shift.AFTER), method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;")
     private void dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> info, @Local ItemEntity itemEntity) {
-        if (ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().enabled() && this.isDead()) {
+        if (ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().enabled() && isDead()) {
             itemEntity.mythicWorldTweaks$setUnderProtection(true);
             if (!retainOwnership && ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().strictPickup()) {
                 itemEntity.setThrower(this);
@@ -111,7 +111,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     @ModifyConstant(constant = @Constant(floatValue = 0.5F), method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;")
     private float throwSpeed(float constant) {
         if (ConfigManager.getConfig().tweaks().valueTweaks().playerDeathItemProtection().enabled()) {
-            return this.getY() < this.getWorld().getBottomY() - 16 ? 0.05F : 0.15F;
+            return getY() < getWorld().getBottomY() - 16 ? 0.05F : 0.15F;
         } else {
             return constant;
         }
@@ -119,15 +119,15 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
     @Inject(at = @At(value = "RETURN"), method = "writeCustomDataToNbt")
     private void writeCustomDataToNbt(NbtCompound nbt, CallbackInfo ci) {
-        nbt.putBoolean("isUnderFallProtection", this.isUnderFallProtection);
+        nbt.putBoolean("isUnderFallProtection", isUnderFallProtection);
     }
 
     @Inject(at = @At(value = "RETURN"), method = "readCustomDataFromNbt")
     private void readCustomDataFromNbt(NbtCompound nbt, CallbackInfo ci) {
         if (nbt.contains("isUnderFallProtection")) {
-            this.isUnderFallProtection = nbt.getBoolean("isUnderFallProtection");
+            isUnderFallProtection = nbt.getBoolean("isUnderFallProtection");
         } else {
-            this.isUnderFallProtection = false;
+            isUnderFallProtection = false;
         }
     }
 }

@@ -30,8 +30,8 @@ public abstract class ItemStackMixin implements ComponentHolder {
 
     @Inject(at = @At(value = "HEAD"), method = "getMaxCount", cancellable = true)
     private void getMaxCount(CallbackInfoReturnable<Integer> info) {
-        if (this.getItem() instanceof BlockItem blockItem) {
-            if (blockItem.getBlock() instanceof ShulkerBoxBlock && this.get(DataComponentTypes.CONTAINER) != ContainerComponent.DEFAULT) {
+        if (getItem() instanceof BlockItem blockItem) {
+            if (blockItem.getBlock() instanceof ShulkerBoxBlock && get(DataComponentTypes.CONTAINER) != ContainerComponent.DEFAULT) {
                 info.setReturnValue(Math.min(ConfigManager.getConfig().tweaks().valueTweaks().stuffedShulkerBoxStacking().maxStackSize(), Items.SHULKER_BOX.getComponents().getOrDefault(DataComponentTypes.MAX_STACK_SIZE, 1)));
             }
         }

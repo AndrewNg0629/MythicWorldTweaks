@@ -31,22 +31,22 @@ public abstract class TridentEntityMixin extends PersistentProjectileEntity {
 
     @Inject(at = @At("HEAD"), method = "tick")
     private void tick(CallbackInfo info) {
-        if (this.getY() <= this.getWorld().getBottomY() + 12 && this.getDataTracker().get(LOYALTY) > 0 && ConfigManager.getConfig().tweaks().localToggleTweaks1().tridentsReturnFromVoid()) {
-            this.setVelocity(Vec3d.ZERO);
-            this.dealtDamage = true;
+        if (getY() <= getWorld().getBottomY() + 12 && getDataTracker().get(LOYALTY) > 0 && ConfigManager.getConfig().tweaks().localToggleTweaks1().tridentsReturnFromVoid()) {
+            setVelocity(Vec3d.ZERO);
+            dealtDamage = true;
         }
     }
 
     @Inject(at = @At(value = "HEAD"), method = "getEntityCollision", cancellable = true)
     public void getEntityCollision(Vec3d currentPosition, Vec3d nextPosition, CallbackInfoReturnable<EntityHitResult> info) {
         if (ConfigManager.getConfig().tweaks().localToggleTweaks1().tridentsDamageMultipleTimes()) {
-            info.setReturnValue(this.isNoClip() ? null : super.getEntityCollision(currentPosition, nextPosition));
+            info.setReturnValue(isNoClip() ? null : getEntityCollision(currentPosition, nextPosition));
         }
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;age()V"), method = "age", cancellable = true)
     private void age(CallbackInfo info) {
-        if ((this.pickupType.equals(PickupPermission.ALLOWED) || this.pickupType.equals(PickupPermission.CREATIVE_ONLY)) && ConfigManager.getConfig().tweaks().localToggleTweaks1().thrownTridentsPersist()) {
+        if ((pickupType.equals(PickupPermission.ALLOWED) || pickupType.equals(PickupPermission.CREATIVE_ONLY)) && ConfigManager.getConfig().tweaks().localToggleTweaks1().thrownTridentsPersist()) {
             info.cancel();
         }
     }

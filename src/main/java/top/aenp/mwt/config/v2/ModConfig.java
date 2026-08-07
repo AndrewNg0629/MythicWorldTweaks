@@ -352,9 +352,9 @@ public record ModConfig(
                 );
 
                 public FoodComponent createComponents() {
-                    Optional<ItemStack> remains = this.eatingRemains.map(entry -> entry.value().equals(Items.AIR) ? null : new ItemStack(entry.value()));
-                    List<FoodComponent.StatusEffectEntry> entries = this.effects.stream().map(WrappedStatusEffectEntry::createEntry).toList();
-                    return new FoodComponent(this.nutrition, (float) this.saturation, this.canAlwaysEat, (float) this.eatSeconds, remains, entries);
+                    Optional<ItemStack> remains = eatingRemains.map(entry -> entry.value().equals(Items.AIR) ? null : new ItemStack(entry.value()));
+                    List<FoodComponent.StatusEffectEntry> entries = effects.stream().map(WrappedStatusEffectEntry::createEntry).toList();
+                    return new FoodComponent(nutrition, (float) saturation, canAlwaysEat, (float) eatSeconds, remains, entries);
                 }
 
                 public record WrappedStatusEffectEntry(
@@ -373,8 +373,8 @@ public record ModConfig(
                     );
 
                     public FoodComponent.StatusEffectEntry createEntry() {
-                        StatusEffectInstance statusEffectInstance = new StatusEffectInstance(this.effect, this.duration * 20, this.level - 1);
-                        return new FoodComponent.StatusEffectEntry(statusEffectInstance, (float) this.probability);
+                        StatusEffectInstance statusEffectInstance = new StatusEffectInstance(effect, duration * 20, level - 1);
+                        return new FoodComponent.StatusEffectEntry(statusEffectInstance, (float) probability);
                     }
                 }
             }

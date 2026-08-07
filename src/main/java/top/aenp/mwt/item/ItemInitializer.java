@@ -86,7 +86,7 @@ public class ItemInitializer {
             @Override
             public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
                 if (ConfigManager.getConfig().tweaks().localToggleTweaks1().dispensableTridents()) {
-                    this.setSuccess(false);
+                    setSuccess(false);
                     if (stack.getMaxDamage() - stack.getDamage() <= 1) {
                         pointer.world().playSound(
                                 null,
@@ -124,7 +124,7 @@ public class ItemInitializer {
                             1.0F,
                             1.0F);
                     stack.decrement(1);
-                    this.setSuccess(true);
+                    setSuccess(true);
                     return stack;
                 } else {
                     return super.dispenseSilently(pointer, stack);

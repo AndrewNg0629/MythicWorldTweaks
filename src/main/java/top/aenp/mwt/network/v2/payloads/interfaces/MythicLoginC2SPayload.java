@@ -11,8 +11,8 @@ import top.aenp.mwt.network.v2.injections.ServerLoginNetworkHandlerMethodInjecti
 public interface MythicLoginC2SPayload extends LoginQueryResponsePayload {
     @Override
     default void write(PacketByteBuf buf) {
-        PacketCodec<PacketByteBuf, MythicLoginC2SPayload> codec = (PacketCodec<PacketByteBuf, MythicLoginC2SPayload>) MythicNetwork.INSTANCE.LOGIN_C2S_CODECS.get(this.mythicId());
-        buf.writeIdentifier(this.mythicId());
+        PacketCodec<PacketByteBuf, MythicLoginC2SPayload> codec = (PacketCodec<PacketByteBuf, MythicLoginC2SPayload>) MythicNetwork.INSTANCE.LOGIN_C2S_CODECS.get(mythicId());
+        buf.writeIdentifier(mythicId());
         codec.encode(buf, this);
     }
 

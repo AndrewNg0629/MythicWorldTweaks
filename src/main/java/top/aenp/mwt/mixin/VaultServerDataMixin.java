@@ -28,32 +28,32 @@ public abstract class VaultServerDataMixin implements VaultServerDataMethodInjec
 
     @Override
     public void mythicworldtweaks$storeVaultBlockEntity(VaultBlockEntity entity) {
-        this.vaultBlockEntity = entity;
+        vaultBlockEntity = entity;
     }
 
     @Unique
     private void executeIfReused(Runnable runnable) {
         ModConfig.Tweaks.ValueTweaks.VaultReuse vaultReuseConfig = ConfigManager.getConfig().tweaks().valueTweaks().vaultReuse();
-        if (this.vaultBlockEntity.getCachedState().get(VaultBlock.OMINOUS) ? vaultReuseConfig.reuseOminousVault() : vaultReuseConfig.reuseRegularVault()) {
+        if (vaultBlockEntity.getCachedState().get(VaultBlock.OMINOUS) ? vaultReuseConfig.reuseOminousVault() : vaultReuseConfig.reuseRegularVault()) {
             runnable.run();
         }
     }
 
     @Inject(method = "getRewardedPlayers", at = @At(value = "RETURN"), cancellable = true)
     private void getRewardedPlayers(CallbackInfoReturnable<Set<UUID>> info) {
-        this.executeIfReused(() -> info.setReturnValue(this.vaultBlockEntity.mythicworldtweaks$getCooldownMap().keySet()));
+        executeIfReused(() -> info.setReturnValue(vaultBlockEntity.mythicworldtweaks$getCooldownMap().keySet()));
     }
 
     @Inject(method = "hasRewardedPlayer", at = @At(value = "RETURN"), cancellable = true)
     private void hasRewardedPlayer(PlayerEntity player, CallbackInfoReturnable<Boolean> info) {
-        this.executeIfReused(() -> info.setReturnValue(this.vaultBlockEntity.mythicworldtweaks$getCooldownMap().containsKey(player.getUuid())));
+        executeIfReused(() -> info.setReturnValue(vaultBlockEntity.mythicworldtweaks$getCooldownMap().containsKey(player.getUuid())));
     }
 
     @Inject(method = "markPlayerAsRewarded", at = @At(value = "HEAD"), cancellable = true)
     private void markPlayerAsRewarded(PlayerEntity player, CallbackInfo info) {
-        this.executeIfReused(() -> {
-            this.vaultBlockEntity.mythicworldtweaks$getCooldownMap().put(player.getUuid(), 0);
-            this.markDirty();
+        executeIfReused(() -> {
+            vaultBlockEntity.mythicworldtweaks$getCooldownMap().put(player.getUuid(), 0);
+            markDirty();
             info.cancel();
         });
     }

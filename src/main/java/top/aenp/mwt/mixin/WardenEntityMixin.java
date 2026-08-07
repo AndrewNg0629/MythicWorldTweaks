@@ -10,7 +10,7 @@ import top.aenp.mwt.misc.WardenEntityStuff;
 @SuppressWarnings("DataFlowIssue")
 @Mixin(WardenEntity.class)
 public abstract class WardenEntityMixin {
-    @Inject(at = @At(value = "TAIL"), method = "<init>")
+    @Inject(at = @At(value = "RETURN"), method = "<init>")
     private void WardenEntity(CallbackInfo info) {
         if (!((WardenEntity) (Object) this).getWorld().isClient()) {
             WardenEntity thisOBJ = (WardenEntity) (Object) this;

@@ -27,26 +27,26 @@ public class SleepingChatScreenMixin extends ChatScreen implements SleepingChatS
 
     @Override
     public ButtonWidget mythicWorldTweaks$getSleepButton() {
-        return this.sleepButton;
+        return sleepButton;
     }
 
     @SuppressWarnings("ConstantConditions")
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ChatScreen;init()V", shift = At.Shift.AFTER), method = "init")
     private void init(CallbackInfo info) {
         if (ConfigManager.getConfig().tweaks().syncedToggleTweaks1().bedIdle()) {
-            ClientPlayerEntity clientPlayerEntity = this.client.player;
-            this.sleepButton = ButtonWidget.builder(Text.translatable("mythicworldtweaks.sleeping_extras.sleep_button"), button -> clientPlayerEntity.networkHandler.sendPacket(new CustomPayloadC2SPacket(new TrySleepC2SPayload())))
-                    .dimensions(this.width / 2 - 100, this.height - 60, 200, 20)
+            ClientPlayerEntity clientPlayerEntity = client.player;
+            sleepButton = ButtonWidget.builder(Text.translatable("mythicworldtweaks.sleeping_extras.sleep_button"), button -> clientPlayerEntity.networkHandler.sendPacket(new CustomPayloadC2SPacket(new TrySleepC2SPayload())))
+                    .dimensions(width / 2 - 100, height - 60, 200, 20)
                     .build();
-            this.sleepButton.visible = !clientPlayerEntity.mythicWorldTweaks$isReallySleeping();
-            this.addDrawableChild(this.sleepButton);
+            sleepButton.visible = !clientPlayerEntity.mythicWorldTweaks$isReallySleeping();
+            addDrawableChild(sleepButton);
         }
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ButtonWidget;render(Lnet/minecraft/client/gui/DrawContext;IIF)V", shift = At.Shift.AFTER), method = "render")
     private void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo info) {
         if (ConfigManager.getConfig().tweaks().syncedToggleTweaks1().bedIdle()) {
-            this.sleepButton.render(context, mouseX, mouseY, delta);
+            sleepButton.render(context, mouseX, mouseY, delta);
         }
     }
 }

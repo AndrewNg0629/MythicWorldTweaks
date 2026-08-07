@@ -48,8 +48,8 @@ public abstract class DrawContextMixin {
                 case 4 -> 0.625F;
                 default -> 0.5F;
             };
-            this.matrices.translate((originalX + 16) * (1 - scale), (originalY + 16) * (1 - scale), 0.0F);
-            this.matrices.scale(scale, scale, 1.0F);
+            matrices.translate((originalX + 16) * (1 - scale), (originalY + 16) * (1 - scale), 0.0F);
+            matrices.scale(scale, scale, 1.0F);
             x = originalX + 19 - 2 - textRenderer.getWidth(text);
         }
         return instance.drawText(textRenderer, text, x, y, color, shadow);

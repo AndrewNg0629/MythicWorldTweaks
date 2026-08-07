@@ -43,32 +43,32 @@ public class MythicNetwork {
     private volatile MinecraftServer currentServer = null;
 
     public void initialize() {
-        if (!this.initialized) {
-            this.LOGIN_S2C_CODECS.put(LoginModVersionS2CPayload.ID, LoginModVersionS2CPayload.CODEC);
-            this.LOGIN_S2C_CODECS.put(NetworkSyncedConfig.ID, NetworkSyncedConfig.PACKET_CODEC);
-            this.LOGIN_S2C_CODECS.put(LoginModIdRequestS2CPayload.ID, LoginModIdRequestS2CPayload.CODEC);
-            this.LOGIN_C2S_CODECS.put(LoginModVersionC2SPayload.ID, LoginModVersionC2SPayload.CODEC);
-            this.LOGIN_C2S_CODECS.put(LoginModIdListC2SPayload.ID, LoginModIdListC2SPayload.CODEC);
+        if (!initialized) {
+            LOGIN_S2C_CODECS.put(LoginModVersionS2CPayload.ID, LoginModVersionS2CPayload.CODEC);
+            LOGIN_S2C_CODECS.put(NetworkSyncedConfig.ID, NetworkSyncedConfig.PACKET_CODEC);
+            LOGIN_S2C_CODECS.put(LoginModIdRequestS2CPayload.ID, LoginModIdRequestS2CPayload.CODEC);
+            LOGIN_C2S_CODECS.put(LoginModVersionC2SPayload.ID, LoginModVersionC2SPayload.CODEC);
+            LOGIN_C2S_CODECS.put(LoginModIdListC2SPayload.ID, LoginModIdListC2SPayload.CODEC);
 
-            this.CUSTOM_PAYLOAD_CODECS.put(NetworkSyncedConfig.ID, NetworkSyncedConfig.PACKET_CODEC);
-            this.CUSTOM_PAYLOAD_CODECS.put(TrySleepC2SPayload.ID.id(), TrySleepC2SPayload.CODEC);
-            this.CUSTOM_PAYLOAD_CODECS.put(SleepingStateUpdateS2CPayload.ID.id(), SleepingStateUpdateS2CPayload.CODEC);
+            CUSTOM_PAYLOAD_CODECS.put(NetworkSyncedConfig.ID, NetworkSyncedConfig.PACKET_CODEC);
+            CUSTOM_PAYLOAD_CODECS.put(TrySleepC2SPayload.ID.id(), TrySleepC2SPayload.CODEC);
+            CUSTOM_PAYLOAD_CODECS.put(SleepingStateUpdateS2CPayload.ID.id(), SleepingStateUpdateS2CPayload.CODEC);
 
-            ServerLifecycleEvents.SERVER_STARTED.register(server -> this.currentServer = server);
-            ServerLifecycleEvents.SERVER_STOPPING.register(server -> this.currentServer = null);
+            ServerLifecycleEvents.SERVER_STARTED.register(server -> currentServer = server);
+            ServerLifecycleEvents.SERVER_STOPPING.register(server -> currentServer = null);
 
-            this.initialized = true;
+            initialized = true;
         } else {
             throw new IllegalStateException();
         }
     }
 
     public void pushConfigDuringPlay() {
-        if (this.currentServer != null) {
+        if (currentServer != null) {
             LinkedList<ServerPlayerEntity> players = new LinkedList<>(currentServer.getPlayerManager().getPlayerList());
             String hostPlayerName;
-            if (!this.currentServer.isDedicated()) {
-                GameProfile hostProfile = this.currentServer.getHostProfile();
+            if (!currentServer.isDedicated()) {
+                GameProfile hostProfile = currentServer.getHostProfile();
                 if (hostProfile != null) {
                     hostPlayerName = hostProfile.getName();
                 } else {

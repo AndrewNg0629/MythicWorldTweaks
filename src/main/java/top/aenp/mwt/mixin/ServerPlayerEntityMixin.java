@@ -39,33 +39,33 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     @Inject(at = @At(value = "HEAD"), method = "tick")
     private void tick(CallbackInfo info) {
         if (ConfigManager.getConfig().tweaks().localToggleTweaks1().playerRiding()) {
-            if (this.isSneaking()) {
-                if (this.pressTime >= 0 && this.pressTime < 10) {
-                    this.pressTime++;
+            if (isSneaking()) {
+                if (pressTime >= 0 && pressTime < 10) {
+                    pressTime++;
                 } else {
-                    this.pressTime = -1;
+                    pressTime = -1;
                 }
             } else {
-                if (this.pressTime > 0 && this.pressTime <= 10) {
-                    if (this.singleClickInterval > 0) {
-                        this.removeAllPassengers();
+                if (pressTime > 0 && pressTime <= 10) {
+                    if (singleClickInterval > 0) {
+                        removeAllPassengers();
                     }
-                    this.singleClickInterval = 0;
+                    singleClickInterval = 0;
                 }
-                this.pressTime = 0;
+                pressTime = 0;
             }
-            if (this.singleClickInterval >= 0) {
+            if (singleClickInterval >= 0) {
                 if (singleClickInterval < (byte) 10) {
-                    this.singleClickInterval++;
+                    singleClickInterval++;
                 } else {
-                    this.singleClickInterval = -1;
+                    singleClickInterval = -1;
                 }
             }
         }
         if (ConfigManager.getConfig().tweaks().localToggleTweaks1().playerRidingFallProtection()) {
-            if (this.mythicWorldTweaks$isUnderFallProtection()) {
-                if ((this.isOnGround() || this.isInFluid() || this.isFallFlying() || (this.isCreative() && this.getAbilities().flying))) {
-                    this.mythicWorldTweaks$setUnderFallProtection(false);
+            if (mythicWorldTweaks$isUnderFallProtection()) {
+                if ((isOnGround() || isInFluid() || isFallFlying() || (isCreative() && getAbilities().flying))) {
+                    mythicWorldTweaks$setUnderFallProtection(false);
                 }
             }
         }
@@ -73,13 +73,13 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
     @Inject(at = @At(value = "HEAD"), method = "onDeath")
     private void onDeath(DamageSource damageSource, CallbackInfo info) {
-        this.mythicWorldTweaks$setUnderFallProtection(false);
-        this.mythicWorldTweaks$setReallySleeping(false);
+        mythicWorldTweaks$setUnderFallProtection(false);
+        mythicWorldTweaks$setReallySleeping(false);
     }
 
     @Inject(at = @At(value = "HEAD"), method = "onDisconnect")
     private void onDisconnect(CallbackInfo info) {
-        Entity passenger = this.getFirstPassenger();
+        Entity passenger = getFirstPassenger();
         if (ConfigManager.getConfig().tweaks().localToggleTweaks1().playerRidingFallProtection()) {
             if (passenger != null) {
                 if (passenger instanceof ServerPlayerEntity playerPassenger) {
@@ -87,20 +87,20 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
                 }
             }
         }
-        this.mythicWorldTweaks$setReallySleeping(false);
+        mythicWorldTweaks$setReallySleeping(false);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;wakeUp(ZZ)V", shift = At.Shift.AFTER), method = "wakeUp")
     private void wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers, CallbackInfo info) {
-        this.mythicWorldTweaks$setReallySleeping(false);
+        mythicWorldTweaks$setReallySleeping(false);
     }
 
     @Inject(at = @At(value = "RETURN", ordinal = 4), method = "trySleep", cancellable = true)
     private void alwaysAbleToSleep(BlockPos pos, CallbackInfoReturnable<Either<PlayerEntity.SleepFailureReason, Unit>> info) {
         if (ConfigManager.getConfig().tweaks().syncedToggleTweaks1().bedIdle()) {
-            if (!this.isCreative()) {
+            if (!isCreative()) {
                 Vec3d vec3d = Vec3d.ofBottomCenter(pos);
-                List<HostileEntity> list = this.getWorld()
+                List<HostileEntity> list = getWorld()
                         .getEntitiesByClass(
                                 HostileEntity.class,
                                 new Box(vec3d.getX() - 8.0, vec3d.getY() - 5.0, vec3d.getZ() - 8.0, vec3d.getX() + 8.0, vec3d.getY() + 5.0, vec3d.getZ() + 8.0),
@@ -111,8 +111,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
                     return;
                 }
             }
-            Either<SleepFailureReason, Unit> either = super.trySleep(pos).ifRight(unit -> this.incrementStat(Stats.SLEEP_IN_BED));
-            ((ServerWorld) this.getWorld()).updateSleepingPlayers();
+            Either<SleepFailureReason, Unit> either = trySleep(pos).ifRight(unit -> incrementStat(Stats.SLEEP_IN_BED));
+            ((ServerWorld) getWorld()).updateSleepingPlayers();
             info.setReturnValue(either);
         }
     }
@@ -124,13 +124,13 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
         }
     }
 
-    @Inject(at = @At(value = "TAIL"), method = "copyFrom")
+    @Inject(at = @At(value = "RETURN"), method = "copyFrom")
     private void copyFrom(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo info) {
-        if (!this.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY) && !oldPlayer.isSpectator() && ConfigManager.getConfig().tweaks().localToggleTweaks1().keepExperienceAfterDeath()) {
-            this.experienceLevel = oldPlayer.experienceLevel;
-            this.totalExperience = oldPlayer.totalExperience;
-            this.experienceProgress = oldPlayer.experienceProgress;
-            this.setScore(oldPlayer.getScore());
+        if (!getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY) && !oldPlayer.isSpectator() && ConfigManager.getConfig().tweaks().localToggleTweaks1().keepExperienceAfterDeath()) {
+            experienceLevel = oldPlayer.experienceLevel;
+            totalExperience = oldPlayer.totalExperience;
+            experienceProgress = oldPlayer.experienceProgress;
+            setScore(oldPlayer.getScore());
         }
     }
 }

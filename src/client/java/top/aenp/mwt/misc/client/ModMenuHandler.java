@@ -17,7 +17,7 @@ public class ModMenuHandler implements ModMenuApi {
             @Override
             protected void init() {
                 Util.getOperatingSystem().open(new File(System.getProperty("user.dir") + "/config/" + MythicWorldTweaks.MOD_ID + "/config.json"));
-                Objects.requireNonNull(this.client).setScreen(screen);
+                Objects.requireNonNull(client).setScreen(screen);
             }
         };
     }

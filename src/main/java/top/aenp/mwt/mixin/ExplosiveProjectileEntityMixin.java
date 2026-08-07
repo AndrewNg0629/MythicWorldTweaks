@@ -10,7 +10,7 @@ import top.aenp.mwt.misc.FireBallEntityManager;
 @SuppressWarnings("DataFlowIssue")
 @Mixin(ExplosiveProjectileEntity.class)
 public class ExplosiveProjectileEntityMixin {
-    @Inject(at = @At("TAIL"), method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V")
+    @Inject(at = @At("RETURN"), method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V")
     private void ExplosiveProjectileEntity(CallbackInfo info) {
         if (!((ExplosiveProjectileEntity) (Object) this).getWorld().isClient()) {
             FireBallEntityManager.registerEntity((ExplosiveProjectileEntity) (Object) this);

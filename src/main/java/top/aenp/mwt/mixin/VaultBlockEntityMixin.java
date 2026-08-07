@@ -37,21 +37,21 @@ public class VaultBlockEntityMixin implements VaultBlockEntityMethodInjections {
 
     @Inject(method = "<init>(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V", at = @At(value = "RETURN"))
     private void init(CallbackInfo info) {
-        this.serverData.mythicworldtweaks$storeVaultBlockEntity((VaultBlockEntity) (Object) this);
+        serverData.mythicworldtweaks$storeVaultBlockEntity((VaultBlockEntity) (Object) this);
     }
 
     @Inject(method = "readNbt", at = @At(value = "RETURN"))
     private void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo ci) {
         if (nbt.contains("mwt_vault_cooldown")) {
             VaultStuff.COOLDOWN_MAP_CODEC.parse(NbtOps.INSTANCE, nbt.get("mwt_vault_cooldown")).resultOrPartial(LOGGER::error).ifPresent(map -> {
-                this.vaultCooldown.clear();
-                this.vaultCooldown.putAll(map);
+                vaultCooldown.clear();
+                vaultCooldown.putAll(map);
             });
         }
     }
 
     @Inject(method = "writeNbt", at = @At(value = "RETURN"))
     private void writeNnt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo info) {
-        nbt.put("mwt_vault_cooldown", VaultStuff.COOLDOWN_MAP_CODEC.encodeStart(NbtOps.INSTANCE, this.vaultCooldown).getOrThrow());
+        nbt.put("mwt_vault_cooldown", VaultStuff.COOLDOWN_MAP_CODEC.encodeStart(NbtOps.INSTANCE, vaultCooldown).getOrThrow());
     }
 }

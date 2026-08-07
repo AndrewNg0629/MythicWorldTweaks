@@ -50,42 +50,42 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
     @Unique
     private void sendConfig() {
         ModConfig modConfig = ConfigManager.getConfig();
-        this.connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new NetworkSyncedConfig(modConfig.tweaks().syncedToggleTweaks1(), modConfig.tweaks().valueTweaks().wardenAttributesControl(), modConfig.tweaks().valueTweaks().vaultReuse(), modConfig.itemEditorConfig())));
-        if (!this.server.getPlayerManager().disconnectDuplicateLogins(this.profile)) {
+        connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new NetworkSyncedConfig(modConfig.tweaks().syncedToggleTweaks1(), modConfig.tweaks().valueTweaks().wardenAttributesControl(), modConfig.tweaks().valueTweaks().vaultReuse(), modConfig.itemEditorConfig())));
+        if (!server.getPlayerManager().disconnectDuplicateLogins(profile)) {
             ReflectionUtils.setLoginHandlerState((ServerLoginNetworkHandler) (Object) this, 5);
         } else {
-            this.sendSuccessPacket(this.profile);
+            sendSuccessPacket(profile);
         }
     }
 
     @Inject(method = "tickVerify", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;disconnectDuplicateLogins(Lcom/mojang/authlib/GameProfile;)Z"), cancellable = true)
     private void onTickVerify(GameProfile profile, CallbackInfo info) {
-        if (!this.connection.isLocal() && ConfigManager.getConfig().multiplayerSupportEnabled()) {
+        if (!connection.isLocal() && ConfigManager.getConfig().multiplayerSupportEnabled()) {
             ReflectionUtils.setLoginHandlerState((ServerLoginNetworkHandler) (Object) this, 3);
-            this.connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new LoginModVersionS2CPayload(MythicNetwork.MOD_VERSION)));
-            this.negotiationState = MythicNetwork.NegotiationStates.VERSION_C2S;
+            connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new LoginModVersionS2CPayload(MythicNetwork.MOD_VERSION)));
+            negotiationState = MythicNetwork.NegotiationStates.VERSION_C2S;
             info.cancel();
         }
     }
 
     @Override
     public void mythicworldtweaks$onModVersion(LoginModVersionC2SPayload version) {
-        Validate.validState(this.negotiationState == MythicNetwork.NegotiationStates.VERSION_C2S, "Unexpected mod version c2s packet.");
+        Validate.validState(negotiationState == MythicNetwork.NegotiationStates.VERSION_C2S, "Unexpected mod version c2s packet.");
         if (MythicNetwork.NETWORK_COMPATIBLE_VERSIONS.contains(version.modVersion())) {
             if (ConfigManager.getConfig().modIdValidationConfig().enabled()) {
-                this.negotiationState = MythicNetwork.NegotiationStates.MOD_LIST;
-                this.connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new LoginModIdRequestS2CPayload()));
+                negotiationState = MythicNetwork.NegotiationStates.MOD_LIST;
+                connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new LoginModIdRequestS2CPayload()));
             } else {
-                this.sendConfig();
+                sendConfig();
             }
         } else {
-            this.disconnect(Text.of("Incompatible client version: " + version.modVersion()));
+            disconnect(Text.of("Incompatible client version: " + version.modVersion()));
         }
     }
 
     @Override
     public void mythicworldtweaks$onModIdList(LoginModIdListC2SPayload list) {
-        Validate.validState(this.negotiationState == MythicNetwork.NegotiationStates.MOD_LIST, "Unexpected mod ID list packet.");
+        Validate.validState(negotiationState == MythicNetwork.NegotiationStates.MOD_LIST, "Unexpected mod ID list packet.");
         ImmutableSet<String> receivedMods = ImmutableSet.copyOf(list.modIdList());
         ImmutableSet<String> missingMods = Sets.difference(Set.copyOf(ConfigManager.getConfig().modIdValidationConfig().requiredMods()), receivedMods).immutableCopy();
         ImmutableSet<String> excessMods = Sets.intersection(Set.copyOf(ConfigManager.getConfig().modIdValidationConfig().prohibitedMods()), receivedMods).immutableCopy();
@@ -104,9 +104,9 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
             failMessage.append(excessModsString, 1, excessModsString.length() - 1);
         }
         if (passed) {
-            this.sendConfig();
+            sendConfig();
         } else {
-            this.disconnect(Text.of(failMessage.toString()));
+            disconnect(Text.of(failMessage.toString()));
         }
     }
 
@@ -117,7 +117,7 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
                 MythicLoginC2SPayload payload = (MythicLoginC2SPayload) packet.response();
                 payload.handle(this);
             } else {
-                this.disconnect(Text.of(String.format("Please have MythicWorldTweaks %s installed.", MythicNetwork.MOD_VERSION)));
+                disconnect(Text.of(String.format("Please have MythicWorldTweaks %s installed.", MythicNetwork.MOD_VERSION)));
             }
             info.cancel();
         }

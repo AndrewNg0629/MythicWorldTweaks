@@ -27,7 +27,7 @@ public abstract class ExplosionMixin {
     @Inject(at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/objects/ObjectArrayList;addAll(Ljava/util/Collection;)Z", remap = false), method = "collectBlocksAndDamageEntities")
     private void collectBlocksAndDamageEntities(CallbackInfo info, @Local Set<BlockPos> blocksToDestroy) {
         boolean shouldDestroyBlocks = true;
-        Entity sourceEntity = this.getEntity();
+        Entity sourceEntity = getEntity();
         if (sourceEntity != null) {
             if (sourceEntity.getType().equals(EntityType.CREEPER) && ConfigManager.getConfig().tweaks().localToggleTweaks1().creepersDontBreakBlocks()) {
                 shouldDestroyBlocks = false;
