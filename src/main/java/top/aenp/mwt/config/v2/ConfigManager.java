@@ -163,29 +163,30 @@ public class ConfigManager {
     }
 
     private void combineConfig() {
+        boolean localTweaksEnabled = configFromFile.tweaks().localTweaksEnabled();
         ModConfig.Tweaks.ValueTweaks valueTweaksFromFile = configFromFile.tweaks().valueTweaks();
-        ModConfig.Tweaks.ValueTweaks.WardenAttributesControl wardenAttributesControlConfig = configFromNetwork != null ? configFromNetwork.wardenAttributesControl() : valueTweaksFromFile.wardenAttributesControl();
-        ModConfig.Tweaks.ValueTweaks.VaultReuse vaultReuseConfig = configFromNetwork != null ? configFromNetwork.vaultReuse() : valueTweaksFromFile.vaultReuse();
+        ModConfig.Tweaks.ValueTweaks.WardenAttributesControl wardenAttributesControlConfig = configFromNetwork != null ? configFromNetwork.wardenAttributesControl() : (localTweaksEnabled ? valueTweaksFromFile.wardenAttributesControl() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().wardenAttributesControl());
+        ModConfig.Tweaks.ValueTweaks.VaultReuse vaultReuseConfig = configFromNetwork != null ? configFromNetwork.vaultReuse() : (localTweaksEnabled ? valueTweaksFromFile.vaultReuse() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().vaultReuse());
         ModConfig.ItemEditorConfig itemEditorConfig = configFromNetwork != null ? configFromNetwork.itemEditorConfig() : configFromFile.itemEditorConfig();
         combinedConfig = modEnabled ?
                 new ModConfig(
                         true,
                         multiplayerSupportEnabled,
                         modIdValidationConfig,
-                        configFromFile.tweaks().localTweaksEnabled() ? new ModConfig.Tweaks(
-                                true,
-                                configFromFile.tweaks().localToggleTweaks1(),
-                                configFromNetwork != null ? configFromNetwork.syncedToggleTweaks1() : configFromFile.tweaks().syncedToggleTweaks1(),
+                        new ModConfig.Tweaks(
+                                localTweaksEnabled,
+                                localTweaksEnabled ? configFromFile.tweaks().localToggleTweaks1() : ModConfig.DEFAULT_CONFIG.tweaks().localToggleTweaks1(),
+                                configFromNetwork != null ? configFromNetwork.syncedToggleTweaks1() : (localTweaksEnabled ? configFromFile.tweaks().syncedToggleTweaks1() : ModConfig.DEFAULT_CONFIG.tweaks().syncedToggleTweaks1()),
                                 new ModConfig.Tweaks.ValueTweaks(
-                                        valueTweaksFromFile.fireballAutoDiscarding().enabled() ? valueTweaksFromFile.fireballAutoDiscarding() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().fireballAutoDiscarding(),
-                                        valueTweaksFromFile.stuffedShulkerBoxStacking().enabled() ? valueTweaksFromFile.stuffedShulkerBoxStacking() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().stuffedShulkerBoxStacking(),
-                                        valueTweaksFromFile.shulkerBoxNesting().enabled() ? valueTweaksFromFile.shulkerBoxNesting() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().shulkerBoxNesting(),
+                                        localTweaksEnabled && valueTweaksFromFile.fireballAutoDiscarding().enabled() ? valueTweaksFromFile.fireballAutoDiscarding() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().fireballAutoDiscarding(),
+                                        localTweaksEnabled && valueTweaksFromFile.stuffedShulkerBoxStacking().enabled() ? valueTweaksFromFile.stuffedShulkerBoxStacking() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().stuffedShulkerBoxStacking(),
+                                        localTweaksEnabled && valueTweaksFromFile.shulkerBoxNesting().enabled() ? valueTweaksFromFile.shulkerBoxNesting() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().shulkerBoxNesting(),
                                         wardenAttributesControlConfig.enabled() ? wardenAttributesControlConfig : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().wardenAttributesControl(),
-                                        valueTweaksFromFile.wardenSonicBoomControl().enabled() ? valueTweaksFromFile.wardenSonicBoomControl() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().wardenSonicBoomControl(),
-                                        valueTweaksFromFile.playerDeathItemProtection().enabled() ? valueTweaksFromFile.playerDeathItemProtection() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().playerDeathItemProtection(),
+                                        localTweaksEnabled && valueTweaksFromFile.wardenSonicBoomControl().enabled() ? valueTweaksFromFile.wardenSonicBoomControl() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().wardenSonicBoomControl(),
+                                        localTweaksEnabled && valueTweaksFromFile.playerDeathItemProtection().enabled() ? valueTweaksFromFile.playerDeathItemProtection() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().playerDeathItemProtection(),
                                         vaultReuseConfig
                                 )
-                        ) : ModConfig.DEFAULT_CONFIG.tweaks(),
+                        ),
                         itemEditorConfig.enabled() ? itemEditorConfig : ModConfig.DEFAULT_CONFIG.itemEditorConfig(),
                         configFromFile.configVersion()
                 )
