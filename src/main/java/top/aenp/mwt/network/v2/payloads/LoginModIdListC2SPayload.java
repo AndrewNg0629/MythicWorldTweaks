@@ -34,7 +34,7 @@ public record LoginModIdListC2SPayload(List<String> modIdList) implements Mythic
 
     @Override
     public Identifier mythicId() {
-        return null;
+        return ID;
     }
 
     @Override
