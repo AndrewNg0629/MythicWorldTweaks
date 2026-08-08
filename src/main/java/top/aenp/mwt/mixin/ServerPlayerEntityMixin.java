@@ -111,7 +111,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
                     return;
                 }
             }
-            Either<SleepFailureReason, Unit> either = trySleep(pos).ifRight(unit -> incrementStat(Stats.SLEEP_IN_BED));
+            Either<SleepFailureReason, Unit> either = super.trySleep(pos).ifRight(unit -> incrementStat(Stats.SLEEP_IN_BED));
             ((ServerWorld) getWorld()).updateSleepingPlayers();
             info.setReturnValue(either);
         }

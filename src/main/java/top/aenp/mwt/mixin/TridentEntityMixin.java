@@ -40,7 +40,7 @@ public abstract class TridentEntityMixin extends PersistentProjectileEntity {
     @Inject(at = @At(value = "HEAD"), method = "getEntityCollision", cancellable = true)
     public void getEntityCollision(Vec3d currentPosition, Vec3d nextPosition, CallbackInfoReturnable<EntityHitResult> info) {
         if (ConfigManager.getConfig().tweaks().localToggleTweaks1().tridentsDamageMultipleTimes()) {
-            info.setReturnValue(isNoClip() ? null : getEntityCollision(currentPosition, nextPosition));
+            info.setReturnValue(isNoClip() ? null : super.getEntityCollision(currentPosition, nextPosition));
         }
     }
 
