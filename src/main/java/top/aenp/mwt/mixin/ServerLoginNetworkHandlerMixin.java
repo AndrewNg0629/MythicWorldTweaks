@@ -19,11 +19,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.aenp.mwt.config.v2.ConfigManager;
-import top.aenp.mwt.config.v2.ModConfig;
 import top.aenp.mwt.misc.ReflectionUtils;
 import top.aenp.mwt.network.v2.MythicNetwork;
 import top.aenp.mwt.network.v2.injections.ServerLoginNetworkHandlerMethodInjections;
-import top.aenp.mwt.network.v2.payloads.*;
+import top.aenp.mwt.network.v2.payloads.LoginModIdListC2SPayload;
+import top.aenp.mwt.network.v2.payloads.LoginModIdRequestS2CPayload;
+import top.aenp.mwt.network.v2.payloads.LoginModVersionC2SPayload;
+import top.aenp.mwt.network.v2.payloads.LoginModVersionS2CPayload;
 import top.aenp.mwt.network.v2.payloads.interfaces.MythicLoginC2SPayload;
 
 import java.util.Set;
@@ -49,8 +51,7 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
 
     @Unique
     private void sendConfig() {
-        ModConfig modConfig = ConfigManager.getConfig();
-        connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new NetworkSyncedConfig(modConfig.tweaks().syncedToggleTweaks1(), modConfig.tweaks().valueTweaks().wardenAttributesControl(), modConfig.tweaks().valueTweaks().vaultReuse(), modConfig.itemEditorConfig())));
+        connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, ConfigManager.getInstance().getConfigToSend()));
         if (!server.getPlayerManager().disconnectDuplicateLogins(profile)) {
             ReflectionUtils.setLoginHandlerState((ServerLoginNetworkHandler) (Object) this, 5);
         } else {
@@ -62,7 +63,7 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
     private void onTickVerify(GameProfile profile, CallbackInfo info) {
         if (!connection.isLocal() && ConfigManager.getConfig().multiplayerSupportEnabled()) {
             ReflectionUtils.setLoginHandlerState((ServerLoginNetworkHandler) (Object) this, 3);
-            connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new LoginModVersionS2CPayload(MythicNetwork.MOD_VERSION)));
+            connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new LoginModVersionS2CPayload(MythicNetwork.MOD_VERSION, MythicNetwork.PROTOCOL_VERSION)));
             negotiationState = MythicNetwork.NegotiationStates.VERSION_C2S;
             info.cancel();
         }
@@ -71,7 +72,7 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
     @Override
     public void mythicworldtweaks$onModVersion(LoginModVersionC2SPayload version) {
         Validate.validState(negotiationState == MythicNetwork.NegotiationStates.VERSION_C2S, "Unexpected mod version c2s packet.");
-        if (MythicNetwork.NETWORK_COMPATIBLE_VERSIONS.contains(version.modVersion())) {
+        if (version.protocolVersion() == MythicNetwork.PROTOCOL_VERSION) {
             if (ConfigManager.getConfig().modIdValidationConfig().enabled()) {
                 negotiationState = MythicNetwork.NegotiationStates.MOD_LIST;
                 connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new LoginModIdRequestS2CPayload()));

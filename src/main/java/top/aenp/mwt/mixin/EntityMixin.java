@@ -7,6 +7,7 @@ import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -64,6 +65,14 @@ public abstract class EntityMixin {
                 setPosition(new Vec3d(getX(), getY() + 1.0D, getZ()));
                 info.cancel();
             }
+        }
+    }
+
+    @Inject(method = "calculateBoundingBox", at = @At(value = "RETURN"), cancellable = true)
+    private void calculateBoundingBox(CallbackInfoReturnable<Box> info) {
+        if (((Entity) (Object) this) instanceof PlayerEntity player && player.getVehicle() != null) {
+            Box box = info.getReturnValue();
+            info.setReturnValue(box.withMinY(Math.min(box.minY + 0.66, box.maxY)));
         }
     }
 }

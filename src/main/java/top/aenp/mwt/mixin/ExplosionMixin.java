@@ -5,6 +5,9 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.Item;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
@@ -15,7 +18,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.aenp.mwt.config.v2.ConfigManager;
+import top.aenp.mwt.config.v2.ModConfig;
 
+import java.util.List;
 import java.util.Set;
 
 @Mixin(Explosion.class)
@@ -41,10 +46,11 @@ public abstract class ExplosionMixin {
     @WrapOperation(method = "collectBlocksAndDamageEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/explosion/ExplosionBehavior;shouldDamage(Lnet/minecraft/world/explosion/Explosion;Lnet/minecraft/entity/Entity;)Z"))
     private boolean shouldDamage(ExplosionBehavior instance, Explosion explosion, Entity entity, Operation<Boolean> original) {
         boolean tweakedShouldDamage = true;
-        if (ConfigManager.getConfig().tweaks().localToggleTweaks1().itemExplosionResistance()) {
-            EntityType<?> entityType = entity.getType();
-            if (entityType.equals(EntityType.ITEM) || entityType.equals(EntityType.ITEM_DISPLAY)) {
-                tweakedShouldDamage = false;
+        ModConfig.Tweaks.ValueTweaks.ItemExplosionResistance itemExplosionResistanceConfig = ConfigManager.getConfig().tweaks().valueTweaks().itemExplosionResistance();
+        if (itemExplosionResistanceConfig.enabled()) {
+            List<Item> inclusionList = itemExplosionResistanceConfig.inclusionList().stream().map(RegistryEntry::value).toList();
+            if (entity instanceof ItemEntity itemEntity) {
+                tweakedShouldDamage = !(inclusionList.isEmpty() || inclusionList.contains(itemEntity.getStack().getItem()));
             }
         }
         return original.call(instance, explosion, entity) && tweakedShouldDamage;

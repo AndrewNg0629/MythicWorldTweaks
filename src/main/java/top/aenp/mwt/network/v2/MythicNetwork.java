@@ -13,13 +13,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import top.aenp.mwt.MythicWorldTweaks;
 import top.aenp.mwt.config.v2.ConfigManager;
-import top.aenp.mwt.config.v2.ModConfig;
 import top.aenp.mwt.network.v2.payloads.*;
 import top.aenp.mwt.network.v2.payloads.interfaces.MythicLoginC2SPayload;
 import top.aenp.mwt.network.v2.payloads.interfaces.MythicLoginS2CPayload;
 
 import java.util.LinkedList;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MythicNetwork {
@@ -27,7 +25,7 @@ public class MythicNetwork {
     public static final int QUERY_ID = -2147483600;
     public static final ImmutableSet<String> ALL_MODS;
     public static final String MOD_VERSION = FabricLoader.getInstance().getModContainer(MythicWorldTweaks.MOD_ID).orElseThrow().getMetadata().getVersion().getFriendlyString();
-    public static final Set<String> NETWORK_COMPATIBLE_VERSIONS = Set.of(MOD_VERSION);
+    public static final int PROTOCOL_VERSION = 0;
 
     static {
         ImmutableSet.Builder<String> modIdSetBuilder = ImmutableSet.builder();
@@ -78,10 +76,8 @@ public class MythicNetwork {
                 hostPlayerName = null;
             }
             players.removeIf(player -> player.getGameProfile().getName().equalsIgnoreCase(hostPlayerName));
-            ModConfig modConfig = ConfigManager.getConfig();
-            NetworkSyncedConfig syncedConfig = new NetworkSyncedConfig(modConfig.tweaks().syncedToggleTweaks1(), modConfig.tweaks().valueTweaks().wardenAttributesControl(), modConfig.tweaks().valueTweaks().vaultReuse(), modConfig.itemEditorConfig());
             for (ServerPlayerEntity player : players) {
-                player.networkHandler.sendPacket(new CustomPayloadS2CPacket(syncedConfig));
+                player.networkHandler.sendPacket(new CustomPayloadS2CPacket(ConfigManager.getInstance().getConfigToSend()));
             }
         }
     }

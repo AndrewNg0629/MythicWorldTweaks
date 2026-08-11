@@ -42,7 +42,7 @@ public record ModConfig(
             new ModIdValidationConfig(false, List.of(), List.of()),
             new Tweaks(
                     false,
-                    new Tweaks.LocalToggleTweaks1(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false),
+                    new Tweaks.LocalToggleTweaks1(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false),
                     new Tweaks.SyncedToggleTweaks1(false, false, false),
                     new Tweaks.ValueTweaks(
                             new Tweaks.ValueTweaks.FireballAutoDiscarding(false, 200),
@@ -51,7 +51,8 @@ public record ModConfig(
                             new Tweaks.ValueTweaks.WardenAttributesControl(false, 500.0, 1.0, 30.0, 1.5, 1.2, 18),
                             new Tweaks.ValueTweaks.WardenSonicBoomControl(false, true, 10.0, 1.0, 34),
                             new Tweaks.ValueTweaks.PlayerDeathItemProtection(false, 12000, false, false),
-                            new Tweaks.ValueTweaks.VaultReuse(false, 300, false, 600, false)
+                            new Tweaks.ValueTweaks.VaultReuse(false, 300, false, 600, false),
+                            new Tweaks.ValueTweaks.ItemExplosionResistance(false, List.of())
                     )
             ),
             new ItemEditorConfig(false, List.of()),
@@ -101,7 +102,6 @@ public record ModConfig(
         public record LocalToggleTweaks1(
                 boolean throwableFireCharge,
                 boolean creepersDontBreakBlocks,
-                boolean itemExplosionResistance,
                 boolean playerRiding,
                 boolean playerRidingFallProtection,
                 boolean dispensableTridents,
@@ -120,7 +120,6 @@ public record ModConfig(
                     instance -> instance.group(
                             Codec.BOOL.fieldOf("throwable_fire_charge").forGetter(LocalToggleTweaks1::throwableFireCharge),
                             Codec.BOOL.fieldOf("creepers_dont_break_blocks").forGetter(LocalToggleTweaks1::creepersDontBreakBlocks),
-                            Codec.BOOL.fieldOf("item_explosion_resistance").forGetter(LocalToggleTweaks1::itemExplosionResistance),
                             Codec.BOOL.fieldOf("player_riding").forGetter(LocalToggleTweaks1::playerRiding),
                             Codec.BOOL.fieldOf("player_riding_fall_protection").forGetter(LocalToggleTweaks1::playerRidingFallProtection),
                             Codec.BOOL.fieldOf("dispensable_tridents").forGetter(LocalToggleTweaks1::dispensableTridents),
@@ -159,7 +158,8 @@ public record ModConfig(
                 WardenAttributesControl wardenAttributesControl,
                 WardenSonicBoomControl wardenSonicBoomControl,
                 PlayerDeathItemProtection playerDeathItemProtection,
-                VaultReuse vaultReuse
+                VaultReuse vaultReuse,
+                ItemExplosionResistance itemExplosionResistance
         ) {
             public static final MapCodec<ValueTweaks> CODEC = RecordCodecBuilder.mapCodec(
                     instance -> instance.group(
@@ -169,7 +169,8 @@ public record ModConfig(
                             WardenAttributesControl.CODEC.fieldOf("warden_attributes_control").forGetter(ValueTweaks::wardenAttributesControl),
                             WardenSonicBoomControl.CODEC.fieldOf("warden_sonic_boom_control").forGetter(ValueTweaks::wardenSonicBoomControl),
                             PlayerDeathItemProtection.CODEC.fieldOf("player_death_item_protection").forGetter(ValueTweaks::playerDeathItemProtection),
-                            VaultReuse.CODEC.fieldOf("vault_reuse").forGetter(ValueTweaks::vaultReuse)
+                            VaultReuse.CODEC.fieldOf("vault_reuse").forGetter(ValueTweaks::vaultReuse),
+                            ItemExplosionResistance.CODEC.fieldOf("item_explosion_resistance").forGetter(ValueTweaks::itemExplosionResistance)
                     ).apply(instance, ValueTweaks::new)
             );
 
@@ -280,6 +281,18 @@ public record ModConfig(
                                 Codec.INT.fieldOf("ominous_vault_cooldown").forGetter(VaultReuse::ominousVaultCooldown),
                                 Codec.BOOL.fieldOf("wthit_integration").forGetter(VaultReuse::wthitIntegration)
                         ).apply(instance, VaultReuse::new)
+                );
+            }
+
+            public record ItemExplosionResistance(
+                    boolean enabled,
+                    List<RegistryEntry<Item>> inclusionList
+            ) {
+                public static final Codec<ItemExplosionResistance> CODEC = RecordCodecBuilder.create(
+                        instance -> instance.group(
+                                Codec.BOOL.fieldOf("enabled").forGetter(ItemExplosionResistance::enabled),
+                                ConfigManager.ITEM_ENTRY_CODEC.listOf().fieldOf("inclusion_list").forGetter(ItemExplosionResistance::inclusionList)
+                        ).apply(instance, ItemExplosionResistance::new)
                 );
             }
         }

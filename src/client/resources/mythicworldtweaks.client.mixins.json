@@ -8,7 +8,6 @@
     "ClientLoginNetworkHandlerMixin",
     "ClientPlayNetworkHandlerMixin",
     "DrawContextMixin",
-    "GameRendererMixin",
     "SleepingChatScreenMixin"
   ],
   "injectors": {

@@ -30,8 +30,8 @@ public class ClientLoginNetworkHandlerMixin implements ClientLoginNetworkHandler
     public void mythicworldtweaks$onModVersion(LoginModVersionS2CPayload version) {
         if (ConfigManager.getConfig().multiplayerSupportEnabled()) {
             MythicWorldTweaks.LOGGER.info("Server initiated negotiation.");
-            if (MythicNetwork.NETWORK_COMPATIBLE_VERSIONS.contains(version.modVersion())) {
-                connection.send(new LoginQueryResponseC2SPacket(MythicNetwork.QUERY_ID, new LoginModVersionC2SPayload(MythicNetwork.MOD_VERSION)));
+            if (version.protocolVersion() == MythicNetwork.PROTOCOL_VERSION) {
+                connection.send(new LoginQueryResponseC2SPacket(MythicNetwork.QUERY_ID, new LoginModVersionC2SPayload(MythicNetwork.MOD_VERSION, MythicNetwork.PROTOCOL_VERSION)));
             } else {
                 String message = "Incompatible server version: " + version.modVersion();
                 connection.disconnect(Text.of(message));
