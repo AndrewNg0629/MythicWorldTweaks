@@ -1,12 +1,14 @@
 package top.aenp.mwt.mixin;
 
 import com.google.common.collect.ImmutableList;
+import net.minecraft.entity.ai.brain.task.SonicBoomTask;
 import net.minecraft.entity.mob.WardenBrain;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import top.aenp.mwt.config.v2.ConfigManager;
+
+import java.util.ArrayList;
 
 @Mixin(WardenBrain.class)
 public class WardenBrainMixin {
@@ -20,11 +22,14 @@ public class WardenBrainMixin {
         return ConfigManager.getConfig().tweaks().valueTweaks().wardenAttributesControl().attackIntervalTicks();
     }
 
-    @Redirect(at = @At(value = "INVOKE",
-            target = "Lcom/google/common/collect/ImmutableList;of(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Lcom/google/common/collect/ImmutableList;",
-            remap = false),
-            method = "addFightActivities")
-    private static <E> ImmutableList<E> editTasks(E e1, E e2, E e3, E e4, E e5, E e6) {
-        return ConfigManager.getConfig().tweaks().valueTweaks().wardenSonicBoomControl().sonicBoomEnabled() ? ImmutableList.of(e1, e2, e3, e4, e6) : ImmutableList.of(e1, e2, e3, e4, e5, e6);
+    @ModifyArg(method = "addFightActivities", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ai/brain/Brain;setTaskList(Lnet/minecraft/entity/ai/brain/Activity;ILcom/google/common/collect/ImmutableList;Lnet/minecraft/entity/ai/brain/MemoryModuleType;)V"), index = 2)
+    private static <E> ImmutableList<E> editTasks(ImmutableList<E> immutableTasks) {
+        if (!ConfigManager.getConfig().tweaks().valueTweaks().wardenSonicBoomControl().sonicBoomEnabled()) {
+            ArrayList<E> tasks = new ArrayList<>(immutableTasks);
+            tasks.removeIf(task -> task instanceof SonicBoomTask);
+            return ImmutableList.copyOf(tasks);
+        } else {
+            return immutableTasks;
+        }
     }
 }
