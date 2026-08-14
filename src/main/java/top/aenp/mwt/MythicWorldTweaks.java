@@ -29,9 +29,9 @@ public class MythicWorldTweaks implements ModInitializer {
             if (ConfigManager.getConfig().tweaks().valueTweaks().fireballAutoDiscarding().enabled()) {
                 FireBallEntityManager.tick();
             }
-            WardenEntityStuff.WardenEntityTrack.tick();
+            WardenEntityStuff.WardenEntityTracker.INSTANCE.tick();
         });
-        ServerWorldEvents.UNLOAD.register((server, world) -> WardenEntityStuff.WardenEntityTrack.clearEntities());
+        ServerWorldEvents.UNLOAD.register((server, world) -> WardenEntityStuff.WardenEntityTracker.INSTANCE.clearEntities());
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
                 CommandManager.literal("suicide")
                         .requires(source -> source.isExecutedByPlayer() && ConfigManager.getConfig().tweaks().syncedToggleTweaks1().suicideCommand())

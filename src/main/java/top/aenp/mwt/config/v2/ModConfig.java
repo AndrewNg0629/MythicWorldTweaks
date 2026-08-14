@@ -48,7 +48,7 @@ public record ModConfig(
                             new Tweaks.ValueTweaks.FireballAutoDiscarding(false, 200),
                             new Tweaks.ValueTweaks.StuffedShulkerBoxStacking(false, 1),
                             new Tweaks.ValueTweaks.ShulkerBoxNesting(false, 2),
-                            new Tweaks.ValueTweaks.WardenAttributesControl(false, 500.0, 1.0, 30.0, 1.5, 1.2, 18),
+                            new Tweaks.ValueTweaks.WardenAttributesControl(false, 500.0, 1.0, 30.0, 1.5, 0.3, 1.2, 18),
                             new Tweaks.ValueTweaks.WardenSonicBoomControl(false, true, 10.0, 1.0, 34),
                             new Tweaks.ValueTweaks.PlayerDeathItemProtection(false, 12000, false, false),
                             new Tweaks.ValueTweaks.VaultReuse(false, 300, false, 600, false),
@@ -216,7 +216,8 @@ public record ModConfig(
                     double knockbackResistance,
                     double meleeAttackDamage,
                     double meleeAttackKnockback,
-                    double chasingMovementSpeed,
+                    double baseMovementSpeed,
+                    double chasingMovementSpeedMultiplier,
                     int attackIntervalTicks
             ) {
                 public static final Codec<WardenAttributesControl> CODEC = RecordCodecBuilder.create(
@@ -226,7 +227,8 @@ public record ModConfig(
                                 rangedDouble(0.0, 1.0, true, true).fieldOf("knockback_resistance").forGetter(WardenAttributesControl::knockbackResistance),
                                 rangedDouble(0.0, Double.MAX_VALUE, true, true).fieldOf("melee_attack_damage").forGetter(WardenAttributesControl::meleeAttackDamage),
                                 rangedDouble(0.0, Double.MAX_VALUE, true, true).fieldOf("melee_attack_knockback").forGetter(WardenAttributesControl::meleeAttackKnockback),
-                                rangedDouble(0.0, Double.MAX_VALUE, true, true).fieldOf("chasing_movement_speed").forGetter(WardenAttributesControl::chasingMovementSpeed),
+                                rangedDouble(0.0, Double.MAX_VALUE, false, false).fieldOf("base_movement_speed").forGetter(WardenAttributesControl::baseMovementSpeed),
+                                rangedDouble(0.0, Double.MAX_VALUE, true, true).fieldOf("chasing_movement_speed_multiplier").forGetter(WardenAttributesControl::chasingMovementSpeedMultiplier),
                                 Codecs.NONNEGATIVE_INT.fieldOf("attack_interval_ticks").forGetter(WardenAttributesControl::attackIntervalTicks)
                         ).apply(instance, WardenAttributesControl::new)
                 );
@@ -236,7 +238,7 @@ public record ModConfig(
                     boolean enabled,
                     boolean sonicBoomEnabled,
                     double sonicBoomDamage,
-                    double sonicBoomKnockbackFactor,
+                    double sonicBoomKnockbackMultiplier,
                     int sonicBoomIntervalTicks
             ) {
                 public static final Codec<WardenSonicBoomControl> CODEC = RecordCodecBuilder.create(
@@ -244,7 +246,7 @@ public record ModConfig(
                                 Codec.BOOL.fieldOf("enabled").forGetter(WardenSonicBoomControl::enabled),
                                 Codec.BOOL.fieldOf("sonic_boom_enabled").forGetter(WardenSonicBoomControl::sonicBoomEnabled),
                                 rangedDouble(0.0, Double.MAX_VALUE, true, true).fieldOf("sonic_boom_damage").forGetter(WardenSonicBoomControl::sonicBoomDamage),
-                                rangedDouble(0.0, 1.0, true, true).fieldOf("sonic_boom_knockback_factor").forGetter(WardenSonicBoomControl::sonicBoomKnockbackFactor),
+                                rangedDouble(0.0, 1.0, true, true).fieldOf("sonic_boom_knockback_multiplier").forGetter(WardenSonicBoomControl::sonicBoomKnockbackMultiplier),
                                 Codecs.NONNEGATIVE_INT.fieldOf("sonic_boom_interval_ticks").forGetter(WardenSonicBoomControl::sonicBoomIntervalTicks)
                         ).apply(instance, WardenSonicBoomControl::new)
                 );

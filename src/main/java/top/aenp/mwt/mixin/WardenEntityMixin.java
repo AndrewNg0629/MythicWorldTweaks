@@ -14,7 +14,7 @@ public abstract class WardenEntityMixin {
     private void WardenEntity(CallbackInfo info) {
         if (!((WardenEntity) (Object) this).getWorld().isClient()) {
             WardenEntity thisOBJ = (WardenEntity) (Object) this;
-            WardenEntityStuff.WardenEntityTrack.registerEntity(thisOBJ);
+            WardenEntityStuff.WardenEntityTracker.INSTANCE.registerEntity(thisOBJ);
         }
     }
 }

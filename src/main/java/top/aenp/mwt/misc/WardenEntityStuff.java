@@ -21,6 +21,7 @@ public class WardenEntityStuff {
     public static void modifyWardenAttributes() {
         Map<RegistryEntry<EntityAttribute>, EntityAttributeInstance> wardenAttributes = ReflectionUtils.DefaultAttributeContainer$instances.getFieldValue(ReflectionUtils.DefaultAttributeRegistry$DEFAULT_ATTRIBUTE_REGISTRY.getFieldValue(null).get(EntityType.WARDEN));
         modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_MAX_HEALTH, ConfigManager.getConfig().tweaks().valueTweaks().wardenAttributesControl().maxHealth());
+        modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_MOVEMENT_SPEED, ConfigManager.getConfig().tweaks().valueTweaks().wardenAttributesControl().baseMovementSpeed());
         modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, ConfigManager.getConfig().tweaks().valueTweaks().wardenAttributesControl().knockbackResistance());
         modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_ATTACK_DAMAGE, ConfigManager.getConfig().tweaks().valueTweaks().wardenAttributesControl().meleeAttackDamage());
         modifyEntityDA(wardenAttributes, EntityAttributes.GENERIC_ATTACK_KNOCKBACK, ConfigManager.getConfig().tweaks().valueTweaks().wardenAttributesControl().meleeAttackKnockback());
@@ -34,20 +35,29 @@ public class WardenEntityStuff {
         }
     }
 
-    public static class WardenEntityTrack {
-        private static final CopyOnWriteArrayList<WardenEntity> wardenEntityList = new CopyOnWriteArrayList<>();
+    public static class WardenEntityTracker {
+        public static final WardenEntityTracker INSTANCE = new WardenEntityTracker();
+        private final CopyOnWriteArrayList<WardenEntity> wardenEntityList = new CopyOnWriteArrayList<>();
 
-        public static void registerEntity(WardenEntity entity) {
+        public static boolean shouldRemove(Entity.RemovalReason reason) {
+            if (reason != null) {
+                return reason.equals(Entity.RemovalReason.CHANGED_DIMENSION) || reason.equals(Entity.RemovalReason.KILLED) || reason.equals(Entity.RemovalReason.DISCARDED);
+            } else {
+                return false;
+            }
+        }
+
+        public void registerEntity(WardenEntity entity) {
             if (!wardenEntityList.contains(entity)) {
                 wardenEntityList.add(entity);
             }
         }
 
-        public static void clearEntities() {
+        public void clearEntities() {
             wardenEntityList.clear();
         }
 
-        public static void tick() {
+        public void tick() {
             Iterator<WardenEntity> iterator = wardenEntityList.iterator();
             WardenEntity wardenEntity;
             while (iterator.hasNext()) {
@@ -60,29 +70,20 @@ public class WardenEntityStuff {
             }
         }
 
-        public static void refreshWardens() {
+        public void refreshWardens() {
             for (WardenEntity wardenEntity : wardenEntityList) {
                 if (wardenEntity != null) {
                     World world = wardenEntity.getWorld();
-                    float healthRate = wardenEntity.getHealth() / wardenEntity.getMaxHealth();
                     int anger = wardenEntity.getAnger();
                     WardenAngerManager angerManager = wardenEntity.getAngerManager();
                     WardenEntity newWardenEntity = wardenEntity.convertTo(EntityType.WARDEN, true);
                     if (newWardenEntity != null) {
                         newWardenEntity.initialize((ServerWorldAccess) world, world.getLocalDifficulty(newWardenEntity.getBlockPos()), SpawnReason.CONVERSION, null);
-                        newWardenEntity.setHealth(newWardenEntity.getMaxHealth() * healthRate);
+                        newWardenEntity.setHealth(wardenEntity.getHealth());
                         newWardenEntity.getDataTracker().set(ReflectionUtils.WardenEntity$ANGER.getFieldValue(null), anger);
                         ReflectionUtils.WardenEntity$angerManager.setFieldValue(newWardenEntity, angerManager);
                     }
                 }
-            }
-        }
-
-        public static boolean shouldRemove(Entity.RemovalReason reason) {
-            if (reason != null) {
-                return reason.equals(Entity.RemovalReason.CHANGED_DIMENSION) || reason.equals(Entity.RemovalReason.KILLED) || reason.equals(Entity.RemovalReason.DISCARDED);
-            } else {
-                return false;
             }
         }
     }

@@ -25,10 +25,11 @@ import java.nio.file.*;
 import java.util.Objects;
 
 public class ConfigManager {
+    public static final int CONFIG_VERSION = 1;
     public static final Codec<RegistryEntry<Item>> ITEM_ENTRY_CODEC = Registries.ITEM.getEntryCodec();
-    private static final String configPathPrefix = System.getProperty("user.dir") + "/config/" + MythicWorldTweaks.MOD_ID;
-    private static final String configFileName = "config.json";
-    private static final String defaultConfigFileName = "default_config_v0.json";
+    private static final String CONFIG_PATH_PREFIX = System.getProperty("user.dir") + "/config/" + MythicWorldTweaks.MOD_ID;
+    private static final String CONFIG_FILE_NAME = "config.json";
+    private static final String DEFAULT_CONFIG_FILE_NAME = String.format("default_config_v%s.json", CONFIG_VERSION);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private volatile static ConfigManager instance = new ConfigManager(ModConfig.DEFAULT_CONFIG);
     private static volatile boolean initialized = false;
@@ -53,7 +54,7 @@ public class ConfigManager {
     }
 
     private static File ensureFile(String fileName) throws IOException {
-        Path path = Paths.get(configPathPrefix, fileName);
+        Path path = Paths.get(CONFIG_PATH_PREFIX, fileName);
         Files.createDirectories(path.getParent());
         if (Files.notExists(path)) {
             Files.createFile(path);
@@ -68,9 +69,14 @@ public class ConfigManager {
     }
 
     private static DataResult<ModConfig> readConfigFromFile() {
-        try (FileReader reader = new FileReader(ensureFile(configFileName))) {
+        try (FileReader reader = new FileReader(ensureFile(CONFIG_FILE_NAME))) {
             JsonElement jsonElement = JsonParser.parseReader(reader);
-            return ModConfig.CODEC.parse(JsonOps.INSTANCE, jsonElement);
+            int fileConfigVersion = jsonElement.getAsJsonObject().get("config_version").getAsInt();
+            if (fileConfigVersion == CONFIG_VERSION) {
+                return ModConfig.CODEC.parse(JsonOps.INSTANCE, jsonElement);
+            } else {
+                return DataResult.error(() -> String.format("The config version of your file is %s, while %s is expected! Migrate your config according to the generated default config %s.", fileConfigVersion, CONFIG_VERSION, DEFAULT_CONFIG_FILE_NAME));
+            }
         } catch (IOException e) {
             return DataResult.error(() -> String.format("IOException when reading config:\n%s", e));
         }
@@ -87,12 +93,12 @@ public class ConfigManager {
                     }
             ).ifError(error -> MythicWorldTweaks.LOGGER.error("Failed to initialize config. See below for error message, correct your config, and restart minecraft.\n{}", error.message()));
             try {
-                ensureFile(defaultConfigFileName);
+                ensureFile(DEFAULT_CONFIG_FILE_NAME);
             } catch (IOException e) {
                 MythicWorldTweaks.LOGGER.error("Failed to place default config.", e);
             }
             Thread.startVirtualThread(() -> {
-                Path configDir = Paths.get(configPathPrefix);
+                Path configDir = Paths.get(CONFIG_PATH_PREFIX);
                 try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
                     configDir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
                     while (true) {
@@ -204,6 +210,6 @@ public class ConfigManager {
     private void applyBakedConfig() {
         ItemEditor.applyFromModConfig();
         WardenEntityStuff.modifyWardenAttributes();
-        WardenEntityStuff.WardenEntityTrack.refreshWardens();
+        WardenEntityStuff.WardenEntityTracker.INSTANCE.refreshWardens();
     }
 }

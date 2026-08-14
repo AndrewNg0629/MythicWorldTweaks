@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class WardenBrainMixin {
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ai/brain/task/RangedApproachTask;create(F)Lnet/minecraft/entity/ai/brain/task/Task;"), index = 0, method = "addFightActivities")
     private static float modifyApproachSpeed(float speed) {
-        return (float) ConfigManager.getConfig().tweaks().valueTweaks().wardenAttributesControl().chasingMovementSpeed();
+        return (float) ConfigManager.getConfig().tweaks().valueTweaks().wardenAttributesControl().chasingMovementSpeedMultiplier();
     }
 
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ai/brain/task/MeleeAttackTask;create(I)Lnet/minecraft/entity/ai/brain/task/SingleTickTask;"), index = 0, method = "addFightActivities")

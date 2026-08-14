@@ -30,7 +30,7 @@ public class SonicBoomTaskMixin {
             double xVelocity = args.get(0);
             double yVelocity = args.get(1);
             double zVelocity = args.get(2);
-            double knockBackVelocityRate = ConfigManager.getConfig().tweaks().valueTweaks().wardenSonicBoomControl().sonicBoomKnockbackFactor();
+            double knockBackVelocityRate = ConfigManager.getConfig().tweaks().valueTweaks().wardenSonicBoomControl().sonicBoomKnockbackMultiplier();
             args.set(0, xVelocity * knockBackVelocityRate);
             args.set(1, yVelocity * knockBackVelocityRate);
             args.set(2, zVelocity * knockBackVelocityRate);
