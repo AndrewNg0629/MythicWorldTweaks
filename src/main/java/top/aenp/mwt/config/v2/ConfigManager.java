@@ -77,8 +77,8 @@ public class ConfigManager {
             } else {
                 return DataResult.error(() -> String.format("The config version of your file is %s, while %s is expected! Migrate your config according to the generated default config %s.", fileConfigVersion, CONFIG_VERSION, DEFAULT_CONFIG_FILE_NAME));
             }
-        } catch (IOException e) {
-            return DataResult.error(() -> String.format("IOException when reading config:\n%s", e));
+        } catch (Exception e) {
+            return DataResult.error(() -> String.format("Exception occurred when reading config from file:\n%s", e));
         }
     }
 
@@ -109,8 +109,9 @@ public class ConfigManager {
                                 if (watchEventKind == StandardWatchEventKinds.ENTRY_MODIFY) {
                                     WatchEvent<Path> modifyEvent = (WatchEvent<Path>) event;
                                     if (modifyEvent.context().toString().startsWith("config.json")) {
+                                        Thread.sleep(1000);
                                         instance.updateConfigFromFile();
-                                        Thread.sleep(5000L);
+                                        Thread.sleep(3000L);
                                     }
                                 }
                             }
