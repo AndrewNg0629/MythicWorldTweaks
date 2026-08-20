@@ -51,7 +51,7 @@ public class VaultBlockEntityMixin implements VaultBlockEntityMethodInjections {
     }
 
     @Inject(method = "writeNbt", at = @At(value = "RETURN"))
-    private void writeNnt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo info) {
+    private void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo info) {
         nbt.put("mwt_vault_cooldown", VaultStuff.COOLDOWN_MAP_CODEC.encodeStart(NbtOps.INSTANCE, vaultCooldown).getOrThrow());
     }
 }
