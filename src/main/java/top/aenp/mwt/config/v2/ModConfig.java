@@ -57,7 +57,7 @@ public record ModConfig(
                     )
             ),
             new ItemEditorConfig(false, List.of()),
-            0
+            ConfigManager.CONFIG_VERSION
     );
 
     public static Codec<Double> rangedDouble(double min, double max, boolean leftInclusive, boolean rightInclusive) {

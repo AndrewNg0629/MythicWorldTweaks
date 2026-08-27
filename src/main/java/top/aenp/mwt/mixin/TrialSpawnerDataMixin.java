@@ -1,6 +1,7 @@
 package top.aenp.mwt.mixin;
 
 import net.minecraft.block.spawner.TrialSpawnerData;
+import net.minecraft.block.spawner.TrialSpawnerLogic;
 import net.minecraft.server.world.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -19,6 +20,11 @@ public class TrialSpawnerDataMixin implements TrialSpawnerDataMethodInjections {
     @Inject(method = "reset", at = @At(value = "HEAD"))
     private void reset(CallbackInfo info) {
         completionTimestamp = -1;
+    }
+
+    @Inject(method = "resetAndClearMobs", at = @At(value = "HEAD"))
+    private void resetAndClearMobs(TrialSpawnerLogic logic, ServerWorld world, CallbackInfo info) {
+        completionTimestamp = -1L;
     }
 
     @Inject(method = "isCooldownOver", at = @At(value = "RETURN"), cancellable = true)
