@@ -33,11 +33,12 @@ public class VaultReuseDataProvider implements IDataProvider<VaultBlockEntity> {
             ModConfig.Tweaks.ValueTweaks.VaultReuse vaultReuseConfig = ConfigManager.getConfig().tweaks().valueTweaks().vaultReuse();
             boolean ominous = accessor.getTarget().getCachedState().get(VaultBlock.OMINOUS);
             if (ConfigManager.getConfig().tweaks().valueTweaks().vaultReuse().wthitIntegration() && (ominous ? vaultReuseConfig.reuseOminousVault() : vaultReuseConfig.reuseRegularVault())) {
-                ConcurrentHashMap<UUID, Integer> cooldownMap = accessor.getTarget().mythicworldtweaks$getCooldownMap();
+                ConcurrentHashMap<UUID, Long> timestampMap = accessor.getTarget().mythicworldtweaks$getTimestampMap();
                 UUID uuid = accessor.getPlayer().getUuid();
-                int targetCooldownTicks = (ominous ? vaultReuseConfig.ominousVaultCooldown() : vaultReuseConfig.regularVaultCooldown()) * 20;
-                if (cooldownMap.containsKey(uuid)) {
-                    data.add(TYPE, result -> result.add(new Data(targetCooldownTicks - cooldownMap.get(uuid))));
+                if (timestampMap.containsKey(uuid)) {
+                    int targetCooldownTicks = (ominous ? vaultReuseConfig.ominousVaultCooldown() : vaultReuseConfig.regularVaultCooldown()) * 20;
+                    int remainingTicks = targetCooldownTicks - (int) (accessor.getLevel().getTime() - timestampMap.get(uuid));
+                    data.add(TYPE, result -> result.add(new Data(remainingTicks)));
                 } else {
                     data.add(TYPE, result -> result.add(new Data(-1)));
                 }

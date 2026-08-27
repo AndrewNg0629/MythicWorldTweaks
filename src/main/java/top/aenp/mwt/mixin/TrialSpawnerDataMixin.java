@@ -14,27 +14,27 @@ import top.aenp.mwt.injected.interfaces.TrialSpawnerDataMethodInjections;
 @Mixin(TrialSpawnerData.class)
 public class TrialSpawnerDataMixin implements TrialSpawnerDataMethodInjections {
     @Unique
-    private int completionElapsedTicks = -1;
+    long completionTimestamp = -1L;
 
     @Inject(method = "reset", at = @At(value = "HEAD"))
     private void reset(CallbackInfo info) {
-        completionElapsedTicks = -1;
+        completionTimestamp = -1;
     }
 
     @Inject(method = "isCooldownOver", at = @At(value = "RETURN"), cancellable = true)
     private void isCooldownOver(ServerWorld world, CallbackInfoReturnable<Boolean> info) {
         if (ConfigManager.getConfig().tweaks().valueTweaks().trialSpawnerCooldownOverride().enabled()) {
-            info.setReturnValue(completionElapsedTicks == -1);
+            info.setReturnValue(completionTimestamp == -1);
         }
     }
 
     @Override
-    public int mythicworldtweaks$getCompletionElapsedTicks() {
-        return completionElapsedTicks;
+    public long mythicworldtweaks$getCompletionTimestamp() {
+        return completionTimestamp;
     }
 
     @Override
-    public void mythicworldtweaks$setCompletionElapsedTicks(int elapsedTicks) {
-        completionElapsedTicks = elapsedTicks;
+    public void mythicworldtweaks$setCompletionTimestamp(long time) {
+        completionTimestamp = time;
     }
 }

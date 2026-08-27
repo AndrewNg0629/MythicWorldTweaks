@@ -4,6 +4,7 @@ import net.minecraft.block.VaultBlock;
 import net.minecraft.block.entity.VaultBlockEntity;
 import net.minecraft.block.vault.VaultServerData;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -41,20 +42,23 @@ public abstract class VaultServerDataMixin implements VaultServerDataMethodInjec
 
     @Inject(method = "getRewardedPlayers", at = @At(value = "RETURN"), cancellable = true)
     private void getRewardedPlayers(CallbackInfoReturnable<Set<UUID>> info) {
-        executeIfReused(() -> info.setReturnValue(vaultBlockEntity.mythicworldtweaks$getCooldownMap().keySet()));
+        executeIfReused(() -> info.setReturnValue(vaultBlockEntity.mythicworldtweaks$getTimestampMap().keySet()));
     }
 
     @Inject(method = "hasRewardedPlayer", at = @At(value = "RETURN"), cancellable = true)
     private void hasRewardedPlayer(PlayerEntity player, CallbackInfoReturnable<Boolean> info) {
-        executeIfReused(() -> info.setReturnValue(vaultBlockEntity.mythicworldtweaks$getCooldownMap().containsKey(player.getUuid())));
+        executeIfReused(() -> info.setReturnValue(vaultBlockEntity.mythicworldtweaks$getTimestampMap().containsKey(player.getUuid())));
     }
 
     @Inject(method = "markPlayerAsRewarded", at = @At(value = "HEAD"), cancellable = true)
     private void markPlayerAsRewarded(PlayerEntity player, CallbackInfo info) {
         executeIfReused(() -> {
-            vaultBlockEntity.mythicworldtweaks$getCooldownMap().put(player.getUuid(), 0);
-            markDirty();
-            info.cancel();
+            World world = vaultBlockEntity.getWorld();
+            if (world != null) {
+                vaultBlockEntity.mythicworldtweaks$getTimestampMap().put(player.getUuid(), world.getTime());
+                markDirty();
+                info.cancel();
+            }
         });
     }
 }

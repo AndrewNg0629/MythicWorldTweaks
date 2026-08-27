@@ -24,15 +24,16 @@ public class VaultBlockEntityMixin implements VaultBlockEntityMethodInjections {
     @Shadow
     @Final
     private static Logger LOGGER;
+
     @Unique
-    private final ConcurrentHashMap<UUID, Integer> vaultCooldown = new ConcurrentHashMap<>();
+    final ConcurrentHashMap<UUID, Long> vaultOpenTimestamp = new ConcurrentHashMap<>();
     @Shadow
     @Final
     private VaultServerData serverData;
 
     @Override
-    public ConcurrentHashMap<UUID, Integer> mythicworldtweaks$getCooldownMap() {
-        return vaultCooldown;
+    public ConcurrentHashMap<UUID, Long> mythicworldtweaks$getTimestampMap() {
+        return vaultOpenTimestamp;
     }
 
     @Inject(method = "<init>(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V", at = @At(value = "RETURN"))
@@ -41,17 +42,17 @@ public class VaultBlockEntityMixin implements VaultBlockEntityMethodInjections {
     }
 
     @Inject(method = "readNbt", at = @At(value = "RETURN"))
-    private void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo ci) {
-        if (nbt.contains("mwt_vault_cooldown")) {
-            TrialChamberStuff.COOLDOWN_MAP_CODEC.parse(NbtOps.INSTANCE, nbt.get("mwt_vault_cooldown")).resultOrPartial(LOGGER::error).ifPresent(map -> {
-                vaultCooldown.clear();
-                vaultCooldown.putAll(map);
+    private void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo info) {
+        if (nbt.contains("mwt_vault_open_timestamp")) {
+            TrialChamberStuff.TIMESTAMP_MAP_CODEC.parse(NbtOps.INSTANCE, nbt.get("mwt_vault_open_timestamp")).resultOrPartial(LOGGER::error).ifPresent(map -> {
+                vaultOpenTimestamp.clear();
+                vaultOpenTimestamp.putAll(map);
             });
         }
     }
 
     @Inject(method = "writeNbt", at = @At(value = "RETURN"))
     private void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo info) {
-        nbt.put("mwt_vault_cooldown", TrialChamberStuff.COOLDOWN_MAP_CODEC.encodeStart(NbtOps.INSTANCE, vaultCooldown).getOrThrow());
+        nbt.put("mwt_vault_open_timestamp", TrialChamberStuff.TIMESTAMP_MAP_CODEC.encodeStart(NbtOps.INSTANCE, vaultOpenTimestamp).getOrThrow());
     }
 }

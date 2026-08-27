@@ -17,13 +17,13 @@ public class TrialSpawnerBlockEntityMixin {
 
     @Inject(method = "readNbt", at = @At(value = "RETURN"))
     private void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo info) {
-        if (nbt.contains("mwt_completion_elapsed_ticks")) {
-            spawner.getData().mythicworldtweaks$setCompletionElapsedTicks(nbt.getInt("mwt_completion_elapsed_ticks"));
+        if (nbt.contains("mwt_completion_timestamp")) {
+            spawner.getData().mythicworldtweaks$setCompletionTimestamp(nbt.getLong("mwt_completion_timestamp"));
         }
     }
 
     @Inject(method = "writeNbt", at = @At(value = "RETURN"))
     private void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo info) {
-        nbt.putInt("mwt_completion_elapsed_ticks", spawner.getData().mythicworldtweaks$getCompletionElapsedTicks());
+        nbt.putLong("mwt_completion_timestamp", spawner.getData().mythicworldtweaks$getCompletionTimestamp());
     }
 }

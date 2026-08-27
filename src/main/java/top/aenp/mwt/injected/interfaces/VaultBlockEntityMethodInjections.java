@@ -6,7 +6,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public interface VaultBlockEntityMethodInjections {
-    default ConcurrentHashMap<UUID, Integer> mythicworldtweaks$getCooldownMap() {
+    default ConcurrentHashMap<UUID, Long> mythicworldtweaks$getTimestampMap() {
         throw new NotImplementedException();
     }
 }

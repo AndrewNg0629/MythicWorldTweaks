@@ -28,10 +28,13 @@ public class TrialSpawnerCooldownDataProvider implements IDataProvider<TrialSpaw
         if (ConfigManager.getConfig().multiplayerSupportEnabled()) {
             ModConfig.Tweaks.ValueTweaks.TrialSpawnerCooldownOverride trialSpawnerCooldownOverride = ConfigManager.getConfig().tweaks().valueTweaks().trialSpawnerCooldownOverride();
             if (trialSpawnerCooldownOverride.enabled() && trialSpawnerCooldownOverride.wthitIntegration()) {
-                int elapsedTicks = accessor.getTarget().getSpawner().getData().mythicworldtweaks$getCompletionElapsedTicks();
-                if (elapsedTicks >= 0) {
+                long completionTime = accessor.getTarget().getSpawner().getData().mythicworldtweaks$getCompletionTimestamp();
+                if (completionTime >= 0) {
                     int targetCooldownTicks = trialSpawnerCooldownOverride.cooldown() * 20;
-                    data.add(TYPE, result -> result.add(new Data(targetCooldownTicks - elapsedTicks)));
+                    int remainingTicks = targetCooldownTicks - (int) (accessor.getLevel().getTime() - completionTime);
+                    if (remainingTicks >= 0) {
+                        data.add(TYPE, result -> result.add(new Data(remainingTicks)));
+                    }
                 }
             }
         }

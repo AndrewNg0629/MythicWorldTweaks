@@ -23,13 +23,10 @@ public class TrialSpawnerLogicMixin {
     private void tick(ServerWorld world, BlockPos pos, boolean ominous, CallbackInfo info) {
         ModConfig.Tweaks.ValueTweaks.TrialSpawnerCooldownOverride trialSpawnerCooldownOverride = ConfigManager.getConfig().tweaks().valueTweaks().trialSpawnerCooldownOverride();
         if (trialSpawnerCooldownOverride.enabled()) {
-            int elapsedTicks = data.mythicworldtweaks$getCompletionElapsedTicks();
-            if (elapsedTicks >= 0) {
-                if (++elapsedTicks >= trialSpawnerCooldownOverride.cooldown() * 20) {
-                    elapsedTicks = -1;
-                }
+            long completionTime = data.mythicworldtweaks$getCompletionTimestamp();
+            if (completionTime >= 0 && (int) (world.getTime() - completionTime) >= trialSpawnerCooldownOverride.cooldown() * 20) {
+                data.mythicworldtweaks$setCompletionTimestamp(-1L);
             }
-            data.mythicworldtweaks$setCompletionElapsedTicks(elapsedTicks);
         }
     }
 }

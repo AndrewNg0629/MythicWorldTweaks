@@ -13,10 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.aenp.mwt.config.v2.ConfigManager;
 import top.aenp.mwt.config.v2.ModConfig;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
-
 @Mixin(VaultBlock.class)
 public class VaultBlockMixin {
     @Inject(method = "method_56718", at = @At(value = "RETURN"))
@@ -25,16 +21,7 @@ public class VaultBlockMixin {
         boolean ominous = state.get(VaultBlock.OMINOUS);
         if (ominous ? vaultReuseConfig.reuseOminousVault() : vaultReuseConfig.reuseRegularVault()) {
             int cooldownTicks = ominous ? vaultReuseConfig.ominousVaultCooldown() * 20 : vaultReuseConfig.regularVaultCooldown() * 20;
-            Iterator<Map.Entry<UUID, Integer>> iterator = blockEntity.mythicworldtweaks$getCooldownMap().entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<UUID, Integer> entry = iterator.next();
-                int ticksElapsed = entry.getValue() + 1;
-                if (ticksElapsed >= cooldownTicks) {
-                    iterator.remove();
-                } else {
-                    entry.setValue(ticksElapsed);
-                }
-            }
+            blockEntity.mythicworldtweaks$getTimestampMap().entrySet().removeIf(entry -> world.getTime() - entry.getValue() >= cooldownTicks);
         }
     }
 }

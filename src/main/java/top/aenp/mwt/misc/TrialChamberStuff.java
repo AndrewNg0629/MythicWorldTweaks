@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class TrialChamberStuff {
-    public static final Codec<Map<UUID, Integer>> COOLDOWN_MAP_CODEC = Codec.unboundedMap(Uuids.STRING_CODEC, Codec.INT);
+    public static final Codec<Map<UUID, Long>> TIMESTAMP_MAP_CODEC = Codec.unboundedMap(Uuids.STRING_CODEC, Codec.LONG);
 
     public static Text formatCooldown(int remainingTicks) {
         int totalSeconds = remainingTicks / 20;
