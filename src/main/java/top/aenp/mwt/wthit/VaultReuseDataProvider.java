@@ -29,16 +29,18 @@ public class VaultReuseDataProvider implements IDataProvider<VaultBlockEntity> {
 
     @Override
     public void appendData(IDataWriter data, IServerAccessor<VaultBlockEntity> accessor, IPluginConfig config) {
-        ModConfig.Tweaks.ValueTweaks.VaultReuse vaultReuseConfig = ConfigManager.getConfig().tweaks().valueTweaks().vaultReuse();
-        boolean ominous = accessor.getTarget().getCachedState().get(VaultBlock.OMINOUS);
-        if (ConfigManager.getConfig().tweaks().valueTweaks().vaultReuse().wthitIntegration() && (ominous ? vaultReuseConfig.reuseOminousVault() : vaultReuseConfig.reuseRegularVault())) {
-            ConcurrentHashMap<UUID, Integer> cooldownMap = accessor.getTarget().mythicworldtweaks$getCooldownMap();
-            UUID uuid = accessor.getPlayer().getUuid();
-            int targetCooldownTicks = (ominous ? vaultReuseConfig.ominousVaultCooldown() : vaultReuseConfig.regularVaultCooldown()) * 20;
-            if (cooldownMap.containsKey(uuid)) {
-                data.add(TYPE, result -> result.add(new Data(targetCooldownTicks - cooldownMap.get(uuid))));
-            } else {
-                data.add(TYPE, result -> result.add(new Data(-1)));
+        if (ConfigManager.getConfig().multiplayerSupportEnabled()) {
+            ModConfig.Tweaks.ValueTweaks.VaultReuse vaultReuseConfig = ConfigManager.getConfig().tweaks().valueTweaks().vaultReuse();
+            boolean ominous = accessor.getTarget().getCachedState().get(VaultBlock.OMINOUS);
+            if (ConfigManager.getConfig().tweaks().valueTweaks().vaultReuse().wthitIntegration() && (ominous ? vaultReuseConfig.reuseOminousVault() : vaultReuseConfig.reuseRegularVault())) {
+                ConcurrentHashMap<UUID, Integer> cooldownMap = accessor.getTarget().mythicworldtweaks$getCooldownMap();
+                UUID uuid = accessor.getPlayer().getUuid();
+                int targetCooldownTicks = (ominous ? vaultReuseConfig.ominousVaultCooldown() : vaultReuseConfig.regularVaultCooldown()) * 20;
+                if (cooldownMap.containsKey(uuid)) {
+                    data.add(TYPE, result -> result.add(new Data(targetCooldownTicks - cooldownMap.get(uuid))));
+                } else {
+                    data.add(TYPE, result -> result.add(new Data(-1)));
+                }
             }
         }
     }

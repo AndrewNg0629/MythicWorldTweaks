@@ -25,12 +25,14 @@ public class TrialSpawnerCooldownDataProvider implements IDataProvider<TrialSpaw
 
     @Override
     public void appendData(IDataWriter data, IServerAccessor<TrialSpawnerBlockEntity> accessor, IPluginConfig config) {
-        ModConfig.Tweaks.ValueTweaks.TrialSpawnerCooldownOverride trialSpawnerCooldownOverride = ConfigManager.getConfig().tweaks().valueTweaks().trialSpawnerCooldownOverride();
-        if (trialSpawnerCooldownOverride.enabled() && trialSpawnerCooldownOverride.wthitIntegration()) {
-            int elapsedTicks = accessor.getTarget().getSpawner().getData().mythicworldtweaks$getCompletionElapsedTicks();
-            if (elapsedTicks >= 0) {
-                int targetCooldownTicks = trialSpawnerCooldownOverride.cooldown() * 20;
-                data.add(TYPE, result -> result.add(new Data(targetCooldownTicks - elapsedTicks)));
+        if (ConfigManager.getConfig().multiplayerSupportEnabled()) {
+            ModConfig.Tweaks.ValueTweaks.TrialSpawnerCooldownOverride trialSpawnerCooldownOverride = ConfigManager.getConfig().tweaks().valueTweaks().trialSpawnerCooldownOverride();
+            if (trialSpawnerCooldownOverride.enabled() && trialSpawnerCooldownOverride.wthitIntegration()) {
+                int elapsedTicks = accessor.getTarget().getSpawner().getData().mythicworldtweaks$getCompletionElapsedTicks();
+                if (elapsedTicks >= 0) {
+                    int targetCooldownTicks = trialSpawnerCooldownOverride.cooldown() * 20;
+                    data.add(TYPE, result -> result.add(new Data(targetCooldownTicks - elapsedTicks)));
+                }
             }
         }
     }

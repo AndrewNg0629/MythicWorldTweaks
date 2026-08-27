@@ -40,6 +40,7 @@ public class ConfigManager {
     private volatile NetworkSyncedConfig configFromNetwork = null;
     private volatile NetworkSyncedConfig configToSend = null;
     private volatile ModConfig combinedConfig = null;
+    private boolean initialConfigSucceeded = false;
 
     public ConfigManager(ModConfig initialConfig) {
         modEnabled = initialConfig.modEnabled();
@@ -89,6 +90,7 @@ public class ConfigManager {
                     config -> {
                         instance = new ConfigManager(config);
                         instance.applyBakedConfig();
+                        instance.initialConfigSucceeded = true;
                         MythicWorldTweaks.LOGGER.info("Successfully parsed initial config.");
                     }
             ).ifError(error -> MythicWorldTweaks.LOGGER.error("Failed to initialize config. See below for error message, correct your config, and restart minecraft.\n{}", error.message()));
@@ -97,37 +99,39 @@ public class ConfigManager {
             } catch (IOException e) {
                 MythicWorldTweaks.LOGGER.error("Failed to place default config.", e);
             }
-            Thread.startVirtualThread(() -> {
-                Path configDir = Paths.get(CONFIG_PATH_PREFIX);
-                try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
-                    configDir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
-                    while (true) {
-                        try {
-                            WatchKey watchKey = watchService.take();
-                            for (WatchEvent<?> event : watchKey.pollEvents()) {
-                                WatchEvent.Kind<?> watchEventKind = event.kind();
-                                if (watchEventKind == StandardWatchEventKinds.ENTRY_MODIFY) {
-                                    WatchEvent<Path> modifyEvent = (WatchEvent<Path>) event;
-                                    if (modifyEvent.context().toString().startsWith("config.json")) {
-                                        Thread.sleep(1000);
-                                        instance.updateConfigFromFile();
-                                        Thread.sleep(3000L);
+            if (instance.initialConfigSucceeded) {
+                Thread.startVirtualThread(() -> {
+                    Path configDir = Paths.get(CONFIG_PATH_PREFIX);
+                    try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
+                        configDir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+                        while (true) {
+                            try {
+                                WatchKey watchKey = watchService.take();
+                                for (WatchEvent<?> event : watchKey.pollEvents()) {
+                                    WatchEvent.Kind<?> watchEventKind = event.kind();
+                                    if (watchEventKind == StandardWatchEventKinds.ENTRY_MODIFY) {
+                                        WatchEvent<Path> modifyEvent = (WatchEvent<Path>) event;
+                                        if (modifyEvent.context().toString().startsWith("config.json")) {
+                                            Thread.sleep(1000);
+                                            instance.updateConfigFromFile();
+                                            Thread.sleep(3000L);
+                                        }
                                     }
                                 }
+                                if (!watchKey.reset()) {
+                                    throw new RuntimeException();
+                                }
+                            } catch (InterruptedException e) {
+                                break;
                             }
-                            if (!watchKey.reset()) {
-                                throw new RuntimeException();
-                            }
-                        } catch (InterruptedException e) {
-                            break;
                         }
+                    } catch (Exception e) {
+                        MythicWorldTweaks.LOGGER.error("Config file listener terminated unexpectedly.", e);
                     }
-                } catch (Exception e) {
-                    MythicWorldTweaks.LOGGER.error("Config file listener terminated unexpectedly.", e);
-                }
-                MythicWorldTweaks.LOGGER.info("config file listener done.");
-            }).setName("Config File Listener");
-            MythicWorldTweaks.LOGGER.info("Spun up config file listener.");
+                    MythicWorldTweaks.LOGGER.info("config file listener done.");
+                }).setName("Config File Listener");
+                MythicWorldTweaks.LOGGER.info("Spun up config file listener.");
+            }
             initialized = true;
         } else {
             throw new IllegalStateException();
@@ -154,7 +158,9 @@ public class ConfigManager {
                 combineConfig();
                 applyBakedConfig();
                 MythicWorldTweaks.LOGGER.info("Your mutable config has been successfully updated.");
-                MythicNetwork.INSTANCE.pushConfigDuringPlay();
+                if (ConfigManager.getConfig().multiplayerSupportEnabled()) {
+                    MythicNetwork.INSTANCE.pushConfigDuringPlay();
+                }
             }
         }).ifError(error -> MythicWorldTweaks.LOGGER.error("Failed to parse config, config was not updated. See below for error message and correct your config.\n{}", error.message()));
     }
