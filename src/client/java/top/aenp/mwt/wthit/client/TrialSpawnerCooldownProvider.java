@@ -4,23 +4,19 @@ import mcp.mobius.waila.api.IBlockAccessor;
 import mcp.mobius.waila.api.IBlockComponentProvider;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.ITooltip;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import top.aenp.mwt.config.v2.ConfigManager;
 import top.aenp.mwt.misc.TrialChamberStuff;
-import top.aenp.mwt.wthit.VaultReuseDataProvider;
+import top.aenp.mwt.wthit.TrialSpawnerCooldownDataProvider;
 
-public class VaultReuseProvider implements IBlockComponentProvider {
+public class TrialSpawnerCooldownProvider implements IBlockComponentProvider {
     @Override
     public void appendBody(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
         if (ConfigManager.getConfig().tweaks().valueTweaks().vaultReuse().wthitIntegration() && ConfigManager.getConfig().multiplayerSupportEnabled()) {
-            VaultReuseDataProvider.Data data = accessor.getData().get(VaultReuseDataProvider.TYPE);
+            TrialSpawnerCooldownDataProvider.Data data = accessor.getData().get(TrialSpawnerCooldownDataProvider.TYPE);
             if (data != null) {
                 int remainingTicks = data.remainingTicks();
                 if (remainingTicks >= 0) {
                     tooltip.addLine(TrialChamberStuff.formatCooldown(remainingTicks));
-                } else {
-                    tooltip.addLine(Text.translatable("mythicworldtweaks.wthit.tooltip.vault.ready").formatted(Formatting.GREEN));
                 }
             }
         }

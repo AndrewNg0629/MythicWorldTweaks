@@ -68,6 +68,9 @@
       ],
       "net/minecraft/class_9204": [
         "top/aenp/mwt/injected/interfaces/VaultServerDataMethodInjections"
+      ],
+      "net/minecraft/class_8966": [
+        "top/aenp/mwt/injected/interfaces/TrialSpawnerDataMethodInjections"
       ]
     }
   }

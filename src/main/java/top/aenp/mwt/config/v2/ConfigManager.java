@@ -25,7 +25,7 @@ import java.nio.file.*;
 import java.util.Objects;
 
 public class ConfigManager {
-    public static final int CONFIG_VERSION = 1;
+    public static final int CONFIG_VERSION = 2;
     public static final Codec<RegistryEntry<Item>> ITEM_ENTRY_CODEC = Registries.ITEM.getEntryCodec();
     private static final String CONFIG_PATH_PREFIX = System.getProperty("user.dir") + "/config/" + MythicWorldTweaks.MOD_ID;
     private static final String CONFIG_FILE_NAME = "config.json";
@@ -179,7 +179,6 @@ public class ConfigManager {
         ModConfig.Tweaks.ValueTweaks valueTweaksFromFile = configFromFile.tweaks().valueTweaks();
         ModConfig.Tweaks.ValueTweaks defaultValueTweaks = ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks();
         ModConfig.Tweaks.ValueTweaks.WardenAttributesControl wardenAttributesControlConfig = configFromNetwork != null ? configFromNetwork.wardenAttributesControl() : (localTweaksEnabled ? valueTweaksFromFile.wardenAttributesControl() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().wardenAttributesControl());
-        ModConfig.Tweaks.ValueTweaks.VaultReuse vaultReuseConfig = configFromNetwork != null ? configFromNetwork.vaultReuse() : (localTweaksEnabled ? valueTweaksFromFile.vaultReuse() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().vaultReuse());
         ModConfig.ItemEditorConfig itemEditorConfig = configFromNetwork != null ? configFromNetwork.itemEditorConfig() : configFromFile.itemEditorConfig();
         combinedConfig = modEnabled ?
                 new ModConfig(
@@ -197,15 +196,16 @@ public class ConfigManager {
                                         wardenAttributesControlConfig.enabled() ? wardenAttributesControlConfig : defaultValueTweaks.wardenAttributesControl(),
                                         localTweaksEnabled && valueTweaksFromFile.wardenSonicBoomControl().enabled() ? valueTweaksFromFile.wardenSonicBoomControl() : defaultValueTweaks.wardenSonicBoomControl(),
                                         localTweaksEnabled && valueTweaksFromFile.playerDeathItemProtection().enabled() ? valueTweaksFromFile.playerDeathItemProtection() : defaultValueTweaks.playerDeathItemProtection(),
-                                        vaultReuseConfig,
-                                        localTweaksEnabled && valueTweaksFromFile.itemExplosionResistance().enabled() ? valueTweaksFromFile.itemExplosionResistance() : defaultValueTweaks.itemExplosionResistance()
+                                        localTweaksEnabled ? valueTweaksFromFile.vaultReuse() : ModConfig.DEFAULT_CONFIG.tweaks().valueTweaks().vaultReuse(),
+                                        localTweaksEnabled && valueTweaksFromFile.itemExplosionResistance().enabled() ? valueTweaksFromFile.itemExplosionResistance() : defaultValueTweaks.itemExplosionResistance(),
+                                        localTweaksEnabled && valueTweaksFromFile.trialSpawnerCooldownOverride().enabled() ? valueTweaksFromFile.trialSpawnerCooldownOverride() : defaultValueTweaks.trialSpawnerCooldownOverride()
                                 )
                         ),
                         itemEditorConfig.enabled() ? itemEditorConfig : ModConfig.DEFAULT_CONFIG.itemEditorConfig(),
                         configFromFile.configVersion()
                 )
                 : ModConfig.DEFAULT_CONFIG;
-        configToSend = new NetworkSyncedConfig(combinedConfig.tweaks().syncedToggleTweaks1(), combinedConfig.tweaks().valueTweaks().wardenAttributesControl(), combinedConfig.tweaks().valueTweaks().vaultReuse(), combinedConfig.itemEditorConfig());
+        configToSend = new NetworkSyncedConfig(combinedConfig.tweaks().syncedToggleTweaks1(), combinedConfig.tweaks().valueTweaks().wardenAttributesControl(), combinedConfig.itemEditorConfig());
     }
 
     private void applyBakedConfig() {

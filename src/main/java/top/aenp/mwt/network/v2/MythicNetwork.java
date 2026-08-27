@@ -25,7 +25,7 @@ public class MythicNetwork {
     public static final int QUERY_ID = -2147483600;
     public static final ImmutableSet<String> ALL_MODS;
     public static final String MOD_VERSION = FabricLoader.getInstance().getModContainer(MythicWorldTweaks.MOD_ID).orElseThrow().getMetadata().getVersion().getFriendlyString();
-    public static final int PROTOCOL_VERSION = 1;
+    public static final int PROTOCOL_VERSION = 2;
 
     static {
         ImmutableSet.Builder<String> modIdSetBuilder = ImmutableSet.builder();

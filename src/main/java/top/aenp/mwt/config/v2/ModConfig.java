@@ -52,7 +52,8 @@ public record ModConfig(
                             new Tweaks.ValueTweaks.WardenSonicBoomControl(false, true, 10.0, 1.0, 34),
                             new Tweaks.ValueTweaks.PlayerDeathItemProtection(false, 12000, false, false),
                             new Tweaks.ValueTweaks.VaultReuse(false, 300, false, 600, false),
-                            new Tweaks.ValueTweaks.ItemExplosionResistance(false, List.of())
+                            new Tweaks.ValueTweaks.ItemExplosionResistance(false, List.of()),
+                            new ModConfig.Tweaks.ValueTweaks.TrialSpawnerCooldownOverride(false, 1800, false)
                     )
             ),
             new ItemEditorConfig(false, List.of()),
@@ -159,7 +160,8 @@ public record ModConfig(
                 WardenSonicBoomControl wardenSonicBoomControl,
                 PlayerDeathItemProtection playerDeathItemProtection,
                 VaultReuse vaultReuse,
-                ItemExplosionResistance itemExplosionResistance
+                ItemExplosionResistance itemExplosionResistance,
+                TrialSpawnerCooldownOverride trialSpawnerCooldownOverride
         ) {
             public static final MapCodec<ValueTweaks> CODEC = RecordCodecBuilder.mapCodec(
                     instance -> instance.group(
@@ -170,7 +172,8 @@ public record ModConfig(
                             WardenSonicBoomControl.CODEC.fieldOf("warden_sonic_boom_control").forGetter(ValueTweaks::wardenSonicBoomControl),
                             PlayerDeathItemProtection.CODEC.fieldOf("player_death_item_protection").forGetter(ValueTweaks::playerDeathItemProtection),
                             VaultReuse.CODEC.fieldOf("vault_reuse").forGetter(ValueTweaks::vaultReuse),
-                            ItemExplosionResistance.CODEC.fieldOf("item_explosion_resistance").forGetter(ValueTweaks::itemExplosionResistance)
+                            ItemExplosionResistance.CODEC.fieldOf("item_explosion_resistance").forGetter(ValueTweaks::itemExplosionResistance),
+                            TrialSpawnerCooldownOverride.CODEC.fieldOf("trial_spawner_cooldown_override").forGetter(ValueTweaks::trialSpawnerCooldownOverride)
                     ).apply(instance, ValueTweaks::new)
             );
 
@@ -295,6 +298,16 @@ public record ModConfig(
                                 Codec.BOOL.fieldOf("enabled").forGetter(ItemExplosionResistance::enabled),
                                 ConfigManager.ITEM_ENTRY_CODEC.listOf().fieldOf("inclusion_list").forGetter(ItemExplosionResistance::inclusionList)
                         ).apply(instance, ItemExplosionResistance::new)
+                );
+            }
+
+            public record TrialSpawnerCooldownOverride(boolean enabled, int cooldown, boolean wthitIntegration) {
+                public static final Codec<TrialSpawnerCooldownOverride> CODEC = RecordCodecBuilder.create(
+                        instance -> instance.group(
+                                Codec.BOOL.fieldOf("enabled").forGetter(TrialSpawnerCooldownOverride::enabled),
+                                Codec.INT.fieldOf("cooldown").forGetter(TrialSpawnerCooldownOverride::cooldown),
+                                Codec.BOOL.fieldOf("wthit_integration").forGetter(TrialSpawnerCooldownOverride::wthitIntegration)
+                        ).apply(instance, TrialSpawnerCooldownOverride::new)
                 );
             }
         }

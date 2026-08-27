@@ -4,5 +4,5 @@
   "mythicworldtweaks.item_editor.item_count_tooltip": "物品数量: %s",
   "mythicworldtweaks.sleeping_extras.sleep_button": "入睡",
   "mythicworldtweaks.wthit.tooltip.vault.ready": "可解锁",
-  "mythicworldtweaks.wthit.tooltip.vault.cooldown": "冷却时间：%s"
+  "mythicworldtweaks.wthit.tooltip.cooldown": "冷却时间：%s"
 }

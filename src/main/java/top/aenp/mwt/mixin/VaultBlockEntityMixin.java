@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.aenp.mwt.injected.interfaces.VaultBlockEntityMethodInjections;
-import top.aenp.mwt.misc.VaultStuff;
+import top.aenp.mwt.misc.TrialChamberStuff;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,7 +43,7 @@ public class VaultBlockEntityMixin implements VaultBlockEntityMethodInjections {
     @Inject(method = "readNbt", at = @At(value = "RETURN"))
     private void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo ci) {
         if (nbt.contains("mwt_vault_cooldown")) {
-            VaultStuff.COOLDOWN_MAP_CODEC.parse(NbtOps.INSTANCE, nbt.get("mwt_vault_cooldown")).resultOrPartial(LOGGER::error).ifPresent(map -> {
+            TrialChamberStuff.COOLDOWN_MAP_CODEC.parse(NbtOps.INSTANCE, nbt.get("mwt_vault_cooldown")).resultOrPartial(LOGGER::error).ifPresent(map -> {
                 vaultCooldown.clear();
                 vaultCooldown.putAll(map);
             });
@@ -52,6 +52,6 @@ public class VaultBlockEntityMixin implements VaultBlockEntityMethodInjections {
 
     @Inject(method = "writeNbt", at = @At(value = "RETURN"))
     private void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo info) {
-        nbt.put("mwt_vault_cooldown", VaultStuff.COOLDOWN_MAP_CODEC.encodeStart(NbtOps.INSTANCE, vaultCooldown).getOrThrow());
+        nbt.put("mwt_vault_cooldown", TrialChamberStuff.COOLDOWN_MAP_CODEC.encodeStart(NbtOps.INSTANCE, vaultCooldown).getOrThrow());
     }
 }
