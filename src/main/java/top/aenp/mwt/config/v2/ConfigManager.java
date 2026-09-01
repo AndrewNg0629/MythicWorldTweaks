@@ -83,7 +83,6 @@ public class ConfigManager {
         }
     }
 
-    @SuppressWarnings({"unchecked", "BusyWait"})
     public static void initialize() {
         if (!initialized) {
             readConfigFromFile().ifSuccess(
@@ -100,42 +99,46 @@ public class ConfigManager {
                 MythicWorldTweaks.LOGGER.error("Failed to place default config.", e);
             }
             if (instance.initialConfigSucceeded) {
-                Thread.startVirtualThread(() -> {
-                    Path configDir = Paths.get(CONFIG_PATH_PREFIX);
-                    try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
-                        configDir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
-                        while (true) {
-                            try {
-                                WatchKey watchKey = watchService.take();
-                                for (WatchEvent<?> event : watchKey.pollEvents()) {
-                                    WatchEvent.Kind<?> watchEventKind = event.kind();
-                                    if (watchEventKind == StandardWatchEventKinds.ENTRY_MODIFY) {
-                                        WatchEvent<Path> modifyEvent = (WatchEvent<Path>) event;
-                                        if (modifyEvent.context().toString().startsWith("config.json")) {
-                                            Thread.sleep(1000);
-                                            instance.updateConfigFromFile();
-                                            Thread.sleep(3000L);
-                                        }
-                                    }
-                                }
-                                if (!watchKey.reset()) {
-                                    throw new RuntimeException();
-                                }
-                            } catch (InterruptedException e) {
-                                break;
-                            }
-                        }
-                    } catch (Exception e) {
-                        MythicWorldTweaks.LOGGER.error("Config file listener terminated unexpectedly.", e);
-                    }
-                    MythicWorldTweaks.LOGGER.info("config file listener done.");
-                }).setName("Config File Listener");
-                MythicWorldTweaks.LOGGER.info("Spun up config file listener.");
+                startListener();
             }
             initialized = true;
         } else {
             throw new IllegalStateException();
         }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private static void startListener() {
+        Thread.startVirtualThread(() -> {
+            Path configDir = Paths.get(CONFIG_PATH_PREFIX);
+            long lastTriggered = 0L;
+            try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
+                configDir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+                while (true) {
+                    try {
+                        WatchKey watchKey = watchService.take();
+                        for (WatchEvent<?> event : watchKey.pollEvents()) {
+                            WatchEvent.Kind<?> watchEventKind = event.kind();
+                            if (watchEventKind == StandardWatchEventKinds.ENTRY_MODIFY) {
+                                WatchEvent<Path> modifyEvent = (WatchEvent<Path>) event;
+                                if (modifyEvent.context().toString().startsWith("config.json") && System.currentTimeMillis() >= lastTriggered + 3000L) {
+                                    lastTriggered = System.currentTimeMillis();
+                                    instance.updateConfigFromFile();
+                                }
+                            }
+                        }
+                        if (!watchKey.reset()) {
+                            break;
+                        }
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                MythicWorldTweaks.LOGGER.error("Config file listener terminated unexpectedly.", e);
+            }
+        }).setName("Config File Listener");
+        MythicWorldTweaks.LOGGER.info("Started config file listener.");
     }
 
     public static ModConfig getConfig() {
@@ -147,22 +150,30 @@ public class ConfigManager {
     }
 
     public void updateConfigFromFile() {
-        readConfigFromFile().ifSuccess(result -> {
-            if (!(result.modEnabled() == configFromFile.modEnabled() && result.multiplayerSupportEnabled() == configFromFile.multiplayerSupportEnabled() && Objects.equals(result.modIdValidationConfig(), configFromFile.modIdValidationConfig()))) {
-                MythicWorldTweaks.LOGGER.warn("You edited immutable config, which can't be reloaded on-the-fly. Restart minecraft to change them.");
+        Thread.startVirtualThread(() -> {
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                MythicWorldTweaks.LOGGER.info("Exception updating config.", e);
+                return;
             }
-            if (Objects.equals(result.tweaks(), configFromFile.tweaks()) && Objects.equals(result.itemEditorConfig(), configFromFile.itemEditorConfig())) {
-                MythicWorldTweaks.LOGGER.info("Your mutable config didn't change.");
-            } else {
-                configFromFile = result;
-                combineConfig();
-                applyBakedConfig();
-                MythicWorldTweaks.LOGGER.info("Your mutable config has been successfully updated.");
-                if (ConfigManager.getConfig().multiplayerSupportEnabled()) {
-                    MythicNetwork.INSTANCE.pushConfigDuringPlay();
+            readConfigFromFile().ifSuccess(result -> {
+                if (!(result.modEnabled() == configFromFile.modEnabled() && result.multiplayerSupportEnabled() == configFromFile.multiplayerSupportEnabled() && Objects.equals(result.modIdValidationConfig(), configFromFile.modIdValidationConfig()))) {
+                    MythicWorldTweaks.LOGGER.warn("You edited immutable config, which can't be reloaded on-the-fly. Restart minecraft to change them.");
                 }
-            }
-        }).ifError(error -> MythicWorldTweaks.LOGGER.error("Failed to parse config, config was not updated. See below for error message and correct your config.\n{}", error.message()));
+                if (Objects.equals(result.tweaks(), configFromFile.tweaks()) && Objects.equals(result.itemEditorConfig(), configFromFile.itemEditorConfig())) {
+                    MythicWorldTweaks.LOGGER.info("Your mutable config didn't change.");
+                } else {
+                    configFromFile = result;
+                    combineConfig();
+                    applyBakedConfig();
+                    MythicWorldTweaks.LOGGER.info("Your mutable config has been successfully updated.");
+                    if (ConfigManager.getConfig().multiplayerSupportEnabled()) {
+                        MythicNetwork.INSTANCE.pushConfigDuringPlay();
+                    }
+                }
+            }).ifError(error -> MythicWorldTweaks.LOGGER.error("Failed to parse config, config was not updated. See below for error message and correct your config.\n{}", error.message()));
+        }).setName("Config File Updater");
     }
 
     public void onConfigPush(NetworkSyncedConfig syncedConfig) {
