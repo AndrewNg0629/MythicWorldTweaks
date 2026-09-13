@@ -5,7 +5,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.s2c.login.LoginQueryRequestPayload;
 import net.minecraft.util.Identifier;
 import top.aenp.mwt.network.v2.MythicNetwork;
-import top.aenp.mwt.network.v2.injections.ClientLoginNetworkHandlerMethodInjections;
+import top.aenp.mwt.network.v2.interfaces.MythicClientLoginNetworkHandler;
 
 @SuppressWarnings("unchecked")
 public interface MythicLoginS2CPayload extends LoginQueryRequestPayload {
@@ -23,5 +23,5 @@ public interface MythicLoginS2CPayload extends LoginQueryRequestPayload {
 
     Identifier mythicId();
 
-    void handle(ClientLoginNetworkHandlerMethodInjections handler);
+    void handle(MythicClientLoginNetworkHandler handler);
 }

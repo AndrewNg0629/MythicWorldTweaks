@@ -14,12 +14,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.aenp.mwt.config.v2.ConfigManager;
-import top.aenp.mwt.network.v2.injections.ClientPlayNetworkHandlerMethodInjections;
+import top.aenp.mwt.network.v2.interfaces.MwtClientPlayNetworkHandler;
 import top.aenp.mwt.network.v2.payloads.SleepingStateUpdateS2CPayload;
 import top.aenp.mwt.network.v2.payloads.interfaces.MythicPlayS2CPayload;
 
 @Mixin(value = ClientPlayNetworkHandler.class, priority = 990)
-public abstract class ClientPlayNetworkHandlerMixin extends ClientCommonNetworkHandler implements ClientPlayNetworkHandlerMethodInjections {
+public abstract class ClientPlayNetworkHandlerMixin extends ClientCommonNetworkHandler implements MwtClientPlayNetworkHandler {
     protected ClientPlayNetworkHandlerMixin(MinecraftClient client, ClientConnection connection, ClientConnectionState connectionState) {
         super(client, connection, connectionState);
     }

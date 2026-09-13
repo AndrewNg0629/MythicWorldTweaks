@@ -17,13 +17,13 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.aenp.mwt.config.v2.ConfigManager;
-import top.aenp.mwt.injected.interfaces.PlayerEntityMethodInjections;
+import top.aenp.mwt.interfaces.MwtPlayerEntity;
 import top.aenp.mwt.misc.PlayerEntityStuff;
 import top.aenp.mwt.network.v2.payloads.SleepingStateUpdateS2CPayload;
 
 @SuppressWarnings("DataFlowIssue")
 @Mixin(PlayerEntity.class)
-public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEntityMethodInjections {
+public abstract class PlayerEntityMixin extends LivingEntity implements MwtPlayerEntity {
     @Unique
     private final boolean isFake = PlayerEntityStuff.determineFake((PlayerEntity) (Object) this);
     @Unique

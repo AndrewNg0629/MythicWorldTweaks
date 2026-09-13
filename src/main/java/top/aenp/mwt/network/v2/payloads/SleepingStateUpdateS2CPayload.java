@@ -4,7 +4,8 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
-import top.aenp.mwt.network.v2.injections.ClientPlayNetworkHandlerMethodInjections;
+import top.aenp.mwt.network.v2.interfaces.MwtClientPlayNetworkHandler;
+import top.aenp.mwt.network.v2.interfaces.MythicClientPlayNetworkHandler;
 import top.aenp.mwt.network.v2.payloads.interfaces.MythicPlayS2CPayload;
 
 public record SleepingStateUpdateS2CPayload(boolean isReallySleeping) implements MythicPlayS2CPayload {
@@ -22,8 +23,8 @@ public record SleepingStateUpdateS2CPayload(boolean isReallySleeping) implements
     };
 
     @Override
-    public void handle(ClientPlayNetworkHandlerMethodInjections handler) {
-        handler.mythicworldtweaks$onSleepingStateUpdate(this);
+    public void handle(MythicClientPlayNetworkHandler handler) {
+        ((MwtClientPlayNetworkHandler) handler).mythicworldtweaks$onSleepingStateUpdate(this);
     }
 
     @Override

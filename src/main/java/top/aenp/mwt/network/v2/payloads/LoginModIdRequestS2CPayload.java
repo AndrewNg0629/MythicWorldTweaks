@@ -3,7 +3,8 @@ package top.aenp.mwt.network.v2.payloads;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.Identifier;
-import top.aenp.mwt.network.v2.injections.ClientLoginNetworkHandlerMethodInjections;
+import top.aenp.mwt.network.v2.interfaces.MwtClientLoginNetworkHandler;
+import top.aenp.mwt.network.v2.interfaces.MythicClientLoginNetworkHandler;
 import top.aenp.mwt.network.v2.payloads.interfaces.MythicLoginS2CPayload;
 
 public class LoginModIdRequestS2CPayload implements MythicLoginS2CPayload {
@@ -25,7 +26,7 @@ public class LoginModIdRequestS2CPayload implements MythicLoginS2CPayload {
     }
 
     @Override
-    public void handle(ClientLoginNetworkHandlerMethodInjections handler) {
-        handler.mythicworldtweaks$onModIdRequest();
+    public void handle(MythicClientLoginNetworkHandler handler) {
+        ((MwtClientLoginNetworkHandler) handler).mythicworldtweaks$onModIdRequest();
     }
 }

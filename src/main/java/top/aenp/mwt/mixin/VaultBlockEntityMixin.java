@@ -13,14 +13,14 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.aenp.mwt.injected.interfaces.VaultBlockEntityMethodInjections;
+import top.aenp.mwt.interfaces.MwtVaultBlockEntity;
 import top.aenp.mwt.misc.TrialChamberStuff;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Mixin(VaultBlockEntity.class)
-public class VaultBlockEntityMixin implements VaultBlockEntityMethodInjections {
+public class VaultBlockEntityMixin implements MwtVaultBlockEntity {
     @Shadow
     @Final
     private static Logger LOGGER;

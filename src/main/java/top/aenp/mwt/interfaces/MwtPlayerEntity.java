@@ -1,6 +1,6 @@
-package top.aenp.mwt.injected.interfaces;
+package top.aenp.mwt.interfaces;
 
-public interface PlayerEntityMethodInjections {
+public interface MwtPlayerEntity {
     default boolean mythicWorldTweaks$isFake() {
         throw new UnsupportedOperationException("Method must be overridden to be used.");
     }

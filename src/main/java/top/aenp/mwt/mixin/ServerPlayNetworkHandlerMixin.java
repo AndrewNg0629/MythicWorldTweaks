@@ -17,11 +17,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.aenp.mwt.config.v2.ConfigManager;
-import top.aenp.mwt.network.v2.injections.ServerPlayNetworkHandlerMethodInjections;
+import top.aenp.mwt.network.v2.interfaces.MwtServerPlayNetworkHandler;
 import top.aenp.mwt.network.v2.payloads.interfaces.MythicPlayC2SPayload;
 
 @Mixin(value = ServerPlayNetworkHandler.class, priority = 990)
-public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonNetworkHandler implements ServerPlayNetworkHandlerMethodInjections {
+public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonNetworkHandler implements MwtServerPlayNetworkHandler {
     @Shadow
     public ServerPlayerEntity player;
 

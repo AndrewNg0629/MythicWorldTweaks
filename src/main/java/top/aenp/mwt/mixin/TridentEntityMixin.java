@@ -31,7 +31,7 @@ public abstract class TridentEntityMixin extends PersistentProjectileEntity {
 
     @Inject(at = @At("HEAD"), method = "tick")
     private void tick(CallbackInfo info) {
-        if (getY() <= getWorld().getBottomY() + 12 && getDataTracker().get(LOYALTY) > 0 && ConfigManager.getConfig().tweaks().localToggleTweaks1().tridentsReturnFromVoid()) {
+        if (getY() <= getWorld().getBottomY() - 63 && getDataTracker().get(LOYALTY) > 0 && ConfigManager.getConfig().tweaks().localToggleTweaks1().tridentsReturnFromVoid()) {
             setVelocity(Vec3d.ZERO);
             dealtDamage = true;
         }

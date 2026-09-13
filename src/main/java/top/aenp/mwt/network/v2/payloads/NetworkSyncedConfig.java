@@ -10,8 +10,8 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 import top.aenp.mwt.config.v2.ConfigManager;
 import top.aenp.mwt.config.v2.ModConfig;
-import top.aenp.mwt.network.v2.injections.ClientLoginNetworkHandlerMethodInjections;
-import top.aenp.mwt.network.v2.injections.ClientPlayNetworkHandlerMethodInjections;
+import top.aenp.mwt.network.v2.interfaces.MythicClientLoginNetworkHandler;
+import top.aenp.mwt.network.v2.interfaces.MythicClientPlayNetworkHandler;
 import top.aenp.mwt.network.v2.payloads.interfaces.MythicLoginS2CPayload;
 import top.aenp.mwt.network.v2.payloads.interfaces.MythicPlayS2CPayload;
 
@@ -56,12 +56,12 @@ public record NetworkSyncedConfig(
     }
 
     @Override
-    public void handle(ClientLoginNetworkHandlerMethodInjections handler) {
+    public void handle(MythicClientLoginNetworkHandler handler) {
         ConfigManager.getInstance().onConfigPush(this);
     }
 
     @Override
-    public void handle(ClientPlayNetworkHandlerMethodInjections handler) {
+    public void handle(MythicClientPlayNetworkHandler handler) {
         ConfigManager.getInstance().onConfigPush(this);
     }
 }

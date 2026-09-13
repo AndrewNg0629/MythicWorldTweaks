@@ -14,13 +14,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.aenp.mwt.config.v2.ConfigManager;
 import top.aenp.mwt.config.v2.ModConfig;
-import top.aenp.mwt.injected.interfaces.VaultServerDataMethodInjections;
+import top.aenp.mwt.interfaces.MwtVaultServerData;
 
 import java.util.Set;
 import java.util.UUID;
 
 @Mixin(VaultServerData.class)
-public abstract class VaultServerDataMixin implements VaultServerDataMethodInjections {
+public abstract class VaultServerDataMixin implements MwtVaultServerData {
     @Unique
     private VaultBlockEntity vaultBlockEntity;
 

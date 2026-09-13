@@ -1,6 +1,6 @@
-package top.aenp.mwt.injected.interfaces;
+package top.aenp.mwt.interfaces;
 
-public interface ItemEntityMethodInjections {
+public interface MwtItemEntity {
     default boolean mythicWorldTweaks$isUnderProtection() {
         throw new UnsupportedOperationException("Method must be overridden to be used.");
     }

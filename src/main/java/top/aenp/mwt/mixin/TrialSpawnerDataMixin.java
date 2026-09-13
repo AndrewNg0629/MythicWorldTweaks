@@ -10,10 +10,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.aenp.mwt.config.v2.ConfigManager;
-import top.aenp.mwt.injected.interfaces.TrialSpawnerDataMethodInjections;
+import top.aenp.mwt.interfaces.MwtTrialSpawnerData;
 
 @Mixin(TrialSpawnerData.class)
-public class TrialSpawnerDataMixin implements TrialSpawnerDataMethodInjections {
+public class TrialSpawnerDataMixin implements MwtTrialSpawnerData {
     @Unique
     long completionTimestamp = -1L;
 

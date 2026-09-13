@@ -14,10 +14,10 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.aenp.mwt.config.v2.ConfigManager;
-import top.aenp.mwt.injected.interfaces.ItemEntityMethodInjections;
+import top.aenp.mwt.interfaces.MwtItemEntity;
 
 @Mixin(ItemEntity.class)
-public abstract class ItemEntityMixin extends Entity implements ItemEntityMethodInjections {
+public abstract class ItemEntityMixin extends Entity implements MwtItemEntity {
     @Unique
     private final int worldMinY = getWorld().getBottomY() + 1;
     @Shadow

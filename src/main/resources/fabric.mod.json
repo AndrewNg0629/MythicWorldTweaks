@@ -45,32 +45,35 @@
       "update_checker": false
     },
     "loom:injected_interfaces": {
-      "net/minecraft/class_1657": [
-        "top/aenp/mwt/injected/interfaces/PlayerEntityMethodInjections"
-      ],
-      "net/minecraft/class_1542": [
-        "top/aenp/mwt/injected/interfaces/ItemEntityMethodInjections"
-      ],
       "net/minecraft/class_3248": [
-        "top/aenp/mwt/network/v2/injections/ServerLoginNetworkHandlerMethodInjections"
+        "top/aenp/mwt/network/v2/interfaces/MwtServerLoginNetworkHandler"
+      ],
+      "net/minecraft/class_3244": [
+        "top/aenp/mwt/network/v2/interfaces/MwtServerPlayNetworkHandler"
       ],
       "net/minecraft/class_635": [
-        "top/aenp/mwt/network/v2/injections/ClientLoginNetworkHandlerMethodInjections"
+        "top/aenp/mwt/network/v2/interfaces/MwtClientLoginNetworkHandler"
       ],
       "net/minecraft/class_634": [
-        "top/aenp/mwt/network/v2/injections/ClientPlayNetworkHandlerMethodInjections"
+        "top/aenp/mwt/network/v2/interfaces/MwtClientPlayNetworkHandler"
       ],
-      "net/minecraft/class_423": [
-        "top/aenp/mwt/injected/interfaces/client/SleepingChatScreenMethodInjections"
+      "net/minecraft/class_1657": [
+        "top/aenp/mwt/interfaces/MwtPlayerEntity"
+      ],
+      "net/minecraft/class_1542": [
+        "top/aenp/mwt/interfaces/MwtItemEntity"
       ],
       "net/minecraft/class_9199": [
-        "top/aenp/mwt/injected/interfaces/VaultBlockEntityMethodInjections"
+        "top/aenp/mwt/interfaces/MwtVaultBlockEntity"
       ],
       "net/minecraft/class_9204": [
-        "top/aenp/mwt/injected/interfaces/VaultServerDataMethodInjections"
+        "top/aenp/mwt/interfaces/MwtVaultServerData"
       ],
       "net/minecraft/class_8966": [
-        "top/aenp/mwt/injected/interfaces/TrialSpawnerDataMethodInjections"
+        "top/aenp/mwt/interfaces/MwtTrialSpawnerData"
+      ],
+      "net/minecraft/class_423": [
+        "top/aenp/mwt/interfaces/client/MwtSleepingChatScreen"
       ]
     }
   }

@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.aenp.mwt.config.v2.ConfigManager;
 import top.aenp.mwt.misc.ReflectionUtils;
 import top.aenp.mwt.network.v2.MythicNetwork;
-import top.aenp.mwt.network.v2.injections.ServerLoginNetworkHandlerMethodInjections;
+import top.aenp.mwt.network.v2.interfaces.MwtServerLoginNetworkHandler;
 import top.aenp.mwt.network.v2.payloads.LoginModIdListC2SPayload;
 import top.aenp.mwt.network.v2.payloads.LoginModIdRequestS2CPayload;
 import top.aenp.mwt.network.v2.payloads.LoginModVersionC2SPayload;
@@ -31,7 +31,7 @@ import top.aenp.mwt.network.v2.payloads.interfaces.MythicLoginC2SPayload;
 import java.util.Set;
 
 @Mixin(value = ServerLoginNetworkHandler.class, priority = 990)
-public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetworkHandlerMethodInjections {
+public abstract class ServerLoginNetworkHandlerMixin implements MwtServerLoginNetworkHandler {
     @Shadow
     @Final
     ClientConnection connection;

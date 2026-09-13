@@ -3,8 +3,9 @@ package top.aenp.mwt.network.v2.payloads;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.Identifier;
-import top.aenp.mwt.network.v2.injections.ServerLoginNetworkHandlerMethodInjections;
+import top.aenp.mwt.network.v2.interfaces.MwtServerLoginNetworkHandler;
 import top.aenp.mwt.network.v2.payloads.interfaces.MythicLoginC2SPayload;
+import top.aenp.mwt.network.v2.interfaces.MythicServerLoginNetworkHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public record LoginModIdListC2SPayload(List<String> modIdList) implements Mythic
     }
 
     @Override
-    public void handle(ServerLoginNetworkHandlerMethodInjections handler) {
-        handler.mythicworldtweaks$onModIdList(this);
+    public void handle(MythicServerLoginNetworkHandler handler) {
+        ((MwtServerLoginNetworkHandler) handler).mythicworldtweaks$onModIdList(this);
     }
 }

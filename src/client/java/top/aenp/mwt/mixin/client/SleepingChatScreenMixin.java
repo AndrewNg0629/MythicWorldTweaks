@@ -13,11 +13,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.aenp.mwt.config.v2.ConfigManager;
-import top.aenp.mwt.injected.interfaces.client.SleepingChatScreenMethodInjections;
+import top.aenp.mwt.interfaces.client.MwtSleepingChatScreen;
 import top.aenp.mwt.network.v2.payloads.TrySleepC2SPayload;
 
 @Mixin(SleepingChatScreen.class)
-public class SleepingChatScreenMixin extends ChatScreen implements SleepingChatScreenMethodInjections {
+public class SleepingChatScreenMixin extends ChatScreen implements MwtSleepingChatScreen {
     @Unique
     private ButtonWidget sleepButton;
 

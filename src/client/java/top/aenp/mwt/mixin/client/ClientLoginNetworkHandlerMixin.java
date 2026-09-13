@@ -14,14 +14,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.aenp.mwt.MythicWorldTweaks;
 import top.aenp.mwt.config.v2.ConfigManager;
 import top.aenp.mwt.network.v2.MythicNetwork;
-import top.aenp.mwt.network.v2.injections.ClientLoginNetworkHandlerMethodInjections;
+import top.aenp.mwt.network.v2.interfaces.MwtClientLoginNetworkHandler;
 import top.aenp.mwt.network.v2.payloads.LoginModIdListC2SPayload;
 import top.aenp.mwt.network.v2.payloads.LoginModVersionC2SPayload;
 import top.aenp.mwt.network.v2.payloads.LoginModVersionS2CPayload;
 import top.aenp.mwt.network.v2.payloads.interfaces.MythicLoginS2CPayload;
 
 @Mixin(value = ClientLoginNetworkHandler.class, priority = 990)
-public class ClientLoginNetworkHandlerMixin implements ClientLoginNetworkHandlerMethodInjections {
+public class ClientLoginNetworkHandlerMixin implements MwtClientLoginNetworkHandler {
     @Shadow
     @Final
     private ClientConnection connection;
