@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
 import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
@@ -18,15 +17,15 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import top.aenp.mwl.network.v2.MythicNetwork;
 import top.aenp.mwt.config.v2.ConfigManager;
 import top.aenp.mwt.misc.ReflectionUtils;
-import top.aenp.mwt.network.v2.MythicNetwork;
+import top.aenp.mwt.network.v2.MwtNetwork;
 import top.aenp.mwt.network.v2.interfaces.MwtServerLoginNetworkHandler;
 import top.aenp.mwt.network.v2.payloads.LoginModIdListC2SPayload;
 import top.aenp.mwt.network.v2.payloads.LoginModIdRequestS2CPayload;
 import top.aenp.mwt.network.v2.payloads.LoginModVersionC2SPayload;
 import top.aenp.mwt.network.v2.payloads.LoginModVersionS2CPayload;
-import top.aenp.mwt.network.v2.payloads.interfaces.MythicLoginC2SPayload;
 
 import java.util.Set;
 
@@ -41,7 +40,7 @@ public abstract class ServerLoginNetworkHandlerMixin implements MwtServerLoginNe
     @Shadow
     private @Nullable GameProfile profile;
     @Unique
-    private MythicNetwork.NegotiationStates negotiationState = MythicNetwork.NegotiationStates.VERSION_S2C;
+    private MwtNetwork.NegotiationStates negotiationState = MwtNetwork.NegotiationStates.VERSION_S2C;
 
     @Shadow
     public abstract void disconnect(Text reason);
@@ -63,18 +62,18 @@ public abstract class ServerLoginNetworkHandlerMixin implements MwtServerLoginNe
     private void onTickVerify(GameProfile profile, CallbackInfo info) {
         if (!connection.isLocal() && ConfigManager.getConfig().multiplayerSupportEnabled()) {
             ReflectionUtils.setLoginHandlerState((ServerLoginNetworkHandler) (Object) this, 3);
-            connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new LoginModVersionS2CPayload(MythicNetwork.MOD_VERSION, MythicNetwork.PROTOCOL_VERSION)));
-            negotiationState = MythicNetwork.NegotiationStates.VERSION_C2S;
+            connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new LoginModVersionS2CPayload(MwtNetwork.MOD_VERSION, MwtNetwork.PROTOCOL_VERSION)));
+            negotiationState = MwtNetwork.NegotiationStates.VERSION_C2S;
             info.cancel();
         }
     }
 
     @Override
     public void mythicworldtweaks$onModVersion(LoginModVersionC2SPayload version) {
-        Validate.validState(negotiationState == MythicNetwork.NegotiationStates.VERSION_C2S, "Unexpected mod version c2s packet.");
-        if (version.protocolVersion() == MythicNetwork.PROTOCOL_VERSION) {
+        Validate.validState(negotiationState == MwtNetwork.NegotiationStates.VERSION_C2S, "Unexpected mod version c2s packet.");
+        if (version.protocolVersion() == MwtNetwork.PROTOCOL_VERSION) {
             if (ConfigManager.getConfig().modIdValidationConfig().enabled()) {
-                negotiationState = MythicNetwork.NegotiationStates.MOD_LIST;
+                negotiationState = MwtNetwork.NegotiationStates.MOD_LIST;
                 connection.send(new LoginQueryRequestS2CPacket(MythicNetwork.QUERY_ID, new LoginModIdRequestS2CPayload()));
             } else {
                 sendConfig();
@@ -86,7 +85,7 @@ public abstract class ServerLoginNetworkHandlerMixin implements MwtServerLoginNe
 
     @Override
     public void mythicworldtweaks$onModIdList(LoginModIdListC2SPayload list) {
-        Validate.validState(negotiationState == MythicNetwork.NegotiationStates.MOD_LIST, "Unexpected mod ID list packet.");
+        Validate.validState(negotiationState == MwtNetwork.NegotiationStates.MOD_LIST, "Unexpected mod ID list packet.");
         ImmutableSet<String> receivedMods = ImmutableSet.copyOf(list.modIdList());
         ImmutableSet<String> missingMods = Sets.difference(Set.copyOf(ConfigManager.getConfig().modIdValidationConfig().requiredMods()), receivedMods).immutableCopy();
         ImmutableSet<String> excessMods = Sets.intersection(Set.copyOf(ConfigManager.getConfig().modIdValidationConfig().prohibitedMods()), receivedMods).immutableCopy();
@@ -108,19 +107,6 @@ public abstract class ServerLoginNetworkHandlerMixin implements MwtServerLoginNe
             sendConfig();
         } else {
             disconnect(Text.of(failMessage.toString()));
-        }
-    }
-
-    @Inject(method = "onQueryResponse", at = @At(value = "HEAD"), cancellable = true)
-    private void handleResponse(LoginQueryResponseC2SPacket packet, CallbackInfo info) {
-        if (packet.queryId() == MythicNetwork.QUERY_ID) {
-            if (packet.response() != null) {
-                MythicLoginC2SPayload payload = (MythicLoginC2SPayload) packet.response();
-                payload.handle(this);
-            } else {
-                disconnect(Text.of(String.format("Please have MythicWorldTweaks %s installed.", MythicNetwork.MOD_VERSION)));
-            }
-            info.cancel();
         }
     }
 }

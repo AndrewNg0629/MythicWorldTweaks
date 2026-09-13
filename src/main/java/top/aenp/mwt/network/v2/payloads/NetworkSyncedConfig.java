@@ -8,12 +8,12 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
+import top.aenp.mwl.network.v2.interfaces.MythicClientLoginNetworkHandler;
+import top.aenp.mwl.network.v2.interfaces.MythicClientPlayNetworkHandler;
+import top.aenp.mwl.network.v2.payloads.interfaces.MythicLoginS2CPayload;
+import top.aenp.mwl.network.v2.payloads.interfaces.MythicPlayS2CPayload;
 import top.aenp.mwt.config.v2.ConfigManager;
 import top.aenp.mwt.config.v2.ModConfig;
-import top.aenp.mwt.network.v2.interfaces.MythicClientLoginNetworkHandler;
-import top.aenp.mwt.network.v2.interfaces.MythicClientPlayNetworkHandler;
-import top.aenp.mwt.network.v2.payloads.interfaces.MythicLoginS2CPayload;
-import top.aenp.mwt.network.v2.payloads.interfaces.MythicPlayS2CPayload;
 
 public record NetworkSyncedConfig(
         ModConfig.Tweaks.SyncedToggleTweaks1 syncedToggleTweaks1,

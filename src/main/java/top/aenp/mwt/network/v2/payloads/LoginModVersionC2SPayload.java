@@ -3,9 +3,9 @@ package top.aenp.mwt.network.v2.payloads;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.Identifier;
+import top.aenp.mwl.network.v2.interfaces.MythicServerLoginNetworkHandler;
+import top.aenp.mwl.network.v2.payloads.interfaces.MythicLoginC2SPayload;
 import top.aenp.mwt.network.v2.interfaces.MwtServerLoginNetworkHandler;
-import top.aenp.mwt.network.v2.payloads.interfaces.MythicLoginC2SPayload;
-import top.aenp.mwt.network.v2.interfaces.MythicServerLoginNetworkHandler;
 
 public record LoginModVersionC2SPayload(String modVersion, int protocolVersion) implements MythicLoginC2SPayload {
     public static final Identifier ID = Identifier.of("mwt", "mod_version_c2s");

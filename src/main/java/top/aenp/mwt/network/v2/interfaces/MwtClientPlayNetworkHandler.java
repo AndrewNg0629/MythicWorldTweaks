@@ -1,5 +1,6 @@
 package top.aenp.mwt.network.v2.interfaces;
 
+import top.aenp.mwl.network.v2.interfaces.MythicClientPlayNetworkHandler;
 import top.aenp.mwt.network.v2.payloads.SleepingStateUpdateS2CPayload;
 
 public interface MwtClientPlayNetworkHandler extends MythicClientPlayNetworkHandler {

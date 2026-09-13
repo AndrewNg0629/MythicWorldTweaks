@@ -3,9 +3,9 @@ package top.aenp.mwt.network.v2.payloads;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.Identifier;
+import top.aenp.mwl.network.v2.interfaces.MythicServerLoginNetworkHandler;
+import top.aenp.mwl.network.v2.payloads.interfaces.MythicLoginC2SPayload;
 import top.aenp.mwt.network.v2.interfaces.MwtServerLoginNetworkHandler;
-import top.aenp.mwt.network.v2.payloads.interfaces.MythicLoginC2SPayload;
-import top.aenp.mwt.network.v2.interfaces.MythicServerLoginNetworkHandler;
 
 import java.util.ArrayList;
 import java.util.List;

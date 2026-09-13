@@ -1,6 +1,7 @@
 package top.aenp.mwt.misc;
 
 import net.minecraft.text.Text;
+import top.aenp.mwl.misc.EnvironmentDetector;
 import top.aenp.mwt.MythicWorldTweaks;
 
 import java.lang.reflect.InvocationTargetException;
@@ -17,8 +18,9 @@ public class LocalToaster {
         }
     }
 
+    @SuppressWarnings("unused")
     public static void toast(Text title, Text index) {
-        if (EnvironmentDetection.isPhyClient) {
+        if (EnvironmentDetector.isPhyClient) {
             if (isToasterReady) {
                 try {
                     toastMethod.invoke(null, title, index);

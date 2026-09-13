@@ -4,9 +4,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
+import top.aenp.mwl.network.v2.interfaces.MythicServerPlayNetworkHandler;
+import top.aenp.mwl.network.v2.payloads.interfaces.MythicPlayC2SPayload;
 import top.aenp.mwt.network.v2.interfaces.MwtServerPlayNetworkHandler;
-import top.aenp.mwt.network.v2.payloads.interfaces.MythicPlayC2SPayload;
-import top.aenp.mwt.network.v2.interfaces.MythicServerPlayNetworkHandler;
 
 public class TrySleepC2SPayload implements MythicPlayC2SPayload {
     public static final CustomPayload.Id<TrySleepC2SPayload> ID = new Id<>(Identifier.of("mwt", "try_sleep"));

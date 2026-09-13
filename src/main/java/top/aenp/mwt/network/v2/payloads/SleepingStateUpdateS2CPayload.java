@@ -4,9 +4,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
+import top.aenp.mwl.network.v2.interfaces.MythicClientPlayNetworkHandler;
+import top.aenp.mwl.network.v2.payloads.interfaces.MythicPlayS2CPayload;
 import top.aenp.mwt.network.v2.interfaces.MwtClientPlayNetworkHandler;
-import top.aenp.mwt.network.v2.interfaces.MythicClientPlayNetworkHandler;
-import top.aenp.mwt.network.v2.payloads.interfaces.MythicPlayS2CPayload;
 
 public record SleepingStateUpdateS2CPayload(boolean isReallySleeping) implements MythicPlayS2CPayload {
     public static final Id<SleepingStateUpdateS2CPayload> ID = new Id<>(Identifier.of("mwt", "sleeping_update"));

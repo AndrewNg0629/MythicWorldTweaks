@@ -14,7 +14,7 @@ import top.aenp.mwt.config.v2.ConfigManager;
 import top.aenp.mwt.item.ItemInitializer;
 import top.aenp.mwt.misc.FireBallEntityManager;
 import top.aenp.mwt.misc.WardenEntityStuff;
-import top.aenp.mwt.network.v2.MythicNetwork;
+import top.aenp.mwt.network.v2.MwtNetwork;
 
 public class MythicWorldTweaks implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("MythicWorldTweaks");
@@ -23,7 +23,7 @@ public class MythicWorldTweaks implements ModInitializer {
     @Override
     public void onInitialize() {
         ConfigManager.initialize();
-        MythicNetwork.INSTANCE.initialize();
+        MwtNetwork.INSTANCE.initialize();
         ItemInitializer.generalInitialization();
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (ConfigManager.getConfig().tweaks().valueTweaks().fireballAutoDiscarding().enabled()) {

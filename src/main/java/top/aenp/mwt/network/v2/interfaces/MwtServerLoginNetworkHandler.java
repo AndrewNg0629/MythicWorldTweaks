@@ -1,5 +1,6 @@
 package top.aenp.mwt.network.v2.interfaces;
 
+import top.aenp.mwl.network.v2.interfaces.MythicServerLoginNetworkHandler;
 import top.aenp.mwt.network.v2.payloads.LoginModIdListC2SPayload;
 import top.aenp.mwt.network.v2.payloads.LoginModVersionC2SPayload;
 

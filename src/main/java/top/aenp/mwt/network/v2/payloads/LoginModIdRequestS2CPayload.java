@@ -3,9 +3,9 @@ package top.aenp.mwt.network.v2.payloads;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.Identifier;
+import top.aenp.mwl.network.v2.interfaces.MythicClientLoginNetworkHandler;
+import top.aenp.mwl.network.v2.payloads.interfaces.MythicLoginS2CPayload;
 import top.aenp.mwt.network.v2.interfaces.MwtClientLoginNetworkHandler;
-import top.aenp.mwt.network.v2.interfaces.MythicClientLoginNetworkHandler;
-import top.aenp.mwt.network.v2.payloads.interfaces.MythicLoginS2CPayload;
 
 public class LoginModIdRequestS2CPayload implements MythicLoginS2CPayload {
     public static final Identifier ID = Identifier.of("mwt", "mod_id_req_s2c");

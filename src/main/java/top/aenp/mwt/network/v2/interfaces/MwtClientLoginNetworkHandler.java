@@ -1,5 +1,6 @@
 package top.aenp.mwt.network.v2.interfaces;
 
+import top.aenp.mwl.network.v2.interfaces.MythicClientLoginNetworkHandler;
 import top.aenp.mwt.network.v2.payloads.LoginModVersionS2CPayload;
 
 public interface MwtClientLoginNetworkHandler extends MythicClientLoginNetworkHandler {

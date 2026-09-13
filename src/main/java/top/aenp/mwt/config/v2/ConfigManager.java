@@ -10,11 +10,11 @@ import com.mojang.serialization.JsonOps;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
+import top.aenp.mwl.misc.EnvironmentDetector;
 import top.aenp.mwt.MythicWorldTweaks;
 import top.aenp.mwt.item.ItemEditor;
-import top.aenp.mwt.misc.EnvironmentDetection;
 import top.aenp.mwt.misc.WardenEntityStuff;
-import top.aenp.mwt.network.v2.MythicNetwork;
+import top.aenp.mwt.network.v2.MwtNetwork;
 import top.aenp.mwt.network.v2.payloads.NetworkSyncedConfig;
 
 import java.io.File;
@@ -169,7 +169,7 @@ public class ConfigManager {
                     applyBakedConfig();
                     MythicWorldTweaks.LOGGER.info("Your mutable config has been successfully updated.");
                     if (ConfigManager.getConfig().multiplayerSupportEnabled()) {
-                        MythicNetwork.INSTANCE.pushConfigDuringPlay();
+                        MwtNetwork.INSTANCE.pushConfigDuringPlay();
                     }
                 }
             }).ifError(error -> MythicWorldTweaks.LOGGER.error("Failed to parse config, config was not updated. See below for error message and correct your config.\n{}", error.message()));
@@ -177,7 +177,7 @@ public class ConfigManager {
     }
 
     public void onConfigPush(NetworkSyncedConfig syncedConfig) {
-        if (EnvironmentDetection.isPhyClient) {
+        if (EnvironmentDetector.isPhyClient) {
             configFromNetwork = syncedConfig;
             combineConfig();
             applyBakedConfig();

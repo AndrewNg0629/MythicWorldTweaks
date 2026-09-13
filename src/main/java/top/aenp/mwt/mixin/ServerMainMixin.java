@@ -6,13 +6,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.aenp.mwt.misc.EnvironmentDetection;
+import top.aenp.mwl.misc.EnvironmentDetector;
 
 @Mixin(Main.class)
 public class ServerMainMixin {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/SharedConstants;createGameVersion()V", shift = At.Shift.AFTER), method = "main")
     private static void setIsDevelopment(String[] args, CallbackInfo info) {
-        if (EnvironmentDetection.isYarn) {
+        if (EnvironmentDetector.isYarn) {
             SharedConstants.isDevelopment = true;
         }
     }
