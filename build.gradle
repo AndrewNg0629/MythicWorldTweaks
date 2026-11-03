@@ -60,7 +60,7 @@ dependencies {
 
 	modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 
-	modImplementation("top.aenp.mwl:MythicWorldLib:26.1")
+	modImplementation("top.aenp.mwl:MythicWorldLib:${project.mwl_version}")
 
 	modCompileOnly "mcp.mobius.waila:wthit-api:fabric-${wthitVersion}"
 	modRuntimeOnly "mcp.mobius.waila:wthit:fabric-${wthitVersion}"
@@ -73,7 +73,8 @@ processResources {
 	inputs.property "version", project.version
 
 	filesMatching("fabric.mod.json") {
-		expand "version": project.version
+		expand "version": project.version,
+				"mwl_version": project.mwl_version
 	}
 }
 

@@ -37,7 +37,7 @@
     "minecraft": ">=1.21",
     "java": ">=21",
     "fabric-api": "*",
-    "mythicworldlib": "*"
+    "mythicworldlib": "${mwl_version}"
   },
   "suggests": {
   },
